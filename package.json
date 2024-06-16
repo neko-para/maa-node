@@ -5,6 +5,7 @@
     ]
   },
   "devDependencies": {
+    "cmake-js": "^7.3.0",
     "node-addon-api": "^8.0.0",
     "node-api-headers": "^1.1.0"
   }

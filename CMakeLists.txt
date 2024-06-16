@@ -4,6 +4,33 @@ cmake_policy(SET CMP0042 NEW)
 
 project(maa-node)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(CMAKE_JS_VERSION "7.3.0")
+set(CMAKE_JS_INC
+    "${CMAKE_CURRENT_LIST_DIR}/node_modules/node-api-headers/include;node_modules/node-addon-api"
+)
+
+if(WIN32)
+  set(CMAKE_JS_SRC
+      "${CMAKE_CURRENT_LIST_DIR}/node_modules/cmake-js/lib/cpp/win_delay_load_hook.cc"
+  )
+endif()
+
+set(NODE_RUNTIME "node")
+set(NODE_RUNTIMEVERSION "20.11.1")
+set(NODE_ARCH "x64")
+
+if(WIN32)
+  set(CMAKE_JS_LIB "${CMAKE_BINARY_DIR}/node.lib")
+  set(CMAKE_JS_NODELIB_DEF
+      "${CMAKE_CURRENT_LIST_DIR}/node_modules/node-api-headers/def/node_api.def"
+  )
+  set(CMAKE_JS_NODELIB_TARGET ${CMAKE_JS_LIB})
+  set(CMAKE_SHARED_LINKER_FLAGS "/delayload:node.exe")
+  link_libraries(delayimp)
+endif()
+
 include(
   ${CMAKE_CURRENT_LIST_DIR}/maa/share/cmake/MaaFramework/MaaFramework.cmake)
 
@@ -23,7 +50,7 @@ if(WIN32
    AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib
   execute_process(
-    COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF}
+    COMMAND ${CMAKE_LINKER} /def:${CMAKE_JS_NODELIB_DEF}
             /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
 endif()
 
