@@ -1,0 +1,11 @@
+{
+  "binary": {
+    "napi_versions": [
+      8
+    ]
+  },
+  "devDependencies": {
+    "node-addon-api": "^8.0.0",
+    "node-api-headers": "^1.1.0"
+  }
+}

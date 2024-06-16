@@ -1,0 +1,31 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      node-addon-api:
+        specifier: ^8.0.0
+        version: 8.0.0
+      node-api-headers:
+        specifier: ^1.1.0
+        version: 1.1.0
+
+packages:
+
+  node-addon-api@8.0.0:
+    resolution: {integrity: sha512-ipO7rsHEBqa9STO5C5T10fj732ml+5kLN1cAG8/jdHd56ldQeGj3Q7+scUS+VHK/qy1zLEwC4wMK5+yM0btPvw==}
+    engines: {node: ^18 || ^20 || >= 21}
+
+  node-api-headers@1.1.0:
+    resolution: {integrity: sha512-ucQW+SbYCUPfprvmzBsnjT034IGRB2XK8rRc78BgjNKhTdFKgAwAmgW704bKIBmcYW48it0Gkjpkd39Azrwquw==}
+
+snapshots:
+
+  node-addon-api@8.0.0: {}
+
+  node-api-headers@1.1.0: {}
