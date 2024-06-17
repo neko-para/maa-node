@@ -1,0 +1,73 @@
+name: 'Build'
+
+on:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - '**.md'
+            - '.vscode'
+    workflow_dispatch:
+
+defaults:
+    run:
+        shell: bash
+
+jobs:
+    build:
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                node: ['20']
+                os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+                # arch: ['amd64', 'arm64']
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  submodules: recursive
+
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: latest
+
+            - name: Use Node.js ${{ matrix.node }}
+              uses: actions/setup-node@v3
+              with:
+                  node-version: ${{ matrix.node }}
+                  cache: 'pnpm'
+
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v2
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa-cache
+                  name: MAA-${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'ubuntu-latest' && 'linux' || 'macos') }}-x86_64
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Setup Windows 10 SDK
+              if: ${{ matrix.os == 'windows-latest' }}
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
+              with:
+                  sdk-version: 22621
+
+            - name: Build maa.node
+              run: |
+                  npx cmake-js build
+                  cmake --install build --prefix install
+
+            - name: Copy files
+              run: |
+                  cp -r maa-cache/bin/* install/
+
+            - uses: actions/upload-artifact@v3
+              if: always()
+              with:
+                  name: maa-node-${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'ubuntu-latest' && 'linux' || 'macos') }}
+                  path: 'install'
