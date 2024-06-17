@@ -3,3 +3,4 @@ build
 install
 maa
 node_modules
+dist/binary

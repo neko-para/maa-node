@@ -1,0 +1,5 @@
+{
+  "name": "@nekosu/maa",
+  "main": "./binary/maa.node",
+  "types": "./types/maa.d.ts"
+}

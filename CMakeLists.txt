@@ -27,8 +27,13 @@ if(WIN32)
       "${CMAKE_CURRENT_LIST_DIR}/node_modules/node-api-headers/def/node_api.def"
   )
   set(CMAKE_JS_NODELIB_TARGET ${CMAKE_JS_LIB})
+endif()
+
+if(WIN32)
   set(CMAKE_SHARED_LINKER_FLAGS "/delayload:node.exe")
   link_libraries(delayimp)
+elseif(APPLE)
+  set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
 endif()
 
 include(
@@ -44,6 +49,7 @@ add_library(maa SHARED ${maa_src} ${CMAKE_JS_SRC})
 set_target_properties(maa PROPERTIES PREFIX "" SUFFIX ".node")
 target_link_libraries(maa ${CMAKE_JS_LIB} MaaFramework::MaaFramework
                       MaaFramework::MaaToolkit)
+target_compile_definitions(maa PRIVATE NODE_ADDON_API_ENABLE_TYPE_CHECK_ON_AS)
 
 if(WIN32
    AND CMAKE_JS_NODELIB_DEF
