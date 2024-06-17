@@ -57,7 +57,7 @@ jobs:
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build ${{ matrix.arch == 'amd64' && '' || '-A ARM64' }}
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '-A x64' || '-A ARM64' }}
                   cmake --install build --prefix install
 
             - name: Copy files
@@ -72,13 +72,11 @@ jobs:
                   name: maa-node-win-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
                   path: "install"
 
-    build:
-        runs-on: ${{ matrix.os }}
+    linux:
+        runs-on: ubuntu-latest
         strategy:
             matrix:
-                node: ["20"]
-                os: ["ubuntu-latest", "macos-latest"]
-                # arch: ['amd64', 'arm64']
+                arch: ["amd64", "arm64"]
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
@@ -90,11 +88,14 @@ jobs:
               with:
                   version: latest
 
-            - name: Use Node.js ${{ matrix.node }}
+            - name: Use Node
               uses: actions/setup-node@v3
               with:
-                  node-version: ${{ matrix.node }}
+                  node-version: 20
                   cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm i
 
             - name: Download MAA
               uses: dawidd6/action-download-artifact@v2
@@ -104,21 +105,19 @@ jobs:
                   workflow: build.yml
                   workflow_conclusion: success
                   path: maa
-                  name: MAA-${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'ubuntu-latest' && 'linux' || 'macos') }}-x86_64
+                  name: MAA-linux-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
 
-            - name: Install dependencies
-              run: pnpm i
-
-            - name: Setup Windows 10 SDK
-              if: ${{ matrix.os == 'windows-latest' }}
-              uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
-              with:
-                  sdk-version: 22621
+            - name: Install cross compiler
+              if: ${{ matrix.arch != 'amd64' }}
+              shell: bash
+              run: |
+                  apt-get update
+                  apt-get install g++-aarch64-linux-gnu
 
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--cc gcc --cxx g++' || '--cc aarch64-linux-gnu-gcc --cxx aarch64-linux-gnu-g++' }}
                   cmake --install build --prefix install
 
             - name: Copy files
@@ -130,5 +129,58 @@ jobs:
             - uses: actions/upload-artifact@v3
               if: always()
               with:
-                  name: maa-node-${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'ubuntu-latest' && 'linux' || 'macos') }}
+                  name: maa-node-linux-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+                  path: "install"
+
+    macos:
+        runs-on: -latest
+        strategy:
+            matrix:
+                arch: ["amd64", "arm64"]
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  submodules: recursive
+
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v2
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa
+                  name: MAA-macos-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+
+            - name: Build maa.node
+              shell: bash
+              run: |
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '-A x86_64' || '-A arm64' }}
+                  cmake --install build --prefix install
+
+            - name: Copy files
+              shell: bash
+              run: |
+                  cp -r maa/bin/* install/
+                  rm install/MaaPiCli* install/MaaHttp*
+
+            - uses: actions/upload-artifact@v3
+              if: always()
+              with:
+                  name: maa-node-macos-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
                   path: "install"
