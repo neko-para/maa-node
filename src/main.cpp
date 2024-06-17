@@ -6,6 +6,7 @@
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Value a = exports;
+    load_instance_controller(env, exports);
     load_utility_buffer(env, exports);
     load_utility_utility(env, exports);
     load_device_device(env, exports);

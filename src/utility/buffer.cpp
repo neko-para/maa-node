@@ -3,8 +3,11 @@
 #include <MaaFramework/MaaAPI.h>
 #include <napi.h>
 
+#include <iostream>
+
 void ImageBufferFinalizer(Napi::Env, MaaImageBufferHandle handle)
 {
+    std::cerr << "destroy image" << std::endl;
     MaaDestroyImageBuffer(handle);
 }
 

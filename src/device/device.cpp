@@ -1,3 +1,4 @@
+#include "../include/helper.h"
 #include "../include/loader.h"
 
 #include <MaaFramework/MaaAPI.h>
@@ -49,9 +50,29 @@ private:
 Napi::Value wait_for_find_device_to_complete(const Napi::CallbackInfo& info)
 {
     Napi::Function cb = info[0].As<Napi::Function>();
-    auto worker = new WaitForFindDeviceToCompleteWork(cb);
+    auto worker = new SimpleAsyncWork<MaaSize>(
+        cb,
+        MaaToolkitWaitForFindDeviceToComplete,
+        [](auto env, auto res) { return Napi::Number::New(env, res); });
     worker->Queue();
     return info.Env().Undefined();
+}
+
+Napi::Value get_device_count(const Napi::CallbackInfo& info)
+{
+    return Napi::Number::New(info.Env(), MaaToolkitGetDeviceCount());
+}
+
+Napi::Value get_device(const Napi::CallbackInfo& info)
+{
+    auto index = info[0].ToNumber().Uint32Value();
+    auto result = Napi::Object::New(info.Env());
+    result["name"] = MaaToolkitGetDeviceName(index);
+    result["adb_path"] = MaaToolkitGetDeviceAdbPath(index);
+    result["adb_serial"] = MaaToolkitGetDeviceAdbSerial(index);
+    result["adb_controller_type"] = MaaToolkitGetDeviceAdbControllerType(index);
+    result["adb_config"] = MaaToolkitGetDeviceAdbConfig(index);
+    return result;
 }
 
 void load_device_device(Napi::Env env, Napi::Object& exports)
@@ -66,4 +87,7 @@ void load_device_device(Napi::Env env, Napi::Object& exports)
         env,
         wait_for_find_device_to_complete,
         "MaaToolkitWaitForFindDeviceToComplete");
+    exports["get_device_count"] =
+        Napi::Function::New(env, get_device_count, "MaaToolkitGetDeviceCount");
+    exports["get_device"] = Napi::Function::New(env, get_device, "MaaToolkitGetDeviceXXX");
 }
