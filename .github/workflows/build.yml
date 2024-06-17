@@ -14,12 +14,70 @@ defaults:
         shell: bash
 
 jobs:
+    windows:
+        runs-on: "windows-latest"
+        strategy:
+            matrix:
+                arch: ["amd64", "arm64"]
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                  submodules: recursive
+
+            - uses: pnpm/action-setup@v2
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: "pnpm"
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v2
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa
+                  name: MAA-win-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+
+            - name: Setup Windows 10 SDK
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
+              with:
+                  sdk-version: 22621
+
+            - name: Build maa.node
+              shell: bash
+              run: |
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '' || '-A ARM64' }}
+                  cmake --install build --prefix install
+
+            - name: Copy files
+              shell: bash
+              run: |
+                  cp -r maa/bin/* install/
+                  rm install/MaaPiCli* install/MaaHttp*
+
+            - uses: actions/upload-artifact@v3
+              if: always()
+              with:
+                  name: maa-node-win-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+                  path: "install"
+
     build:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
                 node: ["20"]
-                os: ["windows-latest", "ubuntu-latest", "macos-latest"]
+                os: ["ubuntu-latest", "macos-latest"]
                 # arch: ['amd64', 'arm64']
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
