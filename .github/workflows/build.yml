@@ -57,12 +57,18 @@ jobs:
               with:
                   sdk-version: 22621
 
+            - name: Symlink maa
+              shell: bash
+              run: |
+                  ln -s maa-cache maa
+
             - name: Build maa.node
               run: |
                   npx cmake-js build
                   cmake --install build --prefix install
 
             - name: Copy files
+              shell: bash
               run: |
                   cp -r maa-cache/bin/* install/
 
