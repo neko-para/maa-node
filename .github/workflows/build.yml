@@ -58,7 +58,9 @@ jobs:
                   sdk-version: 22621
 
             - name: Build maa.node
+              shell: bash
               run: |
+                  mkdir build # for windows
                   npx cmake-js build
                   cmake --install build --prefix install
 
