@@ -45,7 +45,7 @@ jobs:
                   repo: MaaXYZ/MaaFramework
                   workflow: build.yml
                   workflow_conclusion: success
-                  path: maa-cache
+                  path: maa
                   name: MAA-${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'ubuntu-latest' && 'linux' || 'macos') }}-x86_64
 
             - name: Install dependencies
@@ -57,11 +57,6 @@ jobs:
               with:
                   sdk-version: 22621
 
-            - name: Symlink maa
-              shell: bash
-              run: |
-                  ln -s maa-cache maa
-
             - name: Build maa.node
               run: |
                   npx cmake-js build
@@ -71,6 +66,7 @@ jobs:
               shell: bash
               run: |
                   cp -r maa-cache/bin/* install/
+                  rm install/MaaPiCli* install/MaaHttp*
 
             - uses: actions/upload-artifact@v3
               if: always()
