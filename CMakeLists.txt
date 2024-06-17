@@ -56,9 +56,15 @@ if(WIN32
    AND CMAKE_JS_NODELIB_DEF
    AND CMAKE_JS_NODELIB_TARGET)
   # Generate node.lib
-  execute_process(
-    COMMAND ${CMAKE_LINKER} /def:${CMAKE_JS_NODELIB_DEF}
-            /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+  if(MSVC)
+    execute_process(
+      COMMAND ${CMAKE_AR} /def:${CMAKE_JS_NODELIB_DEF}
+              /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+  else()
+    execute_process(
+      COMMAND ${CMAKE_LINKER} /def:${CMAKE_JS_NODELIB_DEF}
+              /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
+  endif()
 endif()
 
 install(

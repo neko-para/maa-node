@@ -1,12 +1,12 @@
-name: 'Build'
+name: "Build"
 
 on:
     push:
         branches:
             - main
         paths-ignore:
-            - '**.md'
-            - '.vscode'
+            - "**.md"
+            - ".vscode"
     workflow_dispatch:
 
 defaults:
@@ -18,8 +18,8 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                node: ['20']
-                os: ['windows-latest', 'ubuntu-latest', 'macos-latest']
+                node: ["20"]
+                os: ["windows-latest", "ubuntu-latest", "macos-latest"]
                 # arch: ['amd64', 'arm64']
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,7 +36,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: ${{ matrix.node }}
-                  cache: 'pnpm'
+                  cache: "pnpm"
 
             - name: Download MAA
               uses: dawidd6/action-download-artifact@v2
@@ -60,7 +60,6 @@ jobs:
             - name: Build maa.node
               shell: bash
               run: |
-                  mkdir build # for windows
                   npx cmake-js build
                   cmake --install build --prefix install
 
@@ -74,4 +73,4 @@ jobs:
               if: always()
               with:
                   name: maa-node-${{ matrix.os == 'windows-latest' && 'win' || (matrix.os == 'ubuntu-latest' && 'linux' || 'macos') }}
-                  path: 'install'
+                  path: "install"
