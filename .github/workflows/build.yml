@@ -65,7 +65,7 @@ jobs:
             - name: Copy files
               shell: bash
               run: |
-                  cp -r maa-cache/bin/* install/
+                  cp -r maa/bin/* install/
                   rm install/MaaPiCli* install/MaaHttp*
 
             - uses: actions/upload-artifact@v3
