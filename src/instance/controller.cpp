@@ -59,6 +59,20 @@ Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
+Napi::Value controller_post_screencap(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto ctrlId = MaaControllerPostScreencap(handle);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_status(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto id = info[1].As<Napi::Number>().Uint32Value();
+    return Napi::Number::New(info.Env(), MaaControllerStatus(handle, id));
+}
+
 Napi::Value controller_wait(const Napi::CallbackInfo& info)
 {
     auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
@@ -72,11 +86,47 @@ Napi::Value controller_wait(const Napi::CallbackInfo& info)
     return info.Env().Undefined();
 }
 
+Napi::Value controller_connected(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    return Napi::Boolean::New(info.Env(), MaaControllerConnected(handle));
+}
+
+Napi::Value controller_get_image(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto value = info[1].As<Napi::External<MaaImageBuffer>>().Data();
+    return Napi::Boolean::New(info.Env(), MaaControllerGetImage(handle, value));
+}
+
+Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    StringBuffer buffer;
+    auto ret = MaaControllerGetUUID(handle, buffer);
+    if (ret) {
+        return Napi::String::New(info.Env(), buffer);
+    }
+    else {
+        return info.Env().Null();
+    }
+}
+
 void load_instance_controller(Napi::Env env, Napi::Object& exports)
 {
     exports["adb_controller_create"] =
         Napi::Function::New(env, adb_controller_create, "MaaAdbControllerCreateV2");
     exports["controller_post_connection"] =
         Napi::Function::New(env, controller_post_connection, "MaaControllerPostConnection");
+    exports["controller_post_screencap"] =
+        Napi::Function::New(env, controller_post_screencap, "MaaControllerPostScreencap");
+    exports["controller_status"] =
+        Napi::Function::New(env, controller_status, "MaaControllerStatus");
     exports["controller_wait"] = Napi::Function::New(env, controller_wait, "MaaControllerWait");
+    exports["controller_connected"] =
+        Napi::Function::New(env, controller_connected, "MaaControllerConnected");
+    exports["controller_get_image"] =
+        Napi::Function::New(env, controller_get_image, "MaaControllerGetImage");
+    exports["controller_get_uuid"] =
+        Napi::Function::New(env, controller_get_image, "MaaControllerGetUUID");
 }

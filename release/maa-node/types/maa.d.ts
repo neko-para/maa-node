@@ -27,11 +27,16 @@ export function adb_controller_create(
     callback: TrivialCallbak | null
 ): ControllerHandle | null
 export function controller_post_connection(handle: ControllerHandle): CtrlId
+export function controller_post_screencap(handle: ControllerHandle): CtrlId
+export function controller_status(handle: ControllerHandle): number
 export function controller_wait(
     handle: ControllerHandle,
     ctrlId: CtrlId,
     cb: (err?: Error, result?: number) => void
 ): void
+export function controller_connected(handle: ControllerHandle): boolean
+export function controller_get_image(handle: ControllerHandle, buffer: ImageBufferHandle): boolean
+export function controller_get_uuid(handle: ControllerHandle): string | null
 
 export function resource_create(callback: TrivialCallbak | null): ResourceHandle | null
 export function resource_post_path(handle: ResourceHandle, path: string): ResId
@@ -43,8 +48,8 @@ export function resource_wait(
     cb: (err?: Error, result?: number) => void
 ): void
 export function resource_loaded(handle: ResourceHandle): boolean
-export function resource_get_hash(handle: ResourceHandle): string
-export function resource_get_task_list(handle: ResourceHandle): string
+export function resource_get_hash(handle: ResourceHandle): string | null
+export function resource_get_task_list(handle: ResourceHandle): string | null
 
 export function version(): string
 export function set_global_option(key: 'LogDir', value: string): boolean
