@@ -18,20 +18,46 @@ async function main() {
             './maa/share/MaaAgentBinary',
             (msg, details) => {
                 console.log(msg, details)
-                return new Promise(resolve => {
-                    setTimeout(() => {
-                        resolve()
-                    }, 10)
-                })
             }
         )
-        if (ctrl) {
-            await util.promisify(maa.controller_wait)(ctrl, maa.controller_post_connection(ctrl))
-            await util.promisify(maa.controller_wait)(ctrl, maa.controller_post_screencap(ctrl))
-            const img = maa.create_image_buffer()!
-            maa.controller_get_image(ctrl, img)
-            fs.writeFileSync('result.png', Buffer.from(maa.get_image_encoded(img)))
+        if (!ctrl) {
+            return
         }
+        await util.promisify(maa.controller_wait)(ctrl, maa.controller_post_connection(ctrl))
+        const res = maa.resource_create((msg, details) => {
+            console.log(msg, details)
+        })
+        const inst = maa.create((msg, details) => {
+            console.log(msg, details)
+        })
+        if (!res || !inst) {
+            return
+        }
+        maa.bind_resource(inst, res)
+        maa.bind_controller(inst, ctrl)
+        console.log(maa.inited(inst))
+        maa.register_custom_action(inst, 'print', (...args) => {
+            console.log(...args)
+            return true
+        })
+        const task = maa.post_task(
+            inst,
+            'testCustom',
+            JSON.stringify({
+                test: {
+                    action: 'StartApp',
+                    package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'
+                },
+                testCustom: {
+                    action: 'Custom',
+                    custom_action: 'print',
+                    custom_action_param: {
+                        msg: 'Hello world!'
+                    }
+                }
+            })
+        )
+        await util.promisify(maa.wait_task)(inst, task)
     }
 }
 

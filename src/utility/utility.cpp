@@ -75,7 +75,7 @@ Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
         auto result = Napi::Object::New(info.Env());
         result["name"] = name;
         result["hit"] = !!hit;
-        result["hit_box"] = FromRect(hit_box);
+        result["hit_box"] = FromRect(info.Env(), hit_box);
         result["detail_json"] = detail_json;
         return result;
     }

@@ -1,6 +1,7 @@
 export type ControllerHandle = { __brand: 'ControllerHandle' }
 export type InstanceHandle = { __brand: 'InstanceHandle' }
 export type ResourceHandle = { __brand: 'ResourceHandle' }
+export type SyncContextHandle = { __brand: 'SyncContextHandle' }
 export type ImageBufferHandle = { __brand: 'ImageBufferHandle' }
 export type ImageListBufferHandle = { __brand: 'ImageListBufferHandle' }
 
@@ -18,6 +19,13 @@ export type Rect = {
 }
 
 export type TrivialCallbak = (msg: string, details: string) => void | Promise<void>
+export type CustomActionRunCallback = (
+    sync_context: SyncContextHandle,
+    task_name: string,
+    custom_action_param: string,
+    cur_box: Rect,
+    cur_rec_detail: string
+) => boolean | Promise<boolean>
 
 export function adb_controller_create(
     adb_path: string,
@@ -68,6 +76,11 @@ export function create(callback: TrivialCallbak | null): InstanceHandle | null
 export function bind_resource(handle: InstanceHandle, resource: ResourceHandle): boolean
 export function bind_controller(handle: InstanceHandle, controller: ControllerHandle): boolean
 export function inited(handle: InstanceHandle): boolean
+export function register_custom_action(
+    handle: InstanceHandle,
+    name: string,
+    func: CustomActionRunCallback
+): boolean
 export function post_task(handle: InstanceHandle, entry: string, param: string): TaskId
 export function post_recognition(handle: InstanceHandle, entry: string, param: string): TaskId
 export function post_action(handle: InstanceHandle, entry: string, param: string): TaskId

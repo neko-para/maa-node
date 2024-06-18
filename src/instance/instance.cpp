@@ -59,6 +59,17 @@ Napi::Value inited(const Napi::CallbackInfo& info)
     return Napi::Boolean::New(info.Env(), MaaInited(handle));
 }
 
+Napi::Value register_custom_action(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaInstanceAPI>>().Data();
+    auto name = info[1].As<Napi::String>().Utf8Value();
+    auto func = info[2].As<Napi::Function>();
+    auto ctx = new CallbackContext(info.Env(), func, "CustomActionRun");
+    return Napi::Boolean::New(
+        info.Env(),
+        MaaRegisterCustomAction(handle, name.c_str(), &custom_action_api, ctx));
+}
+
 Napi::Value post_task(const Napi::CallbackInfo& info)
 {
     auto handle = info[0].As<Napi::External<MaaInstanceAPI>>().Data();
@@ -132,6 +143,7 @@ void load_instance_instance(Napi::Env env, Napi::Object& exports)
     BIND(bind_resource);
     BIND(bind_controller);
     BIND(inited);
+    BIND(register_custom_action);
     BIND(post_task);
     BIND(post_recognition);
     BIND(post_action);

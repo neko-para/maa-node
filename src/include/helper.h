@@ -108,18 +108,52 @@ struct CallbackContext
     }
 };
 
+inline Napi::Object FromRect(Napi::Env env, const MaaRect& rect)
+{
+    auto rc = Napi::Object::New(env);
+    rc["x"] = rect.x;
+    rc["y"] = rect.y;
+    rc["width"] = rect.width;
+    rc["height"] = rect.height;
+    return rc;
+}
+
 inline void TrivialCallback(MaaStringView msg, MaaStringView details, MaaCallbackTransparentArg arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(arg);
-    std::string msg_str = msg;
-    std::string details_str = details;
     ctx->Call<void>(
-        [msg_str, details_str](auto env, auto fn) {
-            return fn.Call(
-                { Napi::String::New(env, msg_str), Napi::String::New(env, details_str) });
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, msg), Napi::String::New(env, details) });
         },
         [](auto res) { std::ignore = res; });
 }
+
+inline MaaBool CustomActionRun(
+    MaaSyncContextHandle sync_context,
+    MaaStringView task_name,
+    MaaStringView custom_action_param,
+    MaaRectHandle cur_box,
+    MaaStringView cur_rec_detail,
+    MaaTransparentArg arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({
+                Napi::External<MaaSyncContextAPI>::New(env, sync_context),
+                Napi::String::New(env, task_name),
+                Napi::String::New(env, custom_action_param),
+                FromRect(env, *cur_box),
+                Napi::String::New(env, cur_rec_detail),
+            });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaCustomActionAPI custom_action_api = { CustomActionRun, nullptr };
 
 template <typename Type>
 inline std::optional<Type*> ExternalOrNull(Napi::Value value)
@@ -130,16 +164,6 @@ inline std::optional<Type*> ExternalOrNull(Napi::Value value)
     else {
         return value.As<Napi::External<Type>>().Data();
     }
-}
-
-inline Napi::Object FromRect(const MaaRect& rect)
-{
-    Napi::Object rc;
-    rc["x"] = rect.x;
-    rc["y"] = rect.y;
-    rc["width"] = rect.width;
-    rc["height"] = rect.height;
-    return rc;
 }
 
 struct StringBuffer
