@@ -57,7 +57,7 @@ jobs:
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build ${{ matrix.arch == 'amd64' && '-A x64' || '-A ARM64' }}
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '-A x64' || '-A ARM64' }} ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }}
                   cmake --install build --prefix install
 
             - name: Copy files
@@ -117,7 +117,7 @@ jobs:
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--cc gcc --cxx g++' || '--cc aarch64-linux-gnu-gcc --cxx aarch64-linux-gnu-g++' }}
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--cc gcc --cxx g++' || '--cc aarch64-linux-gnu-gcc --cxx aarch64-linux-gnu-g++' }} ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }}
                   cmake --install build --prefix install
 
             - name: Copy files
@@ -170,7 +170,7 @@ jobs:
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build ${{ matrix.arch == 'amd64' && '-A x86_64' || '-A arm64' }}
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }} --CDCMAKE_OSX_ARCHITECTURES=${{ matrix.arch == 'amd64' && 'x86_64' || 'arm64' }}
                   cmake --install build --prefix install
 
             - name: Copy files
