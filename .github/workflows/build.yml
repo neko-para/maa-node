@@ -186,6 +186,10 @@ jobs:
         runs-on: ubuntu-latest
         needs: [windows, linux, macos]
         steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
             - uses: actions/download-artifact@v4
               with:
                   path: assets
