@@ -1,6 +1,6 @@
 .cache
 build
-install
-./maa
+/install
+/maa
 node_modules
-dist/binary
+/dist/binary
