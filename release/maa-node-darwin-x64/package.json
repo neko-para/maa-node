@@ -1,6 +1,5 @@
 {
-    "name": "@nekosu/maa-darwin-x64",
-    "version": "1.0.0",
+    "name": "@nekosu/maa-node-darwin-x64",
     "main": "./maa.node",
     "os": [
         "darwin"

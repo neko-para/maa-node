@@ -25,17 +25,16 @@ mkdir -p "$TARGET_DIR"
 
 chmod +x -R $SOURCE_DIR
 
+npm pkg set version=$VERSION --prefix "$TARGET_DIR/maa-node"
+
 # 遍历源目录中的每个子目录
 for dir in "$SOURCE_DIR"/maa-node-*; do
   if [ -d "$dir" ]; then
     # 获取子目录的名称
     dir_name=$(basename "$dir")
 
-    # 移除 'node-' 部分
-    target_dir_name=${dir_name/node-/}
-
     # 定义目标目录路径
-    target_dir="$TARGET_DIR/$target_dir_name"
+    target_dir="$TARGET_DIR/$dir_name"
 
     # 创建目标目录（如果不存在）
     mkdir -p "$target_dir"
@@ -44,6 +43,7 @@ for dir in "$SOURCE_DIR"/maa-node-*; do
     cp -r "$dir"/* "$target_dir"
 
     npm pkg set version=$VERSION --prefix "$target_dir"
+    npm pkg set optionalDependencies.@nekosu/${dir_name}=$VERSION --prefix "$TARGET_DIR/maa-node"
 
     echo "Copied files from $dir to $target_dir"
   fi

@@ -1,9 +1,8 @@
 {
-    "name": "@nekosu/maa-win32-arm64",
-    "version": "1.0.0",
+    "name": "@nekosu/maa-node-linux-arm64",
     "main": "./maa.node",
     "os": [
-        "win32"
+        "linux"
     ],
     "cpu": [
         "arm64"
