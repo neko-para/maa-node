@@ -1,5 +1,6 @@
 {
     "name": "@nekosu/maa-node",
     "main": "./src/maa.js",
-    "types": "./types/maa.d.ts"
+    "types": "./types/maa.d.ts",
+    "scripts": {}
 }
