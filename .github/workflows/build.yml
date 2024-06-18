@@ -209,35 +209,35 @@ jobs:
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa
+                  package: release/maa-node
                   token: ${{ secrets.NPM_TOKEN }}
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa-win32-x64
+                  package: release/maa-node-win32-x64
                   token: ${{ secrets.NPM_TOKEN }}
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa-win32-arm64
+                  package: release/maa-node-win32-arm64
                   token: ${{ secrets.NPM_TOKEN }}
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa-linux-x64
+                  package: release/maa-node-linux-x64
                   token: ${{ secrets.NPM_TOKEN }}
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa-linux-arm64
+                  package: release/maa-node-linux-arm64
                   token: ${{ secrets.NPM_TOKEN }}
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa-darwin-x64
+                  package: release/maa-node-darwin-x64
                   token: ${{ secrets.NPM_TOKEN }}
 
             - uses: JS-DevTools/npm-publish@v3
               with:
-                  package: release/maa-darwin-arm64
+                  package: release/maa-node-darwin-arm64
                   token: ${{ secrets.NPM_TOKEN }}
