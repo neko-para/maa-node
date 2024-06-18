@@ -7,6 +7,8 @@ TARGET_DIR="release"
 # 创建目标目录（如果不存在）
 mkdir -p "$TARGET_DIR"
 
+chmod +x -R $SOURCE_DIR
+
 # 遍历源目录中的每个子目录
 for dir in "$SOURCE_DIR"/maa-node-*; do
   if [ -d "$dir" ]; then
