@@ -57,10 +57,10 @@ Napi::Value set_global_option(const Napi::CallbackInfo& info)
 Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
 {
     MaaRecoId reco_id = info[0].As<Napi::Number>().Int64Value();
-    MaaStringBufferHandle name = MaaCreateStringBuffer();
+    StringBuffer name;
     MaaBool hit;
     MaaRect hit_box;
-    MaaStringBufferHandle detail_json = MaaCreateStringBuffer();
+    StringBuffer detail_json;
     auto raw = ExternalOrNull<MaaImageBuffer>(info[1]);
     auto draws = ExternalOrNull<MaaImageListBuffer>(info[2]);
     auto ret = MaaQueryRecognitionDetail(
@@ -73,18 +73,13 @@ Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
         draws.value_or(nullptr));
     if (ret) {
         auto result = Napi::Object::New(info.Env());
-        result["name"] = std::string(MaaGetString(name), MaaGetStringSize(name));
+        result["name"] = name;
         result["hit"] = !!hit;
         result["hit_box"] = FromRect(hit_box);
-        result["detail_json"] =
-            std::string(MaaGetString(detail_json), MaaGetStringSize(detail_json));
-        MaaDestroyStringBuffer(name);
-        MaaDestroyStringBuffer(detail_json);
+        result["detail_json"] = detail_json;
         return result;
     }
     else {
-        MaaDestroyStringBuffer(name);
-        MaaDestroyStringBuffer(detail_json);
         return info.Env().Null();
     }
 }
@@ -92,20 +87,18 @@ Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
 Napi::Value query_node_detail(const Napi::CallbackInfo& info)
 {
     MaaNodeId node_id = info[0].As<Napi::Number>().Int64Value();
-    MaaStringBufferHandle name = MaaCreateStringBuffer();
+    StringBuffer name;
     MaaRecoId reco_id;
     MaaBool run_completed;
     auto ret = MaaQueryNodeDetail(node_id, name, &reco_id, &run_completed);
     if (ret) {
         auto result = Napi::Object::New(info.Env());
-        result["name"] = std::string(MaaGetString(name), MaaGetStringSize(name));
+        result["name"] = name;
         result["reco_id"] = reco_id;
         result["run_completed"] = !!run_completed;
-        MaaDestroyStringBuffer(name);
         return result;
     }
     else {
-        MaaDestroyStringBuffer(name);
         return info.Env().Null();
     }
 }
@@ -119,21 +112,19 @@ Napi::Value query_task_detail(const Napi::CallbackInfo& info)
         return info.Env().Null();
     }
     std::vector<MaaNodeId> node_id_list(node_id_list_size);
-    MaaStringBufferHandle entry = MaaCreateStringBuffer();
+    StringBuffer entry;
     ret = MaaQueryTaskDetail(task_id, entry, node_id_list.data(), &node_id_list_size);
     if (ret) {
         auto result = Napi::Object::New(info.Env());
-        result["entry"] = std::string(MaaGetString(entry), MaaGetStringSize(entry));
+        result["entry"] = entry;
         auto list = Napi::Array::New(info.Env(), node_id_list_size);
         for (MaaSize i = 0; i < node_id_list_size; i++) {
             list.Set(static_cast<uint32_t>(i), Napi::Number::New(info.Env(), node_id_list[i]));
         }
         result["node_id_list"] = list;
-        MaaDestroyStringBuffer(entry);
         return result;
     }
     else {
-        MaaDestroyStringBuffer(entry);
         return info.Env().Null();
     }
 }

@@ -141,3 +141,24 @@ inline Napi::Object FromRect(const MaaRect& rect)
     rc["height"] = rect.height;
     return rc;
 }
+
+struct StringBuffer
+{
+    MaaStringBufferHandle buffer;
+
+    StringBuffer()
+        : buffer(MaaCreateStringBuffer())
+    {
+    }
+
+    ~StringBuffer() { MaaDestroyStringBuffer(buffer); }
+
+    operator MaaStringBufferHandle() const { return buffer; }
+
+    operator std::string() const
+    {
+        return std::string(MaaGetString(buffer), MaaGetStringSize(buffer));
+    }
+
+    void set(std::string_view data) const { MaaSetStringEx(buffer, data.data(), data.size()); }
+};

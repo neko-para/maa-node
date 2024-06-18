@@ -1,11 +1,13 @@
 export type ControllerHandle = { __brand: 'ControllerHandle' }
+export type ResourceHandle = { __brand: 'ResourceHandle' }
 export type ImageBufferHandle = { __brand: 'ImageBufferHandle' }
 export type ImageListBufferHandle = { __brand: 'ImageListBufferHandle' }
 
 export type CtrlId = number & { __brand: 'CtrlId' }
+export type ResId = number & { __brand: 'ResId' }
+export type TaskId = number & { __brand: 'TaskId' }
 export type RecoId = number & { __brand: 'RecoId' }
 export type NodeId = number & { __brand: 'NodeId' }
-export type TaskId = number & { __brand: 'TaskId' }
 
 export type Rect = {
     x: number
@@ -30,6 +32,19 @@ export function controller_wait(
     ctrlId: CtrlId,
     cb: (err?: Error, result?: number) => void
 ): void
+
+export function resource_create(callback: TrivialCallbak | null): ResourceHandle | null
+export function resource_post_path(handle: ResourceHandle, path: string): ResId
+export function resource_clear(handle: ResourceHandle): boolean
+export function resource_status(handle: ResourceHandle): number
+export function resource_wait(
+    handle: ResourceHandle,
+    resId: ResId,
+    cb: (err?: Error, result?: number) => void
+): void
+export function resource_loaded(handle: ResourceHandle): boolean
+export function resource_get_hash(handle: ResourceHandle): string
+export function resource_get_task_list(handle: ResourceHandle): string
 
 export function version(): string
 export function set_global_option(key: 'LogDir', value: string): boolean
