@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@nekosu/maa-node':
+        specifier: ^1.0.0
+        version: 1.0.0
       cmake-js:
         specifier: ^7.3.0
         version: 7.3.0
@@ -17,11 +20,41 @@ importers:
       node-api-headers:
         specifier: ^1.1.0
         version: 1.1.0
-      why-is-node-running:
-        specifier: ^2.2.2
-        version: 2.2.2
 
 packages:
+
+  '@nekosu/maa-node-darwin-arm64@1.0.0':
+    resolution: {integrity: sha512-G05YYSgAi2M9kR50ZtocIxd8Rk45HZhaeV6LA/iHO9y7cicWzYQ3bqnY5HVIMy1i23UHgqi8FdlaQ1r64eM4FQ==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@nekosu/maa-node-darwin-x64@1.0.0':
+    resolution: {integrity: sha512-gJ0+9T/S6tNu0j2I+Dgt6qHNExG6/12TQ3VqSisnDuA8hTLSQI3+3Qk0zz3wtR9OLtR418kBnZ6kTqxtV/frJQ==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@nekosu/maa-node-linux-arm64@1.0.0':
+    resolution: {integrity: sha512-ntvr0vniqZRMchbz1BtnpcWUKPuPg7NxyJok/oF2PVhzU7BkSQ2HC7i7AB4tbRsUuhNMRAPsYPls/2XaFmrGZg==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@nekosu/maa-node-linux-x64@1.0.0':
+    resolution: {integrity: sha512-pWU3JkKvlk4tXOVLkE3l77NS7iKZZyVr15WU/3usyK//KX6AtNlP+DhyQsfe6bXvxHzozhQDq6OutF9oqduyWg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@nekosu/maa-node-win32-arm64@1.0.0':
+    resolution: {integrity: sha512-i37I2N7os7yGp/auTtnizbfs8SinXCfEZ7Br2j4BiezT70JPk+38QJqa3VsJ6+899l20MtYHmATLRWUsvWUZeQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@nekosu/maa-node-win32-x64@1.0.0':
+    resolution: {integrity: sha512-8gmpPYYgVKgcSMCto68rWiwjuypEX0kBczP+FVodNVYLXD8Cev9wjgYf/JDywtLd8k16K8im+sqkfp36wxpH9Q==}
+    cpu: [x64]
+    os: [win32]
+
+  '@nekosu/maa-node@1.0.0':
+    resolution: {integrity: sha512-mXwrcEaDZ2dQYJOAczKcM8ZAcAJEAXpdfLSauNHcs3l0LAE+oBflUgKlJ++GwTTrj1aI/J+5oDs7PV4xeFXxTg==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -230,14 +263,8 @@ packages:
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
 
-  siginfo@2.0.0:
-    resolution: {integrity: sha512-ybx0WO1/8bSBLEWXZvEd7gMW3Sn3JFlW3TvX1nREbDLRNQNaeNN8WK0meBwPdAaOI7TtRRRJn/Es1zhrrCHu7g==}
-
   signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
-
-  stackback@0.0.2:
-    resolution: {integrity: sha512-1XMJE5fQo1jGH6Y/7ebnwPOBEkIEnT4QF32d5R1+VXdXveM0IBMJt8zfaxX1P3QhVwrYe+576+jkANtSS2mBbw==}
 
   string-width@4.2.3:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
@@ -273,11 +300,6 @@ packages:
     engines: {node: '>= 8'}
     hasBin: true
 
-  why-is-node-running@2.2.2:
-    resolution: {integrity: sha512-6tSwToZxTOcotxHeA+qGCq1mVzKR3CwcJGmVcY+QE8SHy6TnpFnh8PAvPNHYr7EcuVeG0QSMxtYCuO1ta/G/oA==}
-    engines: {node: '>=8'}
-    hasBin: true
-
   wide-align@1.1.5:
     resolution: {integrity: sha512-eDMORYaPNZ4sQIuuYPDHdQvf4gyCF9rEEV/yPxGfwPkRodwEgiMUUXTx/dex+Me0wxx53S+NgUHaP7y3MGlDmg==}
 
@@ -301,6 +323,33 @@ packages:
     engines: {node: '>=12'}
 
 snapshots:
+
+  '@nekosu/maa-node-darwin-arm64@1.0.0':
+    optional: true
+
+  '@nekosu/maa-node-darwin-x64@1.0.0':
+    optional: true
+
+  '@nekosu/maa-node-linux-arm64@1.0.0':
+    optional: true
+
+  '@nekosu/maa-node-linux-x64@1.0.0':
+    optional: true
+
+  '@nekosu/maa-node-win32-arm64@1.0.0':
+    optional: true
+
+  '@nekosu/maa-node-win32-x64@1.0.0':
+    optional: true
+
+  '@nekosu/maa-node@1.0.0':
+    optionalDependencies:
+      '@nekosu/maa-node-darwin-arm64': 1.0.0
+      '@nekosu/maa-node-darwin-x64': 1.0.0
+      '@nekosu/maa-node-linux-arm64': 1.0.0
+      '@nekosu/maa-node-linux-x64': 1.0.0
+      '@nekosu/maa-node-win32-arm64': 1.0.0
+      '@nekosu/maa-node-win32-x64': 1.0.0
 
   ansi-regex@5.0.1: {}
 
@@ -493,11 +542,7 @@ snapshots:
 
   set-blocking@2.0.0: {}
 
-  siginfo@2.0.0: {}
-
   signal-exit@3.0.7: {}
-
-  stackback@0.0.2: {}
 
   string-width@4.2.3:
     dependencies:
@@ -533,11 +578,6 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
-
-  why-is-node-running@2.2.2:
-    dependencies:
-      siginfo: 2.0.0
-      stackback: 0.0.2
 
   wide-align@1.1.5:
     dependencies:

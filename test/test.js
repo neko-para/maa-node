@@ -1,5 +1,4 @@
-const maa = require('@nekosu/maa')
-const whyIsNodeRunning = require('why-is-node-running')
+const maa = require('@nekosu/maa-node')
 
 console.log(maa.version())
 
