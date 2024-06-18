@@ -1,12 +1,12 @@
-name: "Build"
+name: 'Build'
 
 on:
     push:
         branches:
             - main
         paths-ignore:
-            - "**.md"
-            - ".vscode"
+            - '**.md'
+            - '.vscode'
     workflow_dispatch:
 
 defaults:
@@ -15,10 +15,10 @@ defaults:
 
 jobs:
     windows:
-        runs-on: "windows-latest"
+        runs-on: 'windows-latest'
         strategy:
             matrix:
-                arch: ["amd64", "arm64"]
+                arch: ['amd64', 'arm64']
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
@@ -34,7 +34,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 20
-                  cache: "pnpm"
+                  cache: 'pnpm'
 
             - name: Install dependencies
               run: pnpm i
@@ -70,13 +70,13 @@ jobs:
               if: always()
               with:
                   name: maa-node-win-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
-                  path: "install"
+                  path: 'install'
 
     linux:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                arch: ["amd64", "arm64"]
+                arch: ['amd64', 'arm64']
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
@@ -92,7 +92,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 20
-                  cache: "pnpm"
+                  cache: 'pnpm'
 
             - name: Install dependencies
               run: pnpm i
@@ -130,13 +130,13 @@ jobs:
               if: always()
               with:
                   name: maa-node-linux-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
-                  path: "install"
+                  path: 'install'
 
     macos:
-        runs-on: -latest
+        runs-on: macos-latest
         strategy:
             matrix:
-                arch: ["amd64", "arm64"]
+                arch: ['amd64', 'arm64']
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
@@ -152,7 +152,7 @@ jobs:
               uses: actions/setup-node@v4
               with:
                   node-version: 20
-                  cache: "pnpm"
+                  cache: 'pnpm'
 
             - name: Install dependencies
               run: pnpm i
@@ -183,4 +183,4 @@ jobs:
               if: always()
               with:
                   name: maa-node-macos-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
-                  path: "install"
+                  path: 'install'
