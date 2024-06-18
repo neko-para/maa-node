@@ -187,4 +187,10 @@ struct StringBuffer
     void set(std::string_view data) const { MaaSetStringEx(buffer, data.data(), data.size()); }
 };
 
+template <typename Type>
+inline void DeleteFinalizer(Napi::Env env, Type data)
+{
+    delete data;
+}
+
 #define BIND(name) exports[#name] = Napi::Function::New(env, name, #name)

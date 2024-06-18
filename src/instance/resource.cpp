@@ -1,19 +1,8 @@
 #include "../include/helper.h"
+#include "../include/info.h"
 #include "../include/loader.h"
 
 #include <MaaFramework/MaaAPI.h>
-
-#include <iostream>
-
-void ResourceFinalzer(Napi::Env env, MaaResourceHandle handle, void* hint)
-{
-    std::cerr << "destroy resource" << std::endl;
-    MaaResourceDestroy(handle);
-    if (hint) {
-        auto ctx = reinterpret_cast<CallbackContext*>(hint);
-        delete ctx;
-    }
-}
 
 Napi::Value resource_create(const Napi::CallbackInfo& info)
 {
@@ -31,7 +20,10 @@ Napi::Value resource_create(const Napi::CallbackInfo& info)
     handle = MaaResourceCreate(cb, ctx);
 
     if (handle) {
-        return Napi::External<MaaResourceAPI>::New(info.Env(), handle, ResourceFinalzer, ctx);
+        return Napi::External<ResourceInfo>::New(
+            info.Env(),
+            new ResourceInfo { handle, ctx },
+            &DeleteFinalizer<ResourceInfo*>);
     }
     else {
         delete ctx;
@@ -41,7 +33,7 @@ Napi::Value resource_create(const Napi::CallbackInfo& info)
 
 Napi::Value resource_post_path(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     auto path = info[1].As<Napi::String>().Utf8Value();
     auto resid = MaaResourcePostPath(handle, path.c_str());
     return Napi::Number::New(info.Env(), resid);
@@ -49,20 +41,20 @@ Napi::Value resource_post_path(const Napi::CallbackInfo& info)
 
 Napi::Value resource_clear(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaResourceClear(handle));
 }
 
 Napi::Value resource_status(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     auto id = info[1].As<Napi::Number>().Uint32Value();
     return Napi::Number::New(info.Env(), MaaResourceStatus(handle, id));
 }
 
 Napi::Value resource_wait(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     auto id = info[1].As<Napi::Number>().Uint32Value();
     Napi::Function cb = info[2].As<Napi::Function>();
     auto worker = new SimpleAsyncWork<MaaStatus>(
@@ -75,13 +67,13 @@ Napi::Value resource_wait(const Napi::CallbackInfo& info)
 
 Napi::Value resource_loaded(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaResourceLoaded(handle));
 }
 
 Napi::Value resource_get_hash(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     StringBuffer buffer;
     auto ret = MaaResourceGetHash(handle, buffer);
     if (ret) {
@@ -94,7 +86,7 @@ Napi::Value resource_get_hash(const Napi::CallbackInfo& info)
 
 Napi::Value resource_get_task_list(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaResourceAPI>>().Data();
+    auto handle = ResourceInfo::HandleFromValue(info[0]);
     StringBuffer buffer;
     auto ret = MaaResourceGetTaskList(handle, buffer);
     if (ret) {

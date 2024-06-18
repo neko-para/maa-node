@@ -1,19 +1,8 @@
 #include "../include/helper.h"
+#include "../include/info.h"
 #include "../include/loader.h"
 
 #include <MaaFramework/MaaAPI.h>
-
-#include <iostream>
-
-void ControllerFinalzer(Napi::Env env, MaaControllerHandle handle, void* hint)
-{
-    std::cerr << "destroy controller" << std::endl;
-    MaaControllerDestroy(handle);
-    if (hint) {
-        auto ctx = reinterpret_cast<CallbackContext*>(hint);
-        delete ctx;
-    }
-}
 
 Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 {
@@ -44,7 +33,10 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
         ctx);
 
     if (handle) {
-        return Napi::External<MaaControllerAPI>::New(info.Env(), handle, ControllerFinalzer, ctx);
+        return Napi::External<ControllerInfo>::New(
+            info.Env(),
+            new ControllerInfo { handle, ctx },
+            &DeleteFinalizer<ControllerInfo*>);
     }
     else {
         delete ctx;
@@ -54,7 +46,7 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 
 Napi::Value set_controller_option(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto key = info[1].As<Napi::String>().Utf8Value();
     if (key == "ScreenshotTargetLongSide") {
         auto val = info[2].As<Napi::Number>().Int32Value();
@@ -109,28 +101,28 @@ Napi::Value set_controller_option(const Napi::CallbackInfo& info)
 
 Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto ctrlId = MaaControllerPostConnection(handle);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_screencap(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto ctrlId = MaaControllerPostScreencap(handle);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_status(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto id = info[1].As<Napi::Number>().Uint32Value();
     return Napi::Number::New(info.Env(), MaaControllerStatus(handle, id));
 }
 
 Napi::Value controller_wait(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto id = info[1].As<Napi::Number>().Uint32Value();
     Napi::Function cb = info[2].As<Napi::Function>();
     auto worker = new SimpleAsyncWork<MaaStatus>(
@@ -143,20 +135,20 @@ Napi::Value controller_wait(const Napi::CallbackInfo& info)
 
 Napi::Value controller_connected(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     return Napi::Boolean::New(info.Env(), MaaControllerConnected(handle));
 }
 
 Napi::Value controller_get_image(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto value = info[1].As<Napi::External<MaaImageBuffer>>().Data();
     return Napi::Boolean::New(info.Env(), MaaControllerGetImage(handle, value));
 }
 
 Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
     StringBuffer buffer;
     auto ret = MaaControllerGetUUID(handle, buffer);
     if (ret) {
