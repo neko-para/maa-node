@@ -21,25 +21,18 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
     auto config = info[3].As<Napi::String>().Utf8Value();
     auto agent_path = info[4].As<Napi::String>().Utf8Value();
     auto callback = info[5].As<Napi::Function>();
+
     auto ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+
     auto handle = MaaAdbControllerCreateV2(
         adb_path.c_str(),
         adb_serial.c_str(),
         type,
         config.c_str(),
         agent_path.c_str(),
-        [](MaaStringView msg, MaaStringView details, MaaCallbackTransparentArg arg) {
-            auto ctx = reinterpret_cast<CallbackContext*>(arg);
-            std::string msg_str = msg;
-            std::string details_str = details;
-            ctx->Call<void>(
-                [msg_str, details_str](auto env, auto fn) {
-                    return fn.Call(
-                        { Napi::String::New(env, msg_str), Napi::String::New(env, details_str) });
-                },
-                [](auto res) { std::ignore = res; });
-        },
+        TrivialCallback,
         ctx);
+
     if (handle) {
         return Napi::External<MaaControllerAPI>::New(info.Env(), handle, ControllerFinalzer, ctx);
     }

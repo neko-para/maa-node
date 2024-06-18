@@ -1,8 +1,9 @@
 #pragma once
 
-#include <future>
+#include <MaaFramework/MaaAPI.h>
 #include <napi.h>
-#include <string_view>
+
+#include <future>
 #include <type_traits>
 
 template <typename Result>
@@ -105,3 +106,16 @@ struct CallbackContext
         return future.get();
     }
 };
+
+inline void TrivialCallback(MaaStringView msg, MaaStringView details, MaaCallbackTransparentArg arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(arg);
+    std::string msg_str = msg;
+    std::string details_str = details;
+    ctx->Call<void>(
+        [msg_str, details_str](auto env, auto fn) {
+            return fn.Call(
+                { Napi::String::New(env, msg_str), Napi::String::New(env, details_str) });
+        },
+        [](auto res) { std::ignore = res; });
+}

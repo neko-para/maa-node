@@ -3,14 +3,16 @@ export type ImageBufferHandle = { __brand: 'ImageBufferHandle' }
 
 export type CtrlId = number & { __brand: 'CtrlId' }
 
+export type TrivialCallbak = (msg: string, details: string) => void | Promise<void>
+
 export function adb_controller_create(
     adb_path: string,
     adb_serial: string,
     adb_controller_type: number,
     adb_config: string,
     agent_path: string,
-    callback: (msg: string, details: string) => void
-): ControllerHandle
+    callback: TrivialCallbak
+): ControllerHandle | null
 export function controller_post_connection(handle: ControllerHandle): CtrlId
 export function controller_wait(
     handle: ControllerHandle,

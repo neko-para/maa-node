@@ -1,0 +1,10 @@
+{
+    "name": "@nekosu/maa-darwin-arm64",
+    "main": "./maa.node",
+    "os": [
+        "darwin"
+    ],
+    "cpu": [
+        "arm64"
+    ]
+}
