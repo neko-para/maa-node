@@ -1,0 +1,1 @@
+../release/maa-node/types/maa.d.ts

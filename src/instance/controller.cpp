@@ -9,8 +9,10 @@ void ControllerFinalzer(Napi::Env env, MaaControllerHandle handle, void* hint)
 {
     std::cerr << "destroy controller" << std::endl;
     MaaControllerDestroy(handle);
-    auto ctx = reinterpret_cast<CallbackContext*>(hint);
-    delete ctx;
+    if (hint) {
+        auto ctx = reinterpret_cast<CallbackContext*>(hint);
+        delete ctx;
+    }
 }
 
 Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
@@ -20,17 +22,25 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
     auto type = info[2].As<Napi::Number>().Int32Value();
     auto config = info[3].As<Napi::String>().Utf8Value();
     auto agent_path = info[4].As<Napi::String>().Utf8Value();
-    auto callback = info[5].As<Napi::Function>();
 
-    auto ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+    MaaControllerCallback cb = nullptr;
+    CallbackContext* ctx = nullptr;
+    MaaControllerHandle handle = nullptr;
 
-    auto handle = MaaAdbControllerCreateV2(
+    if (!info[5].IsNull()) {
+        auto callback = info[5].As<Napi::Function>();
+
+        cb = TrivialCallback;
+        ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+    }
+
+    handle = MaaAdbControllerCreateV2(
         adb_path.c_str(),
         adb_serial.c_str(),
         type,
         config.c_str(),
         agent_path.c_str(),
-        TrivialCallback,
+        cb,
         ctx);
 
     if (handle) {

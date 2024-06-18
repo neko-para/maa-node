@@ -4,6 +4,7 @@
 #include <napi.h>
 
 #include <future>
+#include <optional>
 #include <type_traits>
 
 template <typename Result>
@@ -118,4 +119,25 @@ inline void TrivialCallback(MaaStringView msg, MaaStringView details, MaaCallbac
                 { Napi::String::New(env, msg_str), Napi::String::New(env, details_str) });
         },
         [](auto res) { std::ignore = res; });
+}
+
+template <typename Type>
+inline std::optional<Type*> ExternalOrNull(Napi::Value value)
+{
+    if (value.IsNull()) {
+        return std::nullopt;
+    }
+    else {
+        return value.As<Napi::External<Type>>().Data();
+    }
+}
+
+inline Napi::Object FromRect(const MaaRect& rect)
+{
+    Napi::Object rc;
+    rc["x"] = rect.x;
+    rc["y"] = rect.y;
+    rc["width"] = rect.width;
+    rc["height"] = rect.height;
+    return rc;
 }

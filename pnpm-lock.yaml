@@ -11,6 +11,9 @@ importers:
       '@nekosu/maa-node':
         specifier: ^1.0.0
         version: 1.0.0
+      '@types/node':
+        specifier: ^20
+        version: 20.14.5
       cmake-js:
         specifier: ^7.3.0
         version: 7.3.0
@@ -55,6 +58,9 @@ packages:
 
   '@nekosu/maa-node@1.0.0':
     resolution: {integrity: sha512-mXwrcEaDZ2dQYJOAczKcM8ZAcAJEAXpdfLSauNHcs3l0LAE+oBflUgKlJ++GwTTrj1aI/J+5oDs7PV4xeFXxTg==}
+
+  '@types/node@20.14.5':
+    resolution: {integrity: sha512-aoRR+fJkZT2l0aGOJhuA8frnCSoNX6W7U2mpNq63+BxBIj5BQFt8rHy627kijCmm63ijdSdwvGgpUsU6MBsZZA==}
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -285,6 +291,9 @@ packages:
     resolution: {integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==}
     engines: {node: '>=10'}
 
+  undici-types@5.26.5:
+    resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
+
   universalify@2.0.1:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
@@ -350,6 +359,10 @@ snapshots:
       '@nekosu/maa-node-linux-x64': 1.0.0
       '@nekosu/maa-node-win32-arm64': 1.0.0
       '@nekosu/maa-node-win32-x64': 1.0.0
+
+  '@types/node@20.14.5':
+    dependencies:
+      undici-types: 5.26.5
 
   ansi-regex@5.0.1: {}
 
@@ -568,6 +581,8 @@ snapshots:
       minizlib: 2.1.2
       mkdirp: 1.0.4
       yallist: 4.0.0
+
+  undici-types@5.26.5: {}
 
   universalify@2.0.1: {}
 
