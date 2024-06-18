@@ -3,21 +3,13 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <future>
 #include <iostream>
-
-struct CallbackContext
-{
-    Napi::Function fn;
-    Napi::ThreadSafeFunction tsfn;
-};
 
 void ControllerFinalzer(Napi::Env env, MaaControllerHandle handle, void* hint)
 {
     std::cerr << "destroy controller" << std::endl;
     MaaControllerDestroy(handle);
     auto ctx = reinterpret_cast<CallbackContext*>(hint);
-    ctx->tsfn.Release();
     delete ctx;
 }
 
@@ -29,10 +21,7 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
     auto config = info[3].As<Napi::String>().Utf8Value();
     auto agent_path = info[4].As<Napi::String>().Utf8Value();
     auto callback = info[5].As<Napi::Function>();
-    auto ctx = new CallbackContext {
-        callback,
-        Napi::ThreadSafeFunction::New(info.Env(), callback, "TrivialCallback", 0, 1)
-    };
+    auto ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
     auto handle = MaaAdbControllerCreateV2(
         adb_path.c_str(),
         adb_serial.c_str(),
@@ -43,43 +32,19 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
             auto ctx = reinterpret_cast<CallbackContext*>(arg);
             std::string msg_str = msg;
             std::string details_str = details;
-            std::promise<void> promise;
-            std::future<void> future = promise.get_future();
-            ctx->tsfn.BlockingCall(
-                [msg_str, details_str, &promise](Napi::Env env, Napi::Function fn) {
-                    Napi::Value result = fn.Call(
+            ctx->Call<void>(
+                [msg_str, details_str](auto env, auto fn) {
+                    return fn.Call(
                         { Napi::String::New(env, msg_str), Napi::String::New(env, details_str) });
-                    if (result.IsPromise()) {
-                        Napi::Object resultObject = result.As<Napi::Object>();
-                        resultObject.Get("then").As<Napi::Function>().Call(
-                            resultObject,
-                            {
-
-                                Napi::Function::New(
-                                    env,
-                                    [&promise](const Napi::CallbackInfo& info) {
-                                        promise.set_value();
-                                        return info.Env().Undefined();
-                                    }),
-                                Napi::Function::New(
-                                    env,
-                                    [&promise](const Napi::CallbackInfo& info) {
-                                        promise.set_value();
-                                        info.Env().Undefined();
-                                    }),
-                            });
-                    }
-                    else {
-                        promise.set_value();
-                    }
-                });
-            future.get();
+                },
+                [](auto res) { std::ignore = res; });
         },
         ctx);
     if (handle) {
         return Napi::External<MaaControllerAPI>::New(info.Env(), handle, ControllerFinalzer, ctx);
     }
     else {
+        delete ctx;
         return info.Env().Null();
     }
 }

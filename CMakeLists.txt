@@ -67,6 +67,12 @@ if(WIN32
   endif()
 endif()
 
+if(APPLE)
+  set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
+elseif(UNIX)
+  set(CMAKE_INSTALL_RPATH "$ORIGIN")
+endif()
+
 install(
   TARGETS maa
   RUNTIME DESTINATION .
