@@ -1,5 +1,6 @@
 {
     "name": "@nekosu/maa-win32-x64",
+    "version": "1.0.0",
     "main": "./maa.node",
     "os": [
         "win32"

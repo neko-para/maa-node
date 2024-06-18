@@ -1,5 +1,6 @@
 {
     "name": "@nekosu/maa-linux-x64",
+    "version": "1.0.0",
     "main": "./maa.node",
     "os": [
         "linux"
