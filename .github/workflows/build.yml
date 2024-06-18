@@ -50,7 +50,7 @@ jobs:
                   name: MAA-win-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
 
             - name: Setup Windows 10 SDK
-              uses: GuillaumeFalourd/setup-windows10-sdk-action@v1.12
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2
               with:
                   sdk-version: 22621
 
