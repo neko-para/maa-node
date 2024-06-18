@@ -4,3 +4,4 @@ build
 /maa
 node_modules
 /dist/binary
+.DS_Store

@@ -1,4 +1,4 @@
-const maa = require('./dist')
+const maa = require('@nekosu/maa')
 const whyIsNodeRunning = require('why-is-node-running')
 
 console.log(maa.version())

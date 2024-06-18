@@ -7,6 +7,12 @@ project(maa-node)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 
+if(APPLE)
+  set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
+elseif(UNIX)
+  set(CMAKE_INSTALL_RPATH "$ORIGIN")
+endif()
+
 set(CMAKE_JS_VERSION "7.3.0")
 set(CMAKE_JS_INC
     "${CMAKE_CURRENT_LIST_DIR}/node_modules/node-api-headers/include;node_modules/node-addon-api"
@@ -65,12 +71,6 @@ if(WIN32
       COMMAND ${CMAKE_LINKER} /def:${CMAKE_JS_NODELIB_DEF}
               /out:${CMAKE_JS_NODELIB_TARGET} ${CMAKE_STATIC_LINKER_FLAGS})
   endif()
-endif()
-
-if(APPLE)
-  set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
-elseif(UNIX)
-  set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()
 
 install(
