@@ -107,15 +107,12 @@ Napi::Value resource_get_task_list(const Napi::CallbackInfo& info)
 
 void load_instance_resource(Napi::Env env, Napi::Object& exports)
 {
-    exports["resource_create"] = Napi::Function::New(env, resource_create, "MaaResourceCreate");
-    exports["resource_post_path"] =
-        Napi::Function::New(env, resource_post_path, "MaaResourcePostPath");
-    exports["resource_clear"] = Napi::Function::New(env, resource_clear, "MaaResourceClear");
-    exports["resource_status"] = Napi::Function::New(env, resource_status, "MaaResourceStatus");
-    exports["resource_wait"] = Napi::Function::New(env, resource_wait, "MaaResourceWait");
-    exports["resource_loaded"] = Napi::Function::New(env, resource_loaded, "MaaResourceLoaded");
-    exports["resource_get_hash"] =
-        Napi::Function::New(env, resource_get_hash, "MaaResourceGetHash");
-    exports["resource_get_task_list"] =
-        Napi::Function::New(env, resource_get_task_list, "MaaResourceGetTaskList");
+    BIND(resource_create);
+    BIND(resource_post_path);
+    BIND(resource_clear);
+    BIND(resource_status);
+    BIND(resource_wait);
+    BIND(resource_loaded);
+    BIND(resource_get_hash);
+    BIND(resource_get_task_list);
 }

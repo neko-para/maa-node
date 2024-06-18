@@ -162,3 +162,5 @@ struct StringBuffer
 
     void set(std::string_view data) const { MaaSetStringEx(buffer, data.data(), data.size()); }
 };
+
+#define BIND(name) exports[#name] = Napi::Function::New(env, name, #name)

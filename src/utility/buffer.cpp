@@ -1,3 +1,4 @@
+#include "../include/helper.h"
 #include "../include/loader.h"
 
 #include <MaaFramework/MaaAPI.h>
@@ -123,26 +124,18 @@ Napi::Value image_list_remove(const Napi::CallbackInfo& info)
 
 void load_utility_buffer(Napi::Env env, Napi::Object& exports)
 {
-    exports["create_image_buffer"] =
-        Napi::Function::New(env, create_image_buffer, "MaaCreateImageBuffer");
-    exports["is_image_empty"] = Napi::Function::New(env, is_image_empty, "MaaIsImageEmpty");
-    exports["clear_image"] = Napi::Function::New(env, clear_image, "MaaClearImage");
-    exports["get_image_info"] = Napi::Function::New(env, get_image_info, "MaaGetImageXXX");
-    exports["get_image_encoded"] =
-        Napi::Function::New(env, get_image_encoded, "MaaGetImageEncoded");
-    exports["set_image_encoded"] =
-        Napi::Function::New(env, set_image_encoded, "MaaSetImageEncoded");
+    BIND(create_image_buffer);
+    BIND(is_image_empty);
+    BIND(clear_image);
+    BIND(get_image_info);
+    BIND(get_image_encoded);
+    BIND(set_image_encoded);
 
-    exports["create_image_list_buffer"] =
-        Napi::Function::New(env, create_image_list_buffer, "MaaCreateImageListBuffer");
-    exports["is_image_list_empty"] =
-        Napi::Function::New(env, is_image_list_empty, "MaaIsImageListEmpty");
-    exports["clear_image_list"] = Napi::Function::New(env, clear_image_list, "MaaClearImageList");
-    exports["get_image_list_size"] =
-        Napi::Function::New(env, get_image_list_size, "MaaGetImageListSize");
-    exports["get_image_list_at"] = Napi::Function::New(env, get_image_list_at, "MaaGetImageListAt");
-    exports["image_list_append"] =
-        Napi::Function::New(env, image_list_append, "MaaImageListAppend");
-    exports["image_list_remove"] =
-        Napi::Function::New(env, image_list_remove, "MaaImageListRemove");
+    BIND(create_image_list_buffer);
+    BIND(is_image_list_empty);
+    BIND(clear_image_list);
+    BIND(get_image_list_size);
+    BIND(get_image_list_at);
+    BIND(image_list_append);
+    BIND(image_list_remove);
 }

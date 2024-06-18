@@ -52,6 +52,61 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
     }
 }
 
+Napi::Value set_controller_option(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
+    auto key = info[1].As<Napi::String>().Utf8Value();
+    if (key == "ScreenshotTargetLongSide") {
+        auto val = info[2].As<Napi::Number>().Int32Value();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaControllerSetOption(
+                handle,
+                MaaCtrlOption_ScreenshotTargetLongSide,
+                &val,
+                sizeof(val)));
+    }
+    else if (key == "ScreenshotTargetShortSide") {
+        auto val = info[2].As<Napi::Number>().Int32Value();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaControllerSetOption(
+                handle,
+                MaaCtrlOption_ScreenshotTargetShortSide,
+                &val,
+                sizeof(val)));
+    }
+    else if (key == "DefaultAppPackageEntry") {
+        auto val = info[2].As<Napi::String>().Utf8Value();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaControllerSetOption(
+                handle,
+                MaaCtrlOption_DefaultAppPackageEntry,
+                val.data(),
+                val.length()));
+    }
+    else if (key == "DefaultAppPackage") {
+        auto val = info[2].As<Napi::String>().Utf8Value();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaControllerSetOption(
+                handle,
+                MaaCtrlOption_DefaultAppPackage,
+                val.data(),
+                val.length()));
+    }
+    else if (key == "Recording") {
+        auto val = info[2].As<Napi::Boolean>().Value();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaControllerSetOption(handle, MaaCtrlOption_Recording, &val, sizeof(val)));
+    }
+    else {
+        return Napi::Boolean::New(info.Env(), false);
+    }
+}
+
 Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
 {
     auto handle = info[0].As<Napi::External<MaaControllerAPI>>().Data();
@@ -114,19 +169,13 @@ Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
 
 void load_instance_controller(Napi::Env env, Napi::Object& exports)
 {
-    exports["adb_controller_create"] =
-        Napi::Function::New(env, adb_controller_create, "MaaAdbControllerCreateV2");
-    exports["controller_post_connection"] =
-        Napi::Function::New(env, controller_post_connection, "MaaControllerPostConnection");
-    exports["controller_post_screencap"] =
-        Napi::Function::New(env, controller_post_screencap, "MaaControllerPostScreencap");
-    exports["controller_status"] =
-        Napi::Function::New(env, controller_status, "MaaControllerStatus");
-    exports["controller_wait"] = Napi::Function::New(env, controller_wait, "MaaControllerWait");
-    exports["controller_connected"] =
-        Napi::Function::New(env, controller_connected, "MaaControllerConnected");
-    exports["controller_get_image"] =
-        Napi::Function::New(env, controller_get_image, "MaaControllerGetImage");
-    exports["controller_get_uuid"] =
-        Napi::Function::New(env, controller_get_image, "MaaControllerGetUUID");
+    BIND(adb_controller_create);
+    BIND(set_controller_option);
+    BIND(controller_post_connection);
+    BIND(controller_post_screencap);
+    BIND(controller_status);
+    BIND(controller_wait);
+    BIND(controller_connected);
+    BIND(controller_get_image);
+    BIND(controller_get_uuid);
 }

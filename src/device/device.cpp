@@ -77,17 +77,10 @@ Napi::Value get_device(const Napi::CallbackInfo& info)
 
 void load_device_device(Napi::Env env, Napi::Object& exports)
 {
-    exports["post_find_device"] =
-        Napi::Function::New(env, post_find_device, "MaaToolkitPostFindDevice");
-    exports["post_find_device_with_adb"] =
-        Napi::Function::New(env, post_find_device_with_adb, "MaaToolkitPostFindDeviceWithAdb");
-    exports["is_find_device_completed"] =
-        Napi::Function::New(env, is_find_device_completed, "MaaToolkitIsFindDeviceCompleted");
-    exports["wait_for_find_device_to_complete"] = Napi::Function::New(
-        env,
-        wait_for_find_device_to_complete,
-        "MaaToolkitWaitForFindDeviceToComplete");
-    exports["get_device_count"] =
-        Napi::Function::New(env, get_device_count, "MaaToolkitGetDeviceCount");
-    exports["get_device"] = Napi::Function::New(env, get_device, "MaaToolkitGetDeviceXXX");
+    BIND(post_find_device);
+    BIND(post_find_device_with_adb);
+    BIND(is_find_device_completed);
+    BIND(wait_for_find_device_to_complete);
+    BIND(get_device_count);
+    BIND(get_device);
 }

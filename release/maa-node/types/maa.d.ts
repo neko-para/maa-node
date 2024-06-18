@@ -1,11 +1,12 @@
 export type ControllerHandle = { __brand: 'ControllerHandle' }
+export type InstanceHandle = { __brand: 'InstanceHandle' }
 export type ResourceHandle = { __brand: 'ResourceHandle' }
 export type ImageBufferHandle = { __brand: 'ImageBufferHandle' }
 export type ImageListBufferHandle = { __brand: 'ImageListBufferHandle' }
 
 export type CtrlId = number & { __brand: 'CtrlId' }
-export type ResId = number & { __brand: 'ResId' }
 export type TaskId = number & { __brand: 'TaskId' }
+export type ResId = number & { __brand: 'ResId' }
 export type RecoId = number & { __brand: 'RecoId' }
 export type NodeId = number & { __brand: 'NodeId' }
 
@@ -26,17 +27,59 @@ export function adb_controller_create(
     agent_path: string,
     callback: TrivialCallbak | null
 ): ControllerHandle | null
+export function set_controller_option(
+    handle: ControllerHandle,
+    key: 'ScreenshotTargetLongSide',
+    value: number
+): boolean
+export function set_controller_option(
+    handle: ControllerHandle,
+    key: 'ScreenshotTargetShortSide',
+    value: number
+): boolean
+export function set_controller_option(
+    handle: ControllerHandle,
+    key: 'DefaultAppPackageEntry',
+    value: string
+): boolean
+export function set_controller_option(
+    handle: ControllerHandle,
+    key: 'DefaultAppPackage',
+    value: string
+): boolean
+export function set_controller_option(
+    handle: ControllerHandle,
+    key: 'Recording',
+    value: boolean
+): boolean
 export function controller_post_connection(handle: ControllerHandle): CtrlId
 export function controller_post_screencap(handle: ControllerHandle): CtrlId
 export function controller_status(handle: ControllerHandle): number
 export function controller_wait(
     handle: ControllerHandle,
-    ctrlId: CtrlId,
+    ctrl_id: CtrlId,
     cb: (err?: Error, result?: number) => void
 ): void
 export function controller_connected(handle: ControllerHandle): boolean
 export function controller_get_image(handle: ControllerHandle, buffer: ImageBufferHandle): boolean
 export function controller_get_uuid(handle: ControllerHandle): string | null
+
+export function create(callback: TrivialCallbak | null): InstanceHandle | null
+export function bind_resource(handle: InstanceHandle, resource: ResourceHandle): boolean
+export function bind_controller(handle: InstanceHandle, controller: ControllerHandle): boolean
+export function inited(handle: InstanceHandle): boolean
+export function post_task(handle: InstanceHandle, entry: string, param: string): TaskId
+export function post_recognition(handle: InstanceHandle, entry: string, param: string): TaskId
+export function post_action(handle: InstanceHandle, entry: string, param: string): TaskId
+export function set_task_param(handle: InstanceHandle, task_id: TaskId, param: string): boolean
+export function task_status(handle: InstanceHandle): number
+export function wait_task(
+    handle: InstanceHandle,
+    task_id: TaskId,
+    cb: (err?: Error, result?: number) => void
+): void
+export function running(handle: InstanceHandle): boolean
+export function post_stop(handle: InstanceHandle): boolean
 
 export function resource_create(callback: TrivialCallbak | null): ResourceHandle | null
 export function resource_post_path(handle: ResourceHandle, path: string): ResId
@@ -44,7 +87,7 @@ export function resource_clear(handle: ResourceHandle): boolean
 export function resource_status(handle: ResourceHandle): number
 export function resource_wait(
     handle: ResourceHandle,
-    resId: ResId,
+    res_id: ResId,
     cb: (err?: Error, result?: number) => void
 ): void
 export function resource_loaded(handle: ResourceHandle): boolean
@@ -61,7 +104,7 @@ export function set_global_option(key: 'DebugMessage', value: boolean): boolean
 export function query_recognition_detail(
     reco_id: RecoId,
     raw: ImageBufferHandle | null,
-    draws: ImageBufferListHandle | null
+    draws: ImageListBufferHandle | null
 ): {
     name: string
     hit: boolean

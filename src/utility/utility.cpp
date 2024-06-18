@@ -131,13 +131,9 @@ Napi::Value query_task_detail(const Napi::CallbackInfo& info)
 
 void load_utility_utility(Napi::Env env, Napi::Object& exports)
 {
-    exports["version"] = Napi::Function::New(env, version, "MaaVersion");
-    exports["set_global_option"] =
-        Napi::Function::New(env, set_global_option, "MaaSetGlobalOption");
-    exports["query_recognition_detail"] =
-        Napi::Function::New(env, query_recognition_detail, "MaaQueryRecognitionDetail");
-    exports["query_node_detail"] =
-        Napi::Function::New(env, query_node_detail, "MaaQueryNodeDetail");
-    exports["query_task_detail"] =
-        Napi::Function::New(env, query_task_detail, "MaaQueryTaskDetail");
+    BIND(version);
+    BIND(set_global_option);
+    BIND(query_recognition_detail);
+    BIND(query_node_detail);
+    BIND(query_task_detail);
 }
