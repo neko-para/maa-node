@@ -25,8 +25,6 @@ mkdir -p "$TARGET_DIR"
 
 chmod +x -R $SOURCE_DIR
 
-npm pkg set version=$VERSION --prefix "$TARGET_DIR/maa-node"
-
 # 遍历源目录中的每个子目录
 for dir in "$SOURCE_DIR"/maa-node-*; do
   if [ -d "$dir" ]; then
@@ -42,9 +40,10 @@ for dir in "$SOURCE_DIR"/maa-node-*; do
     # 复制文件到目标目录
     cp -r "$dir"/* "$target_dir"
 
-    npm pkg set version=$VERSION --prefix "$target_dir"
     npm pkg set optionalDependencies.@nekosu/${dir_name}=$VERSION --prefix "$TARGET_DIR/maa-node"
-
-    echo "Copied files from $dir to $target_dir"
   fi
+done
+
+for dir in "$TARGET_DIR"/*; do
+  npm pkg set version=$VERSION --prefix "$dir"
 done

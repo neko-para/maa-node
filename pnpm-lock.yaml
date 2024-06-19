@@ -8,12 +8,12 @@ importers:
 
   .:
     devDependencies:
-      '@nekosu/maa-node':
-        specifier: ^1.0.0
-        version: 1.0.0
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^4.3.0
         version: 4.3.0(prettier@3.3.2)
+      '@tsconfig/node20':
+        specifier: ^20.1.4
+        version: 20.1.4
       '@types/node':
         specifier: ^20
         version: 20.14.5
@@ -108,38 +108,38 @@ packages:
   '@jridgewell/trace-mapping@0.3.25':
     resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
 
-  '@nekosu/maa-node-darwin-arm64@1.0.0':
-    resolution: {integrity: sha512-G05YYSgAi2M9kR50ZtocIxd8Rk45HZhaeV6LA/iHO9y7cicWzYQ3bqnY5HVIMy1i23UHgqi8FdlaQ1r64eM4FQ==}
+  '@nekosu/maa-node-darwin-arm64@1.1.0':
+    resolution: {integrity: sha512-TXkOChrjpQKbPWsbUMwvtNMMq2NdXThOjNY9II9zBb6NpxSEdi6Slz961kAokVSBotPH/3vAi/K0Ko+V6XCRBQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@nekosu/maa-node-darwin-x64@1.0.0':
-    resolution: {integrity: sha512-gJ0+9T/S6tNu0j2I+Dgt6qHNExG6/12TQ3VqSisnDuA8hTLSQI3+3Qk0zz3wtR9OLtR418kBnZ6kTqxtV/frJQ==}
+  '@nekosu/maa-node-darwin-x64@1.1.0':
+    resolution: {integrity: sha512-kZL8Jj61ICzfAqP/N8sLorJnRQydSjYJYPJSuKdPhzFKOzQUZo9WcTE+apa4gA/4yKHRK/2R+9dkpGjt+7lnVQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@nekosu/maa-node-linux-arm64@1.0.0':
-    resolution: {integrity: sha512-ntvr0vniqZRMchbz1BtnpcWUKPuPg7NxyJok/oF2PVhzU7BkSQ2HC7i7AB4tbRsUuhNMRAPsYPls/2XaFmrGZg==}
+  '@nekosu/maa-node-linux-arm64@1.1.0':
+    resolution: {integrity: sha512-xpmdj7nsDDMZRKwAApNqphx1CZYDOjy6EkY0gv1aNjxoqiJw7cS+Uza5vl+IMrGdyPI7dVTEUY62wHODto022w==}
     cpu: [arm64]
     os: [linux]
 
-  '@nekosu/maa-node-linux-x64@1.0.0':
-    resolution: {integrity: sha512-pWU3JkKvlk4tXOVLkE3l77NS7iKZZyVr15WU/3usyK//KX6AtNlP+DhyQsfe6bXvxHzozhQDq6OutF9oqduyWg==}
+  '@nekosu/maa-node-linux-x64@1.1.0':
+    resolution: {integrity: sha512-yoPYHSW1ir1hABAVgZwhMHjY7ZcCz4A+L65hlCx0S4l1T40ty+7aViVNjmqyG+LUac8Ll1i+guEPJK9K8r3hMQ==}
     cpu: [x64]
     os: [linux]
 
-  '@nekosu/maa-node-win32-arm64@1.0.0':
-    resolution: {integrity: sha512-i37I2N7os7yGp/auTtnizbfs8SinXCfEZ7Br2j4BiezT70JPk+38QJqa3VsJ6+899l20MtYHmATLRWUsvWUZeQ==}
+  '@nekosu/maa-node-win32-arm64@1.1.0':
+    resolution: {integrity: sha512-0qKWl2v7ddFqH9whYyZyg5QlwBRDffuIdRYgMUWm8pKFTdKYbxg8YAI0c+IBA9W0Mr/P9/wfnxJDPRitlmHjOw==}
     cpu: [arm64]
     os: [win32]
 
-  '@nekosu/maa-node-win32-x64@1.0.0':
-    resolution: {integrity: sha512-8gmpPYYgVKgcSMCto68rWiwjuypEX0kBczP+FVodNVYLXD8Cev9wjgYf/JDywtLd8k16K8im+sqkfp36wxpH9Q==}
+  '@nekosu/maa-node-win32-x64@1.1.0':
+    resolution: {integrity: sha512-etsQ7ku73T+enoo4emc2vuPrpNWoHAM0nztY2Q8O2fvb8DumIPGhRH5VjVGaCxcNNvjvN/AtnlOz+zOI6HDsew==}
     cpu: [x64]
     os: [win32]
 
-  '@nekosu/maa-node@1.0.0':
-    resolution: {integrity: sha512-mXwrcEaDZ2dQYJOAczKcM8ZAcAJEAXpdfLSauNHcs3l0LAE+oBflUgKlJ++GwTTrj1aI/J+5oDs7PV4xeFXxTg==}
+  '@nekosu/maa-node@1.1.0':
+    resolution: {integrity: sha512-vxMRYExc0s6TUcciDGyt/Qavuvoos+U48PqukqlAmBh4c+BuHfiGnt1TA4GUB1ozx6NjNqdvGOEOB0rS2uHV2A==}
 
   '@trivago/prettier-plugin-sort-imports@4.3.0':
     resolution: {integrity: sha512-r3n0onD3BTOVUNPhR4lhVK4/pABGpbA7bW3eumZnYdKaHkf1qEC+Mag6DPbGNuuh0eG8AaYj+YqmVHSiGslaTQ==}
@@ -149,6 +149,9 @@ packages:
     peerDependenciesMeta:
       '@vue/compiler-sfc':
         optional: true
+
+  '@tsconfig/node20@20.1.4':
+    resolution: {integrity: sha512-sqgsT69YFeLWf5NtJ4Xq/xAF8p4ZQHlmGW74Nu2tD4+g5fAsposc4ZfaaPixVu4y01BEiDCWLRDCvDM5JOsRxg==}
 
   '@types/node@20.14.5':
     resolution: {integrity: sha512-aoRR+fJkZT2l0aGOJhuA8frnCSoNX6W7U2mpNq63+BxBIj5BQFt8rHy627kijCmm63ijdSdwvGgpUsU6MBsZZA==}
@@ -442,6 +445,11 @@ packages:
     resolution: {integrity: sha512-/OaKK0xYrs3DmxRYqL/yDc+FxFUVYhDlXMhRmv3z915w2HF1tnN1omB354j8VUGO/hbRzyD6Y3sA7v7GS/ceog==}
     engines: {node: '>=4'}
 
+  typescript@5.4.5:
+    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
   undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
@@ -583,32 +591,32 @@ snapshots:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
 
-  '@nekosu/maa-node-darwin-arm64@1.0.0':
+  '@nekosu/maa-node-darwin-arm64@1.1.0':
     optional: true
 
-  '@nekosu/maa-node-darwin-x64@1.0.0':
+  '@nekosu/maa-node-darwin-x64@1.1.0':
     optional: true
 
-  '@nekosu/maa-node-linux-arm64@1.0.0':
+  '@nekosu/maa-node-linux-arm64@1.1.0':
     optional: true
 
-  '@nekosu/maa-node-linux-x64@1.0.0':
+  '@nekosu/maa-node-linux-x64@1.1.0':
     optional: true
 
-  '@nekosu/maa-node-win32-arm64@1.0.0':
+  '@nekosu/maa-node-win32-arm64@1.1.0':
     optional: true
 
-  '@nekosu/maa-node-win32-x64@1.0.0':
+  '@nekosu/maa-node-win32-x64@1.1.0':
     optional: true
 
-  '@nekosu/maa-node@1.0.0':
+  '@nekosu/maa-node@1.1.0':
     optionalDependencies:
-      '@nekosu/maa-node-darwin-arm64': 1.0.0
-      '@nekosu/maa-node-darwin-x64': 1.0.0
-      '@nekosu/maa-node-linux-arm64': 1.0.0
-      '@nekosu/maa-node-linux-x64': 1.0.0
-      '@nekosu/maa-node-win32-arm64': 1.0.0
-      '@nekosu/maa-node-win32-x64': 1.0.0
+      '@nekosu/maa-node-darwin-arm64': 1.1.0
+      '@nekosu/maa-node-darwin-x64': 1.1.0
+      '@nekosu/maa-node-linux-arm64': 1.1.0
+      '@nekosu/maa-node-linux-x64': 1.1.0
+      '@nekosu/maa-node-win32-arm64': 1.1.0
+      '@nekosu/maa-node-win32-x64': 1.1.0
 
   '@trivago/prettier-plugin-sort-imports@4.3.0(prettier@3.3.2)':
     dependencies:
@@ -621,6 +629,8 @@ snapshots:
       prettier: 3.3.2
     transitivePeerDependencies:
       - supports-color
+
+  '@tsconfig/node20@20.1.4': {}
 
   '@types/node@20.14.5':
     dependencies:
@@ -885,6 +895,8 @@ snapshots:
       yallist: 4.0.0
 
   to-fast-properties@2.0.0: {}
+
+  typescript@5.4.5: {}
 
   undici-types@5.26.5: {}
 
