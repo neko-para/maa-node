@@ -7,18 +7,18 @@
 
 Napi::Value post_find_device(const Napi::CallbackInfo& info)
 {
-    return Napi::Boolean::New(info.Env(), MaaToolkitPostFindDevice() > 0);
+    return Napi::Boolean::New(info.Env(), MaaToolkitPostFindDevice());
 }
 
 Napi::Value post_find_device_with_adb(const Napi::CallbackInfo& info)
 {
     Napi::String adb = info[0].As<Napi::String>();
-    return Napi::Boolean::New(info.Env(), MaaToolkitPostFindDevice() > 0);
+    return Napi::Boolean::New(info.Env(), MaaToolkitPostFindDevice());
 }
 
 Napi::Value is_find_device_completed(const Napi::CallbackInfo& info)
 {
-    return Napi::Boolean::New(info.Env(), MaaToolkitIsFindDeviceCompleted() > 0);
+    return Napi::Boolean::New(info.Env(), MaaToolkitIsFindDeviceCompleted());
 }
 
 Napi::Value wait_for_find_device_to_complete(const Napi::CallbackInfo& info)

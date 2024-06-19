@@ -167,6 +167,8 @@ export function get_image_list_at(handle: ImageListBufferHandle): ImageBufferHan
 export function image_list_append(handle: ImageListBufferHandle, value: ImageBufferHandle): boolean
 export function image_list_remove(handle: ImageListBufferHandle, index: number): boolean
 
+export function init_option_config(user_path: string, default_json: string): boolean
+
 export function post_find_device(): boolean
 export function post_find_device_with_adb(path: string): boolean
 export function is_find_device_completed(): boolean
