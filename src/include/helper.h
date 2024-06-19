@@ -15,33 +15,29 @@ class SimpleAsyncWork : public Napi::AsyncWorker
 {
 public:
     SimpleAsyncWork(
-        const Napi::Function& cb,
+        Napi::Env env,
         std::function<Result()> execute,
         std::function<Napi::Value(Napi::Env, const Result&)> ok)
-        : AsyncWorker(cb)
+        : AsyncWorker(env)
         , execute(execute)
         , ok(ok)
+        , deferred(Napi::Promise::Deferred::New(env))
     {
     }
 
     void Execute() override { result = execute(); }
 
-    void OnOK() override
-    {
-        auto env = Env();
-        Callback().Call({ env.Undefined(), ok(env, result) });
-    }
+    void OnOK() override { deferred.Resolve(ok(Env(), result)); }
 
-    void OnError(const Napi::Error& e) override
-    {
-        auto env = Env();
-        Callback().Call({ e.Value(), env.Undefined() });
-    }
+    void OnError(const Napi::Error& e) override { deferred.Reject(e.Value()); }
+
+    Napi::Promise Promise() { return deferred.Promise(); }
 
 private:
     Result result;
     std::function<Result()> execute;
     std::function<Napi::Value(Napi::Env, const Result&)> ok;
+    Napi::Promise::Deferred deferred;
 };
 
 struct CallbackContext

@@ -1,13 +1,10 @@
-import fs from 'fs'
-import util from 'util'
-
 import maa from './maa'
 
 console.log(maa.version())
 
 async function main() {
     maa.post_find_device()
-    const res = await util.promisify(maa.wait_for_find_device_to_complete)()
+    const res = await maa.wait_for_find_device_to_complete()
 
     if (res) {
         const info = maa.get_device(0)
@@ -24,7 +21,7 @@ async function main() {
         if (!ctrl) {
             return
         }
-        await util.promisify(maa.controller_wait)(ctrl, maa.controller_post_connection(ctrl))
+        await maa.controller_wait(ctrl, maa.controller_post_connection(ctrl))
         const res = maa.resource_create((msg, details) => {
             console.log(msg, details)
         })
@@ -76,7 +73,7 @@ async function main() {
                 }
             })
         )
-        await util.promisify(maa.wait_task)(inst, task)
+        await maa.wait_task(inst, task)
         globalThis.gc?.()
         // process.exit()
     }

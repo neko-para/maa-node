@@ -203,13 +203,12 @@ Napi::Value wait_task(const Napi::CallbackInfo& info)
 {
     auto handle = InstanceInfo::HandleFromValue(info[0]);
     auto id = info[1].As<Napi::Number>().Uint32Value();
-    Napi::Function cb = info[2].As<Napi::Function>();
     auto worker = new SimpleAsyncWork<MaaStatus>(
-        cb,
+        info.Env(),
         [handle, id]() { return MaaWaitTask(handle, id); },
         [](auto env, auto res) { return Napi::Number::New(env, res); });
     worker->Queue();
-    return info.Env().Undefined();
+    return worker->Promise();
 }
 
 Napi::Value running(const Napi::CallbackInfo& info)

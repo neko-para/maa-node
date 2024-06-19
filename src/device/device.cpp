@@ -21,41 +21,14 @@ Napi::Value is_find_device_completed(const Napi::CallbackInfo& info)
     return Napi::Boolean::New(info.Env(), MaaToolkitIsFindDeviceCompleted() > 0);
 }
 
-class WaitForFindDeviceToCompleteWork : public Napi::AsyncWorker
-{
-public:
-    WaitForFindDeviceToCompleteWork(const Napi::Function& cb)
-        : AsyncWorker(cb)
-    {
-    }
-
-    void Execute() override { size = MaaToolkitWaitForFindDeviceToComplete(); }
-
-    void OnOK() override
-    {
-        auto env = Env();
-        Callback().Call({ env.Undefined(), Napi::Number::New(env, size) });
-    }
-
-    void OnError(const Napi::Error& e) override
-    {
-        auto env = Env();
-        Callback().Call({ e.Value(), env.Undefined() });
-    }
-
-private:
-    MaaSize size = 0;
-};
-
 Napi::Value wait_for_find_device_to_complete(const Napi::CallbackInfo& info)
 {
-    Napi::Function cb = info[0].As<Napi::Function>();
     auto worker = new SimpleAsyncWork<MaaSize>(
-        cb,
+        info.Env(),
         MaaToolkitWaitForFindDeviceToComplete,
         [](auto env, auto res) { return Napi::Number::New(env, res); });
     worker->Queue();
-    return info.Env().Undefined();
+    return worker->Promise();
 }
 
 Napi::Value get_device_count(const Napi::CallbackInfo& info)

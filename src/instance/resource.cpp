@@ -56,13 +56,12 @@ Napi::Value resource_wait(const Napi::CallbackInfo& info)
 {
     auto handle = ResourceInfo::HandleFromValue(info[0]);
     auto id = info[1].As<Napi::Number>().Uint32Value();
-    Napi::Function cb = info[2].As<Napi::Function>();
     auto worker = new SimpleAsyncWork<MaaStatus>(
-        cb,
+        info.Env(),
         [handle, id]() { return MaaResourceWait(handle, id); },
         [](auto env, auto res) { return Napi::Number::New(env, res); });
     worker->Queue();
-    return info.Env().Undefined();
+    return worker->Promise();
 }
 
 Napi::Value resource_loaded(const Napi::CallbackInfo& info)

@@ -124,13 +124,12 @@ Napi::Value controller_wait(const Napi::CallbackInfo& info)
 {
     auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto id = info[1].As<Napi::Number>().Uint32Value();
-    Napi::Function cb = info[2].As<Napi::Function>();
     auto worker = new SimpleAsyncWork<MaaStatus>(
-        cb,
+        info.Env(),
         [handle, id]() { return MaaControllerWait(handle, id); },
         [](auto env, auto res) { return Napi::Number::New(env, res); });
     worker->Queue();
-    return info.Env().Undefined();
+    return worker->Promise();
 }
 
 Napi::Value controller_connected(const Napi::CallbackInfo& info)

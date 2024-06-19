@@ -74,11 +74,7 @@ export function set_controller_option(
 export function controller_post_connection(handle: ControllerHandle): CtrlId
 export function controller_post_screencap(handle: ControllerHandle): CtrlId
 export function controller_status(handle: ControllerHandle): number
-export function controller_wait(
-    handle: ControllerHandle,
-    ctrl_id: CtrlId,
-    cb: (err?: Error, result?: number) => void
-): void
+export function controller_wait(handle: ControllerHandle, ctrl_id: CtrlId): Promise<number>
 export function controller_connected(handle: ControllerHandle): boolean
 export function controller_get_image(handle: ControllerHandle, buffer: ImageBufferHandle): boolean
 export function controller_get_uuid(handle: ControllerHandle): string | null
@@ -106,11 +102,7 @@ export function post_recognition(handle: InstanceHandle, entry: string, param: s
 export function post_action(handle: InstanceHandle, entry: string, param: string): TaskId
 export function set_task_param(handle: InstanceHandle, task_id: TaskId, param: string): boolean
 export function task_status(handle: InstanceHandle): number
-export function wait_task(
-    handle: InstanceHandle,
-    task_id: TaskId,
-    cb: (err?: Error, result?: number) => void
-): void
+export function wait_task(handle: InstanceHandle, task_id: TaskId): Promise<number>
 export function running(handle: InstanceHandle): boolean
 export function post_stop(handle: InstanceHandle): boolean
 
@@ -118,11 +110,7 @@ export function resource_create(callback: TrivialCallbak | null): ResourceHandle
 export function resource_post_path(handle: ResourceHandle, path: string): ResId
 export function resource_clear(handle: ResourceHandle): boolean
 export function resource_status(handle: ResourceHandle): number
-export function resource_wait(
-    handle: ResourceHandle,
-    res_id: ResId,
-    cb: (err?: Error, result?: number) => void
-): void
+export function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<number>
 export function resource_loaded(handle: ResourceHandle): boolean
 export function resource_get_hash(handle: ResourceHandle): string | null
 export function resource_get_task_list(handle: ResourceHandle): string | null
@@ -176,7 +164,7 @@ export function image_list_remove(handle: ImageListBufferHandle, index: number):
 export function post_find_device(): boolean
 export function post_find_device_with_adb(path: string): boolean
 export function is_find_device_completed(): boolean
-export function wait_for_find_device_to_complete(cb: (err?: Error, result?: number) => void): void
+export function wait_for_find_device_to_complete(): Promise<number>
 export function get_device_count(): number
 export function get_device(index: number): {
     name: string
