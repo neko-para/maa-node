@@ -1,6 +1,7 @@
-import maa from './maa'
 import fs from 'fs'
 import util from 'util'
+
+import maa from './maa'
 
 console.log(maa.version())
 
@@ -42,7 +43,7 @@ async function main() {
         })
         const task = maa.post_task(
             inst,
-            'testCustom',
+            'test',
             JSON.stringify({
                 test: {
                     action: 'StartApp',
@@ -58,6 +59,8 @@ async function main() {
             })
         )
         await util.promisify(maa.wait_task)(inst, task)
+        globalThis.gc?.()
+        // process.exit()
     }
 }
 

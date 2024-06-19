@@ -4,18 +4,6 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <iostream>
-
-void InstanceFinalzer(Napi::Env env, MaaInstanceHandle handle, void* hint)
-{
-    std::cerr << "destroy instance" << std::endl;
-    MaaDestroy(handle);
-    if (hint) {
-        auto ctx = reinterpret_cast<CallbackContext*>(hint);
-        delete ctx;
-    }
-}
-
 Napi::Value create(const Napi::CallbackInfo& info)
 {
     MaaInstanceCallback cb = nullptr;

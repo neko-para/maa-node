@@ -4,6 +4,7 @@
 #include <napi.h>
 
 #include <future>
+#include <iostream>
 #include <optional>
 #include <type_traits>
 
@@ -45,14 +46,20 @@ struct CallbackContext
 {
     Napi::Function fn;
     Napi::ThreadSafeFunction tsfn;
+    const char* name;
 
     CallbackContext(Napi::Env env, Napi::Function cb, const char* name)
         : fn(cb)
         , tsfn(Napi::ThreadSafeFunction::New(env, fn, name, 0, 1))
+        , name(name)
     {
     }
 
-    ~CallbackContext() { tsfn.Release(); }
+    ~CallbackContext()
+    {
+        std::cerr << "destroy " << name << std::endl;
+        tsfn.Release();
+    }
 
     template <typename Result>
     Result Call(
