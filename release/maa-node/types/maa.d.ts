@@ -92,11 +92,15 @@ export function register_custom_recognizer(
     name: string,
     func: CustomRecognizerAnalyzeCallback
 ): boolean
+export function unregister_custom_recognizer(handle: InstanceHandle, name: string): boolean
+export function clear_custom_recognizer(handle: InstanceHandle): boolean
 export function register_custom_action(
     handle: InstanceHandle,
     name: string,
     func: CustomActionRunCallback
 ): boolean
+export function unregister_custom_action(handle: InstanceHandle, name: string): boolean
+export function clear_custom_action(handle: InstanceHandle): boolean
 export function post_task(handle: InstanceHandle, entry: string, param: string): TaskId
 export function post_recognition(handle: InstanceHandle, entry: string, param: string): TaskId
 export function post_action(handle: InstanceHandle, entry: string, param: string): TaskId

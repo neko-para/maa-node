@@ -81,11 +81,23 @@ struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
         if (callback) {
             delete callback;
         }
+        ClearRecos();
+        ClearActs();
+    }
+
+    void ClearRecos()
+    {
         for (const auto& [name, cb] : custom_recognizers) {
             delete cb;
         }
+        custom_recognizers.clear();
+    }
+
+    void ClearActs()
+    {
         for (const auto& [name, cb] : custom_actions) {
             delete cb;
         }
+        custom_actions.clear();
     }
 };

@@ -91,6 +91,30 @@ Napi::Value register_custom_recognizer(const Napi::CallbackInfo& info)
     return Napi::Boolean::New(info.Env(), ret);
 }
 
+Napi::Value unregister_custom_recognizer(const Napi::CallbackInfo& info)
+{
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+    auto name = info[1].As<Napi::String>().Utf8Value();
+
+    auto ret = MaaUnregisterCustomRecognizer(handle_info->handle, name.c_str());
+    if (ret) {
+        delete handle_info->custom_recognizers[name];
+        handle_info->custom_recognizers.erase(name);
+    }
+    return Napi::Boolean::New(info.Env(), ret);
+}
+
+Napi::Value clear_custom_recognizer(const Napi::CallbackInfo& info)
+{
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+
+    auto ret = MaaClearCustomRecognizer(handle_info->handle);
+    if (ret) {
+        handle_info->ClearRecos();
+    }
+    return Napi::Boolean::New(info.Env(), ret);
+}
+
 Napi::Value register_custom_action(const Napi::CallbackInfo& info)
 {
     auto handle_info = InstanceInfo::FromValue(info[0]);
@@ -105,6 +129,30 @@ Napi::Value register_custom_action(const Napi::CallbackInfo& info)
         if (old_ctx) {
             delete old_ctx;
         }
+    }
+    return Napi::Boolean::New(info.Env(), ret);
+}
+
+Napi::Value unregister_custom_action(const Napi::CallbackInfo& info)
+{
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+    auto name = info[1].As<Napi::String>().Utf8Value();
+
+    auto ret = MaaUnregisterCustomAction(handle_info->handle, name.c_str());
+    if (ret) {
+        delete handle_info->custom_actions[name];
+        handle_info->custom_actions.erase(name);
+    }
+    return Napi::Boolean::New(info.Env(), ret);
+}
+
+Napi::Value clear_custom_action(const Napi::CallbackInfo& info)
+{
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+
+    auto ret = MaaClearCustomAction(handle_info->handle);
+    if (ret) {
+        handle_info->ClearActs();
     }
     return Napi::Boolean::New(info.Env(), ret);
 }
@@ -183,7 +231,11 @@ void load_instance_instance(Napi::Env env, Napi::Object& exports)
     BIND(bind_controller);
     BIND(inited);
     BIND(register_custom_recognizer);
+    BIND(unregister_custom_recognizer);
+    BIND(clear_custom_recognizer);
     BIND(register_custom_action);
+    BIND(unregister_custom_action);
+    BIND(clear_custom_action);
     BIND(post_task);
     BIND(post_recognition);
     BIND(post_action);
