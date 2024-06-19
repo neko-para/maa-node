@@ -59,6 +59,7 @@ struct ResourceInfo : InfoBase<MaaResourceHandle, ResourceInfo>
 struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
 {
     CallbackContext* callback = nullptr;
+    std::map<std::string, CallbackContext*> custom_recognizers;
     std::map<std::string, CallbackContext*> custom_actions;
 
     ~InstanceInfo()
@@ -67,6 +68,9 @@ struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
         MaaDestroy(handle);
         if (callback) {
             delete callback;
+        }
+        for (const auto& [name, cb] : custom_recognizers) {
+            delete cb;
         }
         for (const auto& [name, cb] : custom_actions) {
             delete cb;

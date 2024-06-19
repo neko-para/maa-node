@@ -37,19 +37,37 @@ async function main() {
         maa.bind_resource(inst, res)
         maa.bind_controller(inst, ctrl)
         console.log(maa.inited(inst))
+
+        maa.register_custom_recognizer(inst, 'direct', (...args) => {
+            console.log(...args)
+            return {
+                out_box: {
+                    x: 0,
+                    y: 0,
+                    width: 0,
+                    height: 0
+                },
+                out_detail: '111'
+            }
+        })
         maa.register_custom_action(inst, 'print', (...args) => {
             console.log(...args)
             return true
         })
         const task = maa.post_task(
             inst,
-            'test',
+            'testCustom',
             JSON.stringify({
                 test: {
                     action: 'StartApp',
                     package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'
                 },
                 testCustom: {
+                    recognition: 'Custom',
+                    custom_recognition: 'direct',
+                    custom_recognition_param: {
+                        msg: 'Hello world!'
+                    },
                     action: 'Custom',
                     custom_action: 'print',
                     custom_action_param: {

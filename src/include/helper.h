@@ -6,6 +6,8 @@
 #include <future>
 #include <iostream>
 #include <optional>
+#include <string>
+#include <tuple>
 #include <type_traits>
 
 template <typename Result>
@@ -125,6 +127,16 @@ inline Napi::Object FromRect(Napi::Env env, const MaaRect& rect)
     return rc;
 }
 
+inline MaaRect ToRect(Napi::Object rc)
+{
+    return MaaRect {
+        Napi::Value(rc["x"]).As<Napi::Number>().Int32Value(),
+        Napi::Value(rc["y"]).As<Napi::Number>().Int32Value(),
+        Napi::Value(rc["width"]).As<Napi::Number>().Int32Value(),
+        Napi::Value(rc["height"]).As<Napi::Number>().Int32Value(),
+    };
+}
+
 inline void TrivialCallback(MaaStringView msg, MaaStringView details, MaaCallbackTransparentArg arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(arg);
@@ -133,6 +145,48 @@ inline void TrivialCallback(MaaStringView msg, MaaStringView details, MaaCallbac
             return fn.Call({ Napi::String::New(env, msg), Napi::String::New(env, details) });
         },
         [](auto res) { std::ignore = res; });
+}
+
+inline MaaBool CustomRecognizerAnalyze(
+    MaaSyncContextHandle sync_context,
+    MaaImageBufferHandle image,
+    MaaStringView task_name,
+    MaaStringView custom_recognition_param,
+    MaaTransparentArg arg,
+    MaaRectHandle out_box,
+    MaaStringBufferHandle out_detail)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(arg);
+    using R = std::optional<std::tuple<MaaRect, std::string>>;
+    auto res = ctx->Call<R>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::External<MaaSyncContextAPI>::New(env, sync_context),
+                             Napi::External<MaaImageBuffer>::New(env, image),
+                             Napi::String::New(env, task_name),
+                             Napi::String::New(env, custom_recognition_param) });
+        },
+        [](Napi::Value res) -> R {
+            if (res.IsNull()) {
+                return std::nullopt;
+            }
+            else {
+                auto obj = res.As<Napi::Object>();
+                return std::tuple<MaaRect, std::string> {
+                    ToRect(Napi::Value(obj["out_box"]).As<Napi::Object>()),
+                    Napi::Value(obj["out_detail"]).As<Napi::String>().Utf8Value()
+                };
+            }
+        });
+
+    if (res.has_value()) {
+        *out_box = std::get<0>(res.value());
+        auto& str = std::get<1>(res.value());
+        MaaSetStringEx(out_detail, str.c_str(), str.size());
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 inline MaaBool CustomActionRun(
@@ -160,6 +214,7 @@ inline MaaBool CustomActionRun(
     return res;
 }
 
+inline MaaCustomRecognizerAPI custom_recognizer_api = { CustomRecognizerAnalyze };
 inline MaaCustomActionAPI custom_action_api = { CustomActionRun, nullptr };
 
 template <typename Type>

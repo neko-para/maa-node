@@ -18,14 +18,25 @@ export type Rect = {
     height: number
 }
 
-export type TrivialCallbak = (msg: string, details: string) => void | Promise<void>
+type MaybePromise<T> = T | Promise<T>
+
+export type TrivialCallbak = (msg: string, details: string) => MaybePromise<void>
+export type CustomRecognizerAnalyzeCallback = (
+    sync_context: SyncContextHandle,
+    image: ImageBufferHandle,
+    task_name: string,
+    custom_recognition_param: string
+) => MaybePromise<{
+    out_box: Rect
+    out_detail: string
+} | null>
 export type CustomActionRunCallback = (
     sync_context: SyncContextHandle,
     task_name: string,
     custom_action_param: string,
     cur_box: Rect,
     cur_rec_detail: string
-) => boolean | Promise<boolean>
+) => MaybePromise<boolean>
 
 export function adb_controller_create(
     adb_path: string,
@@ -76,6 +87,11 @@ export function create(callback: TrivialCallbak | null): InstanceHandle | null
 export function bind_resource(handle: InstanceHandle, resource: ResourceHandle): boolean
 export function bind_controller(handle: InstanceHandle, controller: ControllerHandle): boolean
 export function inited(handle: InstanceHandle): boolean
+export function register_custom_recognizer(
+    handle: InstanceHandle,
+    name: string,
+    func: CustomRecognizerAnalyzeCallback
+): boolean
 export function register_custom_action(
     handle: InstanceHandle,
     name: string,

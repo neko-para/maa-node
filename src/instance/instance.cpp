@@ -51,6 +51,25 @@ Napi::Value inited(const Napi::CallbackInfo& info)
     return Napi::Boolean::New(info.Env(), MaaInited(handle));
 }
 
+Napi::Value register_custom_recognizer(const Napi::CallbackInfo& info)
+{
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+    auto name = info[1].As<Napi::String>().Utf8Value();
+    auto func = info[2].As<Napi::Function>();
+    auto ctx = new CallbackContext(info.Env(), func, "CustomActionRun");
+    auto old_ctx = handle_info->custom_recognizers[name];
+    handle_info->custom_actions[name] = ctx;
+
+    auto ret =
+        MaaRegisterCustomRecognizer(handle_info->handle, name.c_str(), &custom_recognizer_api, ctx);
+    if (ret) {
+        if (old_ctx) {
+            delete old_ctx;
+        }
+    }
+    return Napi::Boolean::New(info.Env(), ret);
+}
+
 Napi::Value register_custom_action(const Napi::CallbackInfo& info)
 {
     auto handle_info = InstanceInfo::FromValue(info[0]);
@@ -142,6 +161,7 @@ void load_instance_instance(Napi::Env env, Napi::Object& exports)
     BIND(bind_resource);
     BIND(bind_controller);
     BIND(inited);
+    BIND(register_custom_recognizer);
     BIND(register_custom_action);
     BIND(post_task);
     BIND(post_recognition);
