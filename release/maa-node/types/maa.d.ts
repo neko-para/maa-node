@@ -149,6 +149,66 @@ export function resource_loaded(handle: ResourceHandle): boolean
 export function resource_get_hash(handle: ResourceHandle): string | null
 export function resource_get_task_list(handle: ResourceHandle): string | null
 
+export function sync_context_run_task(
+    handle: SyncContextHandle,
+    task_name: string,
+    param: string
+): Promise<boolean>
+export function sync_context_run_recognition(
+    handle: SyncContextHandle,
+    image: ImageBufferHandle,
+    task_name: string,
+    task_param: string
+): Promise<{
+    out_box: Rect
+    out_detail: string
+} | null>
+export function sync_context_run_action(
+    handle: SyncContextHandle,
+    task_name: string,
+    task_param: string,
+    cur_box: Rect,
+    cur_rec_detail: string
+): Promise<boolean>
+export function sync_context_click(
+    handle: SyncContextHandle,
+    x: number,
+    y: number
+): Promise<boolean>
+export function sync_context_swipe(
+    handle: SyncContextHandle,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    duration: number
+): Promise<boolean>
+export function sync_context_press_key(handle: SyncContextHandle, keycode: number): Promise<boolean>
+export function sync_context_input_text(handle: SyncContextHandle, text: string): Promise<boolean>
+export function sync_context_touch_down(
+    handle: SyncContextHandle,
+    contact: number,
+    x: number,
+    y: number,
+    pressure: number
+): Promise<boolean>
+export function sync_context_touch_move(
+    handle: SyncContextHandle,
+    contact: number,
+    x: number,
+    y: number,
+    pressure: number
+): Promise<boolean>
+export function sync_context_touch_up(handle: SyncContextHandle, contact: number): Promise<boolean>
+export function sync_context_screencap(
+    handle: SyncContextHandle,
+    image: ImageBufferHandle
+): Promise<boolean>
+export function sync_context_cached_image(
+    handle: SyncContextHandle,
+    image: ImageBufferHandle
+): Promise<boolean>
+
 export function version(): string
 export function set_global_option(key: 'LogDir', value: string): boolean
 export function set_global_option(key: 'SaveDraw', value: boolean): boolean

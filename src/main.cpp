@@ -9,6 +9,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_instance_controller(env, exports);
     load_instance_instance(env, exports);
     load_instance_resource(env, exports);
+    load_task_syncContext(env, exports);
     load_utility_buffer(env, exports);
     load_utility_utility(env, exports);
     load_config_config(env, exports);
