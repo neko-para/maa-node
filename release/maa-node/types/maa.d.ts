@@ -78,6 +78,34 @@ export function set_controller_option(
     value: boolean
 ): boolean
 export function controller_post_connection(handle: ControllerHandle): CtrlId
+export function controller_post_click(handle: ControllerHandle, x: number, y: number): CtrlId
+export function controller_post_swipe(
+    handle: ControllerHandle,
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    duration: number
+): CtrlId
+export function controller_post_press_key(handle: ControllerHandle, keycode: number): CtrlId
+export function controller_post_input_text(handle: ControllerHandle, text: string): CtrlId
+export function controller_post_start_app(handle: ControllerHandle, intent: string): CtrlId
+export function controller_post_stop_app(handle: ControllerHandle, intent: string): CtrlId
+export function controller_post_touch_down(
+    handle: ControllerHandle,
+    contact: number,
+    x: number,
+    y: number,
+    pressure: number
+): CtrlId
+export function controller_post_touch_move(
+    handle: ControllerHandle,
+    contact: number,
+    x: number,
+    y: number,
+    pressure: number
+): CtrlId
+export function controller_post_touch_up(handle: ControllerHandle, contact: number): CtrlId
 export function controller_post_screencap(handle: ControllerHandle): CtrlId
 export function controller_status(handle: ControllerHandle): number
 export function controller_wait(handle: ControllerHandle, ctrl_id: CtrlId): Promise<number>

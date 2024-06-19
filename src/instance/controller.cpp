@@ -136,6 +136,89 @@ Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
+Napi::Value controller_post_click(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto x = info[1].As<Napi::Number>().Int32Value();
+    auto y = info[2].As<Napi::Number>().Int32Value();
+    auto ctrlId = MaaControllerPostClick(handle, x, y);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_swipe(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto x1 = info[1].As<Napi::Number>().Int32Value();
+    auto y1 = info[2].As<Napi::Number>().Int32Value();
+    auto x2 = info[3].As<Napi::Number>().Int32Value();
+    auto y2 = info[4].As<Napi::Number>().Int32Value();
+    auto duration = info[5].As<Napi::Number>().Int32Value();
+    auto ctrlId = MaaControllerPostSwipe(handle, x1, y1, x2, y2, duration);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_press_key(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto key = info[1].As<Napi::Number>().Int32Value();
+    auto ctrlId = MaaControllerPostPressKey(handle, key);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_input_text(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto text = info[1].As<Napi::String>().Utf8Value();
+    auto ctrlId = MaaControllerPostInputText(handle, text.c_str());
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_start_app(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto intent = info[1].As<Napi::String>().Utf8Value();
+    auto ctrlId = MaaControllerPostStartApp(handle, intent.c_str());
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_stop_app(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto intent = info[1].As<Napi::String>().Utf8Value();
+    auto ctrlId = MaaControllerPostStopApp(handle, intent.c_str());
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_touch_down(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto contact = info[1].As<Napi::Number>().Int32Value();
+    auto x = info[2].As<Napi::Number>().Int32Value();
+    auto y = info[3].As<Napi::Number>().Int32Value();
+    auto pressure = info[4].As<Napi::Number>().Int32Value();
+    auto ctrlId = MaaControllerPostTouchDown(handle, contact, x, y, pressure);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_touch_move(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto contact = info[1].As<Napi::Number>().Int32Value();
+    auto x = info[2].As<Napi::Number>().Int32Value();
+    auto y = info[3].As<Napi::Number>().Int32Value();
+    auto pressure = info[4].As<Napi::Number>().Int32Value();
+    auto ctrlId = MaaControllerPostTouchMove(handle, contact, x, y, pressure);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
+Napi::Value controller_post_touch_up(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0])->handle;
+    auto contact = info[1].As<Napi::Number>().Int32Value();
+    auto ctrlId = MaaControllerPostTouchUp(handle, contact);
+    return Napi::Number::New(info.Env(), ctrlId);
+}
+
 Napi::Value controller_post_screencap(const Napi::CallbackInfo& info)
 {
     auto handle = ControllerInfo::FromValue(info[0])->handle;
@@ -194,6 +277,15 @@ void load_instance_controller(Napi::Env env, Napi::Object& exports)
     BIND(win32_controller_create);
     BIND(set_controller_option);
     BIND(controller_post_connection);
+    BIND(controller_post_click);
+    BIND(controller_post_swipe);
+    BIND(controller_post_press_key);
+    BIND(controller_post_input_text);
+    BIND(controller_post_start_app);
+    BIND(controller_post_stop_app);
+    BIND(controller_post_touch_down);
+    BIND(controller_post_touch_move);
+    BIND(controller_post_touch_up);
     BIND(controller_post_screencap);
     BIND(controller_status);
     BIND(controller_wait);
