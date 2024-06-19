@@ -15,6 +15,16 @@ struct InfoBase
 
     static Impl* FromValue(Napi::Value value) { return value.As<Napi::External<Impl>>().Data(); }
 
+    static Impl* FromValueOrNull(Napi::Value value)
+    {
+        if (value.IsNull()) {
+            return nullptr;
+        }
+        else {
+            return FromValue(value);
+        }
+    }
+
     static Type HandleFromValue(Napi::Value value) { return FromValue(value)->handle; }
 
     static Type HandleFromValueOrNull(Napi::Value value)
@@ -59,6 +69,8 @@ struct ResourceInfo : InfoBase<MaaResourceHandle, ResourceInfo>
 struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
 {
     CallbackContext* callback = nullptr;
+    Napi::Reference<Napi::External<ResourceInfo>> resource;
+    Napi::Reference<Napi::External<ControllerInfo>> controller;
     std::map<std::string, CallbackContext*> custom_recognizers;
     std::map<std::string, CallbackContext*> custom_actions;
 

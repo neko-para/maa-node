@@ -33,16 +33,37 @@ Napi::Value create(const Napi::CallbackInfo& info)
 
 Napi::Value bind_resource(const Napi::CallbackInfo& info)
 {
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto value = ResourceInfo::HandleFromValueOrNull(info[1]);
-    return Napi::Boolean::New(info.Env(), MaaBindResource(handle, value));
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+    auto value_info = ResourceInfo::FromValueOrNull(info[1]);
+    auto value = value_info ? value_info->handle : nullptr;
+    auto ret = MaaBindResource(handle_info->handle, value);
+    if (ret) {
+        if (value_info) {
+            handle_info->resource = Napi::Persistent(info[1].As<Napi::External<ResourceInfo>>());
+        }
+        else {
+            handle_info->resource.Reset();
+        }
+    }
+    return Napi::Boolean::New(info.Env(), ret);
 }
 
 Napi::Value bind_controller(const Napi::CallbackInfo& info)
 {
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto value = ControllerInfo::HandleFromValueOrNull(info[1]);
-    return Napi::Boolean::New(info.Env(), MaaBindController(handle, value));
+    auto handle_info = InstanceInfo::FromValue(info[0]);
+    auto value_info = ControllerInfo::FromValueOrNull(info[1]);
+    auto value = value_info ? value_info->handle : nullptr;
+    auto ret = MaaBindController(handle_info->handle, value);
+    if (ret) {
+        if (value_info) {
+            handle_info->controller =
+                Napi::Persistent(info[1].As<Napi::External<ControllerInfo>>());
+        }
+        else {
+            handle_info->controller.Reset();
+        }
+    }
+    return Napi::Boolean::New(info.Env(), ret);
 }
 
 Napi::Value inited(const Napi::CallbackInfo& info)
