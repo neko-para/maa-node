@@ -1,7 +1,7 @@
-
-#include <napi.h>
-
 #include "include/loader.h"
+
+#include <MaaFramework/MaaAPI.h>
+#include <napi.h>
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
@@ -16,6 +16,28 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_device_device(env, exports);
     load_execAgent_execAgent(env, exports);
     load_win32_win32Window(env, exports);
+
+#define DE(prefix, key) prefix[#key] = Napi::Number::New(env, prefix##_##key)
+
+    auto MaaStatus = Napi::Object::New(env);
+    DE(MaaStatus, Invalid);
+    DE(MaaStatus, Pending);
+    DE(MaaStatus, Running);
+    DE(MaaStatus, Success);
+    DE(MaaStatus, Failed);
+    exports["Status"] = MaaStatus;
+
+    auto MaaLoggingLevel = Napi::Object::New(env);
+    DE(MaaLoggingLevel, Off);
+    DE(MaaLoggingLevel, Fatal);
+    DE(MaaLoggingLevel, Error);
+    DE(MaaLoggingLevel, Warn);
+    DE(MaaLoggingLevel, Info);
+    DE(MaaLoggingLevel, Debug);
+    DE(MaaLoggingLevel, Trace);
+    DE(MaaLoggingLevel, All);
+    exports["LoggingLevel"] = MaaLoggingLevel;
+
     return exports;
 }
 
