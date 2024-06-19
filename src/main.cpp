@@ -12,6 +12,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_utility_buffer(env, exports);
     load_utility_utility(env, exports);
     load_device_device(env, exports);
+    load_win32_window(env, exports);
     return exports;
 }
 

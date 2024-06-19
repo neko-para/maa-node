@@ -7,7 +7,7 @@
 Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 {
     auto adb_path = info[0].As<Napi::String>().Utf8Value();
-    auto adb_serial = info[1].As<Napi::String>().Utf8Value();
+    auto address = info[1].As<Napi::String>().Utf8Value();
     auto type = info[2].As<Napi::Number>().Int32Value();
     auto config = info[3].As<Napi::String>().Utf8Value();
     auto agent_path = info[4].As<Napi::String>().Utf8Value();
@@ -25,12 +25,42 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 
     handle = MaaAdbControllerCreateV2(
         adb_path.c_str(),
-        adb_serial.c_str(),
+        address.c_str(),
         type,
         config.c_str(),
         agent_path.c_str(),
         cb,
         ctx);
+
+    if (handle) {
+        return Napi::External<ControllerInfo>::New(
+            info.Env(),
+            new ControllerInfo { handle, ctx },
+            &DeleteFinalizer<ControllerInfo*>);
+    }
+    else {
+        delete ctx;
+        return info.Env().Null();
+    }
+}
+
+Napi::Value win32_controller_create(const Napi::CallbackInfo& info)
+{
+    auto hwnd = info[0].As<Napi::External<void>>().Data();
+    auto type = info[1].As<Napi::Number>().Int32Value();
+
+    MaaControllerCallback cb = nullptr;
+    CallbackContext* ctx = nullptr;
+    MaaControllerHandle handle = nullptr;
+
+    if (!info[2].IsNull()) {
+        auto callback = info[2].As<Napi::Function>();
+
+        cb = TrivialCallback;
+        ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+    }
+
+    handle = MaaWin32ControllerCreate(hwnd, type, cb, ctx);
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(
@@ -161,6 +191,7 @@ Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
 void load_instance_controller(Napi::Env env, Napi::Object& exports)
 {
     BIND(adb_controller_create);
+    BIND(win32_controller_create);
     BIND(set_controller_option);
     BIND(controller_post_connection);
     BIND(controller_post_screencap);

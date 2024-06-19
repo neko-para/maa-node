@@ -4,6 +4,7 @@ export type ResourceHandle = { __brand: 'ResourceHandle' }
 export type SyncContextHandle = { __brand: 'SyncContextHandle' }
 export type ImageBufferHandle = { __brand: 'ImageBufferHandle' }
 export type ImageListBufferHandle = { __brand: 'ImageListBufferHandle' }
+export type Win32Hwnd = { __brand: 'Win32Hwnd' }
 
 export type CtrlId = number & { __brand: 'CtrlId' }
 export type TaskId = number & { __brand: 'TaskId' }
@@ -40,10 +41,15 @@ export type CustomActionRunCallback = (
 
 export function adb_controller_create(
     adb_path: string,
-    adb_serial: string,
-    adb_controller_type: number,
-    adb_config: string,
+    address: string,
+    type: number,
+    config: string,
     agent_path: string,
+    callback: TrivialCallbak | null
+): ControllerHandle | null
+export function win32_controller_create(
+    hwnd: Win32Hwnd,
+    type: number,
     callback: TrivialCallbak | null
 ): ControllerHandle | null
 export function set_controller_option(
@@ -172,4 +178,16 @@ export function get_device(index: number): {
     adb_serial: string
     adb_controller_type: number
     adb_config: string
+}
+
+export function find_window(class_name: string, window_name: string): number
+export function search_window(class_name: string, window_name: string): number
+export function list_windows(): number
+export function get_window(index: number): Win32Hwnd
+export function get_cursor_window(): Win32Hwnd
+export function get_desktop_window(): Win32Hwnd
+export function get_foreground_window(): Win32Hwnd
+export function get_window_info(hwnd: Win32Hwnd): {
+    class_name?: string
+    window_name?: string
 }
