@@ -182,6 +182,29 @@ export function get_device(index: number): {
     adb_config: string
 }
 
+export function register_custom_recognizer_executor(
+    handle: InstanceHandle,
+    recognizer_name: string,
+    exec_path: string,
+    exec_params: string[]
+): boolean
+export function unregister_custom_recognizer_executor(
+    handle: InstanceHandle,
+    recognizer_name: string
+): boolean
+export function clear_custom_recognizer_executor(handle: InstanceHandle): boolean
+export function register_custom_action_executor(
+    handle: InstanceHandle,
+    action_name: string,
+    exec_path: string,
+    exec_params: string[]
+): boolean
+export function unregister_custom_action_executor(
+    handle: InstanceHandle,
+    action_name: string
+): boolean
+export function clear_custom_action_executor(handle: InstanceHandle): boolean
+
 export function find_window(class_name: string, window_name: string): number
 export function search_window(class_name: string, window_name: string): number
 export function list_windows(): number

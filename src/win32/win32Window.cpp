@@ -62,7 +62,7 @@ Napi::Value get_window_info(const Napi::CallbackInfo& info)
     return result;
 }
 
-void load_win32_window(Napi::Env env, Napi::Object& exports)
+void load_win32_win32Window(Napi::Env env, Napi::Object& exports)
 {
     BIND(find_window);
     BIND(search_window);

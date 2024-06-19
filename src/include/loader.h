@@ -12,4 +12,6 @@ void load_config_config(Napi::Env env, Napi::Object& exports);
 
 void load_device_device(Napi::Env env, Napi::Object& exports);
 
-void load_win32_window(Napi::Env env, Napi::Object& exports);
+void load_execAgent_execAgent(Napi::Env env, Napi::Object& exports);
+
+void load_win32_win32Window(Napi::Env env, Napi::Object& exports);
