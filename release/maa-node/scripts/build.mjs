@@ -1,5 +1,5 @@
 import { build } from 'esbuild'
-import { copyFileSync } from 'fs'
+import { copyFileSync, mkdirSync } from 'fs'
 
 build({
     entryPoints: ['src/index.ts'],
@@ -16,4 +16,5 @@ build({
     bundle: true
 })
 
+mkdirSync('dist', { recursive: true })
 copyFileSync('src/maa.d.ts', 'dist/maa.d.ts')
