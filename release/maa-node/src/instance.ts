@@ -3,6 +3,33 @@ import maa from './maa'
 import { ResourceBase } from './resource'
 import { TaskDecl } from './task'
 
+export class RecoInfo {
+    id: maa.RecoId
+
+    constructor(id: maa.RecoId) {
+        this.id = id
+    }
+}
+
+export class NodeInfo {
+    id: maa.NodeId
+
+    constructor(id: maa.NodeId) {
+        this.id = id
+    }
+
+    get detail() {
+        const info = maa.query_node_detail(this.id)
+        return info
+            ? {
+                  name: info.name,
+                  recos: new RecoInfo(info.reco_id),
+                  run_completed: info.run_completed
+              }
+            : null
+    }
+}
+
 export class TaskInfo {
     instance: InstanceBase
     id: maa.TaskId
@@ -20,6 +47,16 @@ export class TaskInfo {
 
     wait() {
         return maa.wait_task(this.instance.handle, this.id)
+    }
+
+    get detail() {
+        const info = maa.query_task_detail(this.id)
+        return info
+            ? {
+                  entry: info.entry,
+                  nodes: info.node_id_list.map(id => new NodeInfo(id))
+              }
+            : null
     }
 }
 
