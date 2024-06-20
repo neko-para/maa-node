@@ -38,6 +38,16 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     DE(MaaLoggingLevel, All);
     exports["LoggingLevel"] = MaaLoggingLevel;
 
+    auto MaaWin32ControllerType = Napi::Object::New(env);
+    DE(MaaWin32ControllerType, Touch_SendMessage);
+    DE(MaaWin32ControllerType, Touch_Seize);
+    DE(MaaWin32ControllerType, Key_SendMessage);
+    DE(MaaWin32ControllerType, Key_Seize);
+    DE(MaaWin32ControllerType, Screencap_GDI);
+    DE(MaaWin32ControllerType, Screencap_DXGI_DesktopDup);
+    DE(MaaWin32ControllerType, Screencap_DXGI_FramePool);
+    exports["Win32ControllerType"] = MaaWin32ControllerType;
+
     return exports;
 }
 

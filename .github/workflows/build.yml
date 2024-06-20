@@ -201,6 +201,9 @@ jobs:
               shell: bash
               run: |
                   ./scripts/copy_release.sh ${{ github.ref }}
+                  cd release/maa-node
+                  pnpm i
+                  pnpm run build
 
             - uses: actions/upload-artifact@v4
               with:

@@ -1,6 +1,14 @@
 {
     "name": "@nekosu/maa-node",
-    "main": "./src/maa.js",
-    "types": "./types/maa.d.ts",
-    "scripts": {}
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "scripts": {
+        "build": "node scripts/build.mjs && tsc"
+    },
+    "devDependencies": {
+        "@tsconfig/node20": "^20.1.4",
+        "@types/node": "^20",
+        "esbuild": "^0.21.5",
+        "typescript": "^5.4.5"
+    }
 }

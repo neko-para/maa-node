@@ -12,11 +12,20 @@ export type ResId = number & { __brand: 'ResId' }
 export type RecoId = number & { __brand: 'RecoId' }
 export type NodeId = number & { __brand: 'NodeId' }
 
+export type Status = number & { __brand: 'Status' }
+
 export type Rect = {
     x: number
     y: number
     width: number
     height: number
+}
+
+export type AdbInfo = {
+    adb_path: string
+    adb_serial: string
+    adb_controller_type: number
+    adb_config: string
 }
 
 type MaybePromise<T> = T | Promise<T>
@@ -111,8 +120,8 @@ export declare function controller_post_touch_move(
 ): CtrlId
 export declare function controller_post_touch_up(handle: ControllerHandle, contact: number): CtrlId
 export declare function controller_post_screencap(handle: ControllerHandle): CtrlId
-export declare function controller_status(handle: ControllerHandle): number
-export declare function controller_wait(handle: ControllerHandle, ctrl_id: CtrlId): Promise<number>
+export declare function controller_status(handle: ControllerHandle): Status
+export declare function controller_wait(handle: ControllerHandle, ctrl_id: CtrlId): Promise<Status>
 export declare function controller_connected(handle: ControllerHandle): boolean
 export declare function controller_get_image(
     handle: ControllerHandle,
@@ -153,16 +162,16 @@ export declare function set_task_param(
     task_id: TaskId,
     param: string
 ): boolean
-export declare function task_status(handle: InstanceHandle): number
-export declare function wait_task(handle: InstanceHandle, task_id: TaskId): Promise<number>
+export declare function task_status(handle: InstanceHandle): Status
+export declare function wait_task(handle: InstanceHandle, task_id: TaskId): Promise<Status>
 export declare function running(handle: InstanceHandle): boolean
 export declare function post_stop(handle: InstanceHandle): boolean
 
 export declare function resource_create(callback: TrivialCallbak | null): ResourceHandle | null
 export declare function resource_post_path(handle: ResourceHandle, path: string): ResId
 export declare function resource_clear(handle: ResourceHandle): boolean
-export declare function resource_status(handle: ResourceHandle): number
-export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<number>
+export declare function resource_status(handle: ResourceHandle): Status
+export declare function resource_wait(handle: ResourceHandle, res_id: ResId): Promise<Status>
 export declare function resource_loaded(handle: ResourceHandle): boolean
 export declare function resource_get_hash(handle: ResourceHandle): string | null
 export declare function resource_get_task_list(handle: ResourceHandle): string | null
@@ -294,11 +303,7 @@ export declare function wait_for_find_device_to_complete(): Promise<number>
 export declare function get_device_count(): number
 export declare function get_device(index: number): {
     name: string
-    adb_path: string
-    adb_serial: string
-    adb_controller_type: number
-    adb_config: string
-}
+} & AdbInfo
 
 export declare function register_custom_recognizer_executor(
     handle: InstanceHandle,
@@ -337,9 +342,19 @@ export declare function get_window_info(hwnd: Win32Hwnd): {
 
 export declare const Status: Record<
     'Invalid' | 'Pending' | 'Running' | 'Success' | 'Failed',
-    number
+    Status
 >
 export declare const LoggingLevel: Record<
     'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All',
+    number
+>
+export declare const Win32ControllerType: Record<
+    | 'Touch_SendMessage'
+    | 'Touch_Seize'
+    | 'Key_SendMessage'
+    | 'Key_Seize'
+    | 'Screencap_GDI'
+    | 'Screencap_DXGI_DesktopDup'
+    | 'Screencap_DXGI_FramePool',
     number
 >
