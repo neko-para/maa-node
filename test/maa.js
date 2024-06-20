@@ -1,5 +1,6 @@
 if (process.platform === 'win32') {
-    module.exports = require('../build/maa.node')
+    globalThis.MaaAPI = require('../build/maa.node')
 } else {
-    module.exports = require('../build/Release/maa.node')
+    globalThis.MaaAPI = require('../build/Release/maa.node')
 }
+module.exports = require('../release/maa-node/types')
