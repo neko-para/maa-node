@@ -47,3 +47,5 @@ done
 for dir in "$TARGET_DIR"/*; do
   npm pkg set version=$VERSION --prefix "$dir"
 done
+
+cp -r maa/share/MaaAgentBinary/* release/maa-node/agent

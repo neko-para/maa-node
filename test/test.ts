@@ -9,7 +9,7 @@ async function main() {
         return
     }
 
-    const ctrl = new maa.AdbController(devices[0], './maa/share/MaaAgentBinary')
+    const ctrl = new maa.AdbController(devices[0])
     ctrl.notify = (msg, detail) => {
         console.log(msg, detail)
     }
@@ -27,22 +27,24 @@ async function main() {
 
     console.log(inst.inited)
 
-    maa.register_custom_recognizer(inst.handle, 'direct', (...args) => {
+    inst.register_custom_recognizer('direct', (...args) => {
         console.log(...args)
         return {
-            out_box: {
+            box: {
                 x: 0,
                 y: 0,
                 width: 0,
                 height: 0
             },
-            out_detail: '111'
+            detail: '111'
         }
     })
-    maa.register_custom_action(inst.handle, 'print', (...args) => {
+
+    inst.register_custom_action('print', (...args) => {
         console.log(...args)
         return true
     })
+
     await inst
         .post('task', 'testCustom', {
             test: {
@@ -63,8 +65,6 @@ async function main() {
             }
         })
         .wait()
-    globalThis.gc?.()
-    // process.exit()
 }
 
 main()
