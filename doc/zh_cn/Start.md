@@ -73,14 +73,12 @@ async function main() {
 
     // 执行任务, Task1来自pipeline/Task.json
     await inst
-        .post('task', 'Task1')
+        .post_task('Task1')
         .wait()
 }
 
 main()
 ```
-
-> `post('task', 'Task1')`的第一个参数`'task'`表明是执行整个任务, 也可以通过传入`'recognition'`或`'action'`来只执行识别/操作.
 
 ## 在JS侧影响资源行为
 
@@ -92,7 +90,7 @@ main()
 // 通过第三个参数, 创建了一个新的任务Task2, 然后执行它
 // 此处创建的任务仅在当前执行中有效
 await inst
-    .post('task', 'Task2', {
+    .post_task('Task2', {
         Task2: {
             next: [
                 'Task1'

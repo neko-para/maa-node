@@ -63,7 +63,7 @@ export class TaskInfo {
         this.id = id
     }
 
-    set param(param: TaskDecl) {
+    set param(param: Record<string, TaskDecl>) {
         if (!maa.set_task_param(this.instance.handle, this.id, JSON.stringify(param))) {
             throw 'TaskInfo set param failed'
         }
@@ -159,21 +159,16 @@ export class InstanceBase {
         }
     }
 
-    post(type: 'task' | 'recognition' | 'action', entry: string, param: TaskDecl = {}) {
-        switch (type) {
-            case 'task':
-                return new TaskInfo(this, maa.post_task(this.handle, entry, JSON.stringify(param)))
-            case 'recognition':
-                return new TaskInfo(
-                    this,
-                    maa.post_recognition(this.handle, entry, JSON.stringify(param))
-                )
-            case 'action':
-                return new TaskInfo(
-                    this,
-                    maa.post_action(this.handle, entry, JSON.stringify(param))
-                )
-        }
+    post_task(entry: string, param: Record<string, TaskDecl> = {}) {
+        return new TaskInfo(this, maa.post_task(this.handle, entry, JSON.stringify(param)))
+    }
+
+    post_recognition(entry: string, param: Record<string, TaskDecl> = {}) {
+        return new TaskInfo(this, maa.post_recognition(this.handle, entry, JSON.stringify(param)))
+    }
+
+    post_action(entry: string, param: Record<string, TaskDecl> = {}) {
+        return new TaskInfo(this, maa.post_action(this.handle, entry, JSON.stringify(param)))
     }
 
     get inited() {
