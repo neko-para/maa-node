@@ -8,17 +8,17 @@ import { TaskDecl } from './task'
 export type CustomRecognizer = (
     sync_context: SyncContext,
     name: string,
-    param: string,
+    param: unknown,
     image: ImageBuffer
 ) => maa.MaybePromise<{
-    box: maa.Rect
-    detail: string
-}>
+    out_box: maa.Rect
+    out_detail: string
+} | null>
 
 export type CustomAction = (
     sync_context: SyncContext,
     name: string,
-    param: string,
+    param: unknown,
     box: maa.Rect,
     rec_detail: string
 ) => maa.MaybePromise<boolean>
@@ -108,12 +108,14 @@ export class InstanceBase {
     register_custom_recognizer(name: string, reco: CustomRecognizer) {
         if (
             !maa.register_custom_recognizer(this.handle, name, async (ctx, image, name, param) => {
-                const result = await reco(new SyncContext(ctx), name, param, new ImageBuffer(image))
+                const result = await reco(
+                    new SyncContext(ctx),
+                    name,
+                    JSON.parse(param),
+                    new ImageBuffer(image)
+                )
                 if (result) {
-                    return {
-                        out_box: result.box,
-                        out_detail: result.detail
-                    }
+                    return result
                 } else {
                     return null
                 }
@@ -137,8 +139,8 @@ export class InstanceBase {
 
     register_custom_action(name: string, action: CustomAction) {
         if (
-            !maa.register_custom_action(this.handle, name, (ctx, ...args) =>
-                action(new SyncContext(ctx), ...args)
+            !maa.register_custom_action(this.handle, name, (ctx, name, param, box, detail) =>
+                action(new SyncContext(ctx), name, JSON.parse(param), box, detail)
             )
         ) {
             throw 'Instance register_custom_action failed'

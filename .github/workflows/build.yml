@@ -227,12 +227,20 @@ jobs:
               with:
                   path: assets
 
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v6
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa
+                  name: MAA-linux-x86_64
+
             - name: Prepare release
               shell: bash
               run: |
                   ./scripts/copy_release.sh ${{ github.ref }}
-                  mkdir -p release/maa-node/dist
-                  cp assets/maa-wrapper/* release/maa-node/dist
 
             - uses: actions/upload-artifact@v4
               with:

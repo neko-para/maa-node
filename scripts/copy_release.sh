@@ -49,3 +49,5 @@ for dir in "$TARGET_DIR"/*; do
 done
 
 cp -r maa/share/MaaAgentBinary/* release/maa-node/agent
+mkdir -p release/maa-node/dist
+cp assets/maa-wrapper/* release/maa-node/dist

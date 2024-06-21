@@ -1,0 +1,106 @@
+# 快速开始
+
+## 安装
+
+需要NodeJS 20及以上, 创建项目文件夹后通过下列命令安装
+
+```shell
+npm install @nekosu/maa-node
+```
+
+由于npm包中集成了MaaFramework的库以及AgentBinary, 下载可能会花费一点时间.
+
+## 准备基础资源
+
+执行下面的命令, 将会创建一个基础的资源模板.
+
+```shell
+npx maa-setup-resource
+```
+
+执行完毕后, `resource`目录中应当有`model`, `image`, `pipeline`三个目录.
+
+## 连接, 执行任务
+
+对于一个最直接的流程而言, 我们需要执行以下步骤:
+
+* 扫描设备
+* 创建控制器并连接
+* 创建资源并加载
+* 创建实例并绑定
+* 执行任务
+
+```typescript
+import * as maa from './maa'
+
+console.log(maa.version())
+
+async function main() {
+    // 查询所有Adb设备
+    const devices = await maa.AdbController.find()
+    if (!devices) {
+        return
+    }
+
+    // 使用第一个设备创建控制器
+    const ctrl = new maa.AdbController(devices[0])
+    ctrl.notify = (msg, detail) => {
+        console.log(msg, detail)
+    }
+    // 连接设备
+    await ctrl.post_connection()
+    
+    // 创建资源
+    const res = new maa.Resource()
+    res.notify = (msg, detail) => {
+        console.log(msg, detail)
+    }
+    // 加载资源
+    await res.post_path('./resource')
+
+    // 创建实例
+    const inst = new maa.Instance()
+    inst.notify = (msg, detail) => {
+        console.log(msg, detail)
+    }
+    
+    // 绑定控制器和资源
+    inst.bind(ctrl)
+    inst.bind(res)
+
+    // 检查是否正确创建
+    console.log(inst.inited)
+
+    // 执行任务, Task1来自pipeline/Task.json
+    await inst
+        .post('task', 'Task1')
+        .wait()
+}
+
+main()
+
+```
+
+## 在JS侧影响资源行为
+
+注意执行任务的这段代码`await inst.post('task', 'Task1').wait()`
+
+`post`函数可以传入第三个参数, 该参数是一个对象, 其结构和`pipeline`下的json完全一致, 会覆盖在原有的`pipeline`之上. 因此, 可以通过在此处传入一个对象来实现控制任务(甚至创建新的任务).
+
+```javascript
+// 通过第三个参数, 创建了一个新的任务Task2, 然后执行它
+// 此处创建的任务仅在当前执行中有效
+await inst
+    .post('task', 'Task2', {
+        Task2: {
+            next: [
+                'Task1'
+            ]
+        }
+    })
+    .wait()
+```
+
+## 接下来
+
+请参考MaaFramework的文档, 编写资源

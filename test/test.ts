@@ -27,21 +27,19 @@ async function main() {
 
     console.log(inst.inited)
 
-    inst.register_custom_recognizer('direct', (...args) => {
-        console.log(...args)
+    inst.register_custom_recognizer('direct', (ctx, name, param, image) => {
         return {
-            box: {
+            out_box: {
                 x: 0,
                 y: 0,
                 width: 0,
                 height: 0
             },
-            detail: '111'
+            out_detail: '111'
         }
     })
 
-    inst.register_custom_action('print', (...args) => {
-        console.log(...args)
+    inst.register_custom_action('print', (ctx, name, param, box, detail) => {
         return true
     })
 
