@@ -78,8 +78,9 @@ async function main() {
 }
 
 main()
-
 ```
+
+> `post('task', 'Task1')`的第一个参数`'task'`表明是执行整个任务, 也可以通过传入`'recognition'`或`'action'`来只执行识别/操作.
 
 ## 在JS侧影响资源行为
 
