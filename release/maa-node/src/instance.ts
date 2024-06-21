@@ -1,4 +1,5 @@
 import { ControllerBase } from './controller'
+import { ImageBuffer, ImageListBuffer } from './image'
 import maa from './maa'
 import { ResourceBase } from './resource'
 import { TaskDecl } from './task'
@@ -8,6 +9,10 @@ export class RecoInfo {
 
     constructor(id: maa.RecoId) {
         this.id = id
+    }
+
+    detail(raw?: ImageBuffer, draws?: ImageListBuffer) {
+        return maa.query_recognition_detail(this.id, raw?.handle ?? null, draws?.handle ?? null)
     }
 }
 

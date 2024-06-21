@@ -287,7 +287,10 @@ export declare function create_image_list_buffer(): ImageListBufferHandle | null
 export declare function is_image_list_empty(handle: ImageListBufferHandle): boolean
 export declare function clear_image_list(handle: ImageListBufferHandle): boolean
 export declare function get_image_list_size(handle: ImageListBufferHandle): number
-export declare function get_image_list_at(handle: ImageListBufferHandle): ImageBufferHandle
+export declare function get_image_list_at(
+    handle: ImageListBufferHandle,
+    index: number
+): ImageBufferHandle
 export declare function image_list_append(
     handle: ImageListBufferHandle,
     value: ImageBufferHandle
