@@ -10,4 +10,4 @@ npm install @nekosu/maa-node
 
 ## Usage
 
-Please refer to `test/test.ts`
+[Reference](./doc/zh_cn/README.md)
