@@ -1,5 +1,6 @@
 {
     "name": "@nekosu/maa-node",
+    "author": "nekosu",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
     "scripts": {
@@ -7,6 +8,13 @@
     },
     "bin": {
         "maa-setup-resource": "./bin/maa-setup-resource.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/neko-para/maa-node.git"
+    },
+    "engines": {
+        "node": ">= 20.0.0"
     },
     "devDependencies": {
         "@trivago/prettier-plugin-sort-imports": "^4.3.0",
