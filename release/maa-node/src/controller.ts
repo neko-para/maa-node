@@ -25,14 +25,14 @@ export class ControllerBase {
 }
 
 export class AdbController extends ControllerBase {
-    constructor(info: maa.AdbInfo) {
+    constructor(info: maa.AdbInfo, agent?: string) {
         let ws: WeakRef<this>
         const h = maa.adb_controller_create(
             info.adb_path,
             info.adb_serial,
             info.adb_controller_type,
             info.adb_config,
-            path.join(__dirname, '..', 'agent'),
+            agent ?? AdbController.agent_path(),
             (msg, detail) => {
                 ws.deref()?.notify(msg, detail)
             }
@@ -42,6 +42,10 @@ export class AdbController extends ControllerBase {
         }
         super(h)
         ws = new WeakRef(this)
+    }
+
+    static agent_path() {
+        return path.join(__dirname, '..', 'agent')
     }
 
     static async find(adb?: string) {
