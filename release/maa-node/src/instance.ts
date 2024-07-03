@@ -3,7 +3,7 @@ import { ImageBuffer, ImageListBuffer } from './image'
 import maa from './maa'
 import { ResourceBase } from './resource'
 import { SyncContext } from './syncContext'
-import { TaskDecl } from './task'
+import { PipelineDecl } from './task'
 
 export type CustomRecognizer = (
     sync_context: SyncContext,
@@ -63,7 +63,7 @@ export class TaskInfo {
         this.id = id
     }
 
-    set param(param: Record<string, TaskDecl>) {
+    set param(param: PipelineDecl) {
         if (!maa.set_task_param(this.instance.handle, this.id, JSON.stringify(param))) {
             throw 'TaskInfo set param failed'
         }
@@ -159,15 +159,15 @@ export class InstanceBase {
         }
     }
 
-    post_task(entry: string, param: Record<string, TaskDecl> = {}) {
+    post_task(entry: string, param: PipelineDecl = {}) {
         return new TaskInfo(this, maa.post_task(this.handle, entry, JSON.stringify(param)))
     }
 
-    post_recognition(entry: string, param: Record<string, TaskDecl> = {}) {
+    post_recognition(entry: string, param: PipelineDecl = {}) {
         return new TaskInfo(this, maa.post_recognition(this.handle, entry, JSON.stringify(param)))
     }
 
-    post_action(entry: string, param: Record<string, TaskDecl> = {}) {
+    post_action(entry: string, param: PipelineDecl = {}) {
         return new TaskInfo(this, maa.post_action(this.handle, entry, JSON.stringify(param)))
     }
 

@@ -21,6 +21,8 @@ export type Rect = {
     height: number
 }
 
+export type FlatRect = [x: number, y: number, width: number, height: number]
+
 export type AdbInfo = {
     adb_path: string
     adb_serial: string
