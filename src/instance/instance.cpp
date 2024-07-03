@@ -31,6 +31,13 @@ Napi::Value create(const Napi::CallbackInfo& info)
     }
 }
 
+Napi::Value destroy(const Napi::CallbackInfo& info)
+{
+    auto handle = InstanceInfo::FromValue(info[0]);
+    handle->dispose();
+    return info.Env().Undefined();
+}
+
 Napi::Value bind_resource(const Napi::CallbackInfo& info)
 {
     auto handle_info = InstanceInfo::FromValue(info[0]);
@@ -226,6 +233,7 @@ Napi::Value post_stop(const Napi::CallbackInfo& info)
 void load_instance_instance(Napi::Env env, Napi::Object& exports)
 {
     BIND(create);
+    BIND(destroy);
     BIND(bind_resource);
     BIND(bind_controller);
     BIND(inited);

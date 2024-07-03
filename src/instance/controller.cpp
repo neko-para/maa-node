@@ -74,6 +74,13 @@ Napi::Value win32_controller_create(const Napi::CallbackInfo& info)
     }
 }
 
+Napi::Value controller_destroy(const Napi::CallbackInfo& info)
+{
+    auto handle = ControllerInfo::FromValue(info[0]);
+    handle->dispose();
+    return info.Env().Undefined();
+}
+
 Napi::Value set_controller_option(const Napi::CallbackInfo& info)
 {
     auto handle = ControllerInfo::FromValue(info[0])->handle;
@@ -275,6 +282,7 @@ void load_instance_controller(Napi::Env env, Napi::Object& exports)
 {
     BIND(adb_controller_create);
     BIND(win32_controller_create);
+    BIND(controller_destroy);
     BIND(set_controller_option);
     BIND(controller_post_connection);
     BIND(controller_post_click);

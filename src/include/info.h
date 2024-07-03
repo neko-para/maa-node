@@ -41,29 +41,41 @@ struct InfoBase
 struct ControllerInfo : InfoBase<MaaControllerHandle, ControllerInfo>
 {
     CallbackContext* callback = nullptr;
+    bool disposed = false;
 
-    ~ControllerInfo()
+    void dispose()
     {
-        std::cerr << "destroy controller" << std::endl;
+        if (disposed) {
+            return;
+        }
+        disposed = true;
         MaaControllerDestroy(handle);
         if (callback) {
             delete callback;
         }
     }
+
+    ~ControllerInfo() { dispose(); }
 };
 
 struct ResourceInfo : InfoBase<MaaResourceHandle, ResourceInfo>
 {
     CallbackContext* callback = nullptr;
+    bool disposed = false;
 
-    ~ResourceInfo()
+    void dispose()
     {
-        std::cerr << "destroy resource" << std::endl;
+        if (disposed) {
+            return;
+        }
+        disposed = true;
         MaaResourceDestroy(handle);
         if (callback) {
             delete callback;
         }
     }
+
+    ~ResourceInfo() { dispose(); }
 };
 
 struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
@@ -73,10 +85,14 @@ struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
     Napi::Reference<Napi::External<ControllerInfo>> controller;
     std::map<std::string, CallbackContext*> custom_recognizers;
     std::map<std::string, CallbackContext*> custom_actions;
+    bool disposed = false;
 
-    ~InstanceInfo()
+    void dispose()
     {
-        std::cerr << "destroy instance" << std::endl;
+        if (disposed) {
+            return;
+        }
+        disposed = true;
         MaaDestroy(handle);
         if (callback) {
             delete callback;
@@ -84,6 +100,8 @@ struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
         ClearRecos();
         ClearActs();
     }
+
+    ~InstanceInfo() { dispose(); }
 
     void ClearRecos()
     {

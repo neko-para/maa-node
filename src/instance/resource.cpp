@@ -31,6 +31,13 @@ Napi::Value resource_create(const Napi::CallbackInfo& info)
     }
 }
 
+Napi::Value resource_destroy(const Napi::CallbackInfo& info)
+{
+    auto handle = ResourceInfo::FromValue(info[0]);
+    handle->dispose();
+    return info.Env().Undefined();
+}
+
 Napi::Value resource_post_path(const Napi::CallbackInfo& info)
 {
     auto handle = ResourceInfo::HandleFromValue(info[0]);
@@ -99,6 +106,7 @@ Napi::Value resource_get_task_list(const Napi::CallbackInfo& info)
 void load_instance_resource(Napi::Env env, Napi::Object& exports)
 {
     BIND(resource_create);
+    BIND(resource_destroy);
     BIND(resource_post_path);
     BIND(resource_clear);
     BIND(resource_status);

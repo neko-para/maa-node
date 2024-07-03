@@ -63,6 +63,7 @@ export declare function win32_controller_create(
     type: number,
     callback: TrivialCallbak | null
 ): ControllerHandle | null
+export declare function controller_destroy(handle: ControllerHandle): void
 export declare function set_controller_option(
     handle: ControllerHandle,
     key: 'ScreenshotTargetLongSide',
@@ -132,6 +133,7 @@ export declare function controller_get_image(
 export declare function controller_get_uuid(handle: ControllerHandle): string | null
 
 export declare function create(callback: TrivialCallbak | null): InstanceHandle | null
+export declare function destroy(handle: InstanceHandle): void
 export declare function bind_resource(handle: InstanceHandle, resource: ResourceHandle): boolean
 export declare function bind_controller(
     handle: InstanceHandle,
@@ -170,6 +172,7 @@ export declare function running(handle: InstanceHandle): boolean
 export declare function post_stop(handle: InstanceHandle): boolean
 
 export declare function resource_create(callback: TrivialCallbak | null): ResourceHandle | null
+export declare function resource_destroy(handle: ResourceHandle): void
 export declare function resource_post_path(handle: ResourceHandle, path: string): ResId
 export declare function resource_clear(handle: ResourceHandle): boolean
 export declare function resource_status(handle: ResourceHandle): Status
