@@ -1,32 +1,40 @@
 import { FlatRect } from './maa'
 
-type RGBColor = [r: number, g: number, b: number]
-type HSVColor = [h: number, s: number, v: number]
-type GrayColor = [g: number]
+export type RGBColor = [r: number, g: number, b: number]
+export type HSVColor = [h: number, s: number, v: number]
+export type GrayColor = [g: number]
 
-type RecoDecl =
+export type RecoType =
+    | 'DirectHit'
+    | 'TemplateMatch'
+    | 'FeatureMatch'
+    | 'ColorMatch'
+    | 'OCR'
+    | 'NeuralNetworkClassify'
+    | 'NeuralNetworkDetect'
+    | 'Custom'
+
+export type RecoDecl =
     | {
           /**
            * 识别算法类型。可选，默认 `DirectHit`。
            *
            * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
            *
-           * 直接命中，即不进行识别，直接执行动作。
+           * - `DirectHit`: 直接命中，即不进行识别，直接执行动作。
+           * - `TemplateMatch`: 模板匹配，即“找图”。
+           * - `FeatureMatch`: 特征匹配，泛化能力更强的“找图”，具有抗透视、抗尺寸变化等特点。
+           * - `ColorMatch`: 颜色匹配，即“找色”。
+           * - `OCR`: 文字识别。
+           * - `NeuralNetworkClassify`: 深度学习分类，判断图像中的 **固定位置** 是否为预期的“类别”。
+           * - `NeuralNetworkDetect`: 深度学习目标检测，高级版“找图”。与分类器主要区别在于“找”，即支持任意位置。但通常来说模型复杂度会更高，需要更多的训练集、训练时间，使用时的资源占用（推理开销）也会成倍上涨。
+           * - `Custom`: 执行通过 `MaaRegisterCustomRecognizer` 接口传入的识别器句柄
            *
            * @default "DirectHit"
            */
           recognition?: 'DirectHit'
       }
     | {
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 模板匹配，即“找图”。
-           *
-           * @default "DirectHit"
-           */
           recognition: 'TemplateMatch'
 
           /**
@@ -95,15 +103,6 @@ type RecoDecl =
           green_mask?: boolean
       }
     | {
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 特征匹配，泛化能力更强的“找图”，具有抗透视、抗尺寸变化等特点。
-           *
-           * @default "DirectHit"
-           */
           recognition: 'FeatureMatch'
 
           /**
@@ -184,15 +183,6 @@ type RecoDecl =
           ratio?: number
       }
     | ({
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 颜色匹配，即“找色”。
-           *
-           * @default "DirectHit"
-           */
           recognition: 'ColorMatch'
 
           /**
@@ -310,15 +300,6 @@ type RecoDecl =
             }
       ))
     | {
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 文字识别。
-           *
-           * @default "DirectHit"
-           */
           recognition: 'OCR'
 
           /**
@@ -377,15 +358,6 @@ type RecoDecl =
           model?: string
       }
     | {
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 深度学习分类，判断图像中的 **固定位置** 是否为预期的“类别”。
-           *
-           * @default "DirectHit"
-           */
           recognition: 'NeuralNetworkClassify'
 
           /**
@@ -442,17 +414,6 @@ type RecoDecl =
           index?: number
       }
     | {
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 深度学习目标检测，高级版“找图”。
-           *
-           * 与分类器主要区别在于“找”，即支持任意位置。但通常来说模型复杂度会更高，需要更多的训练集、训练时间，使用时的资源占用（推理开销）也会成倍上涨。
-           *
-           * @default "DirectHit"
-           */
           recognition: 'NeuralNetworkDetect'
 
           /**
@@ -516,15 +477,6 @@ type RecoDecl =
           index?: number
       }
     | {
-          /**
-           * 识别算法类型。可选，默认 `DirectHit`。
-           *
-           * 可选的值：`DirectHit` | `TemplateMatch` | `FeatureMatch` | `ColorMatch` | `OCR` | `NeuralNetworkClassify` | `NeuralNetworkDetect` | `Custom`
-           *
-           * 执行通过 `MaaRegisterCustomRecognizer` 接口传入的识别器句柄
-           *
-           * @default "DirectHit"
-           */
           recognition: 'Custom'
 
           /**
@@ -538,9 +490,20 @@ type RecoDecl =
           custom_recognition_param?: unknown
       }
 
-type TargetDecl = true | string | FlatRect
+export type TargetDecl = true | string | FlatRect
 
-type ActionDecl =
+export type ActionType =
+    | 'DoNothing'
+    | 'Click'
+    | 'Swipe'
+    | 'Key'
+    | 'Text'
+    | 'StartApp'
+    | 'StopApp'
+    | 'StopTask'
+    | 'Custom'
+
+export type ActionDecl =
     | {
           /**
            * 执行的动作。可选，默认 `DoNothing`。
@@ -755,7 +718,7 @@ type ActionDecl =
 /**
  * 等待画面静止。需连续一定时间 画面 **没有较大变化** 才会退出动作。
  */
-type FreezeDecl =
+export type FreezeDecl =
     | number
     | {
           /**
@@ -801,7 +764,7 @@ type FreezeDecl =
           method?: 1 | 3 | 5
       }
 
-type TaskRestDecl = {
+export type TaskRestDecl = {
     /**
      * 接下来要执行的任务列表。可选，默认空。
      *
@@ -922,7 +885,7 @@ type TaskRestDecl = {
     focus?: boolean
 }
 
-type TaskDecl = RecoDecl & ActionDecl & TaskRestDecl
+export type TaskDecl = RecoDecl & ActionDecl & TaskRestDecl
 
 export type PipelineDecl = {
     [task: string]: TaskDecl

@@ -1,6 +1,6 @@
 import { ImageBuffer } from './image'
 import maa from './maa'
-import { TaskDecl } from './task'
+import { PipelineDecl } from './task'
 
 export class SyncContext {
     handle: maa.SyncContextHandle
@@ -9,11 +9,11 @@ export class SyncContext {
         this.handle = handle
     }
 
-    run_task(name: string, param: Record<string, TaskDecl> = {}) {
+    run_task(name: string, param: PipelineDecl = {}) {
         return maa.sync_context_run_task(this.handle, name, JSON.stringify(param))
     }
 
-    run_recognition(name: string, image: ImageBuffer, param: Record<string, TaskDecl> = {}) {
+    run_recognition(name: string, image: ImageBuffer, param: PipelineDecl = {}) {
         return maa.sync_context_run_recognition(
             this.handle,
             image.handle,
@@ -22,7 +22,7 @@ export class SyncContext {
         )
     }
 
-    run_action(name: string, box: maa.Rect, detail: string, param: Record<string, TaskDecl> = {}) {
+    run_action(name: string, box: maa.Rect, detail: string, param: PipelineDecl = {}) {
         return maa.sync_context_run_action(this.handle, name, JSON.stringify(param), box, detail)
     }
 
