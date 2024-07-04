@@ -1,13 +1,4 @@
-.cache
-build
-/install
-/maa
-node_modules
-/dist/binary
-.DS_Store
-*.png
-dist
-
+/node_modules
 *.md
 LICENSE
 .gitkeep
