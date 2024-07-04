@@ -1,0 +1,17 @@
+.cache
+build
+/install
+/maa
+node_modules
+/dist/binary
+.DS_Store
+*.png
+dist
+
+*.md
+LICENSE
+.gitkeep
+/src
+/scripts
+/tsconfig.json
+/pnpm-lock.yaml
