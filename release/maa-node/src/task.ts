@@ -508,24 +508,23 @@ export type ActionDecl =
           /**
            * 执行的动作。可选，默认 `DoNothing`。
            *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
+           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `InputText` | `StartApp` | `StopApp` | `StopTask` | `Custom`
            *
-           * 什么都不做。
+           * - `DoNothing`: 什么都不做。
+           * - `Click`: 点击。
+           * - `Swipe`: 滑动。
+           * - `Key`: 按键。
+           * - `InputText`: 输入文本。
+           * - `StartApp`: 启动 App。
+           * - `StopApp`: 关闭 App。
+           * - `StopTask`: 停止当前任务链（MaaPostTask 传入的单个任务链）
+           * - `Custom`: 执行通过 `MaaRegisterCustomAction` 接口传入的动作句柄
            *
            * @default "DoNothing"
            */
           action?: 'DoNothing'
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 点击。
-           *
-           * @default "DoNothing"
-           */
           action: 'Click'
 
           /**
@@ -546,15 +545,6 @@ export type ActionDecl =
           target_offset?: FlatRect
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 滑动。
-           *
-           * @default "DoNothing"
-           */
           action: 'Swipe'
 
           /**
@@ -599,15 +589,6 @@ export type ActionDecl =
           duration?: number
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 按键
-           *
-           * @default "DoNothing"
-           */
           action: 'Key'
 
           /**
@@ -618,15 +599,6 @@ export type ActionDecl =
           key: number | number[]
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 输入文本。
-           *
-           * @default "DoNothing"
-           */
           action: 'InputText'
 
           /**
@@ -635,15 +607,6 @@ export type ActionDecl =
           input_text: string
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 启动 App。
-           *
-           * @default "DoNothing"
-           */
           action: 'StartApp'
 
           /**
@@ -658,15 +621,6 @@ export type ActionDecl =
           package?: string
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 关闭 App。
-           *
-           * @default "DoNothing"
-           */
           action: 'StopApp'
 
           /**
@@ -681,27 +635,9 @@ export type ActionDecl =
           package?: string
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 停止当前任务链（MaaPostTask 传入的单个任务链）
-           *
-           * @default "DoNothing"
-           */
           action: 'StopTask'
       }
     | {
-          /**
-           * 执行的动作。可选，默认 `DoNothing`。
-           *
-           * 可选的值：`DoNothing` | `Click` | `Swipe` | `Key` | `Text` | `StartApp` | `StopApp` | `StopTask` | `Custom`
-           *
-           * 执行通过 `MaaRegisterCustomAction` 接口传入的动作句柄
-           *
-           * @default "DoNothing"
-           */
           action: 'Custom'
 
           /**
