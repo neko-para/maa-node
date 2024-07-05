@@ -91,6 +91,10 @@ export class InstanceBase {
         this.handle = handle
     }
 
+    destroy() {
+        maa.destroy(this.handle)
+    }
+
     notify(msg: string, detail: string): maa.MaybePromise<void> {}
 
     bind(slave: ControllerBase | ResourceBase) {

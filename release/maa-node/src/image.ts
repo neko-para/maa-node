@@ -29,7 +29,11 @@ export class ImageBuffer {
         return maa.get_image_encoded(this.handle)
     }
 
-    set encoded(data: ArrayBuffer) {
+    get encoded_copied() {
+        return maa.get_image_encoded_copied(this.handle)
+    }
+
+    set encoded(data: ArrayBuffer | Buffer) {
         if (!maa.set_image_encoded(this.handle, data)) {
             throw 'ImageBuffer set encoded failed'
         }

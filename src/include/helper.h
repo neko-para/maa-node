@@ -4,7 +4,6 @@
 #include <napi.h>
 
 #include <future>
-#include <iostream>
 #include <optional>
 #include <string>
 #include <tuple>
@@ -53,11 +52,7 @@ struct CallbackContext
     {
     }
 
-    ~CallbackContext()
-    {
-        std::cerr << "destroy " << name << std::endl;
-        tsfn.Release();
-    }
+    ~CallbackContext() { tsfn.Release(); }
 
     template <typename Result>
     Result Call(

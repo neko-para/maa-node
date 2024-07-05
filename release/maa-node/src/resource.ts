@@ -7,6 +7,10 @@ export class ResourceBase {
         this.handle = handle
     }
 
+    destroy() {
+        maa.resource_destroy(this.handle)
+    }
+
     notify(msg: string, detail: string): maa.MaybePromise<void> {}
 
     post_path(path: string): Promise<maa.Status> {

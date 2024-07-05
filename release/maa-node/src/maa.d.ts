@@ -287,7 +287,11 @@ export declare function get_image_info(handle: ImageBufferHandle): {
 }
 // returned buffer is not copied, thus will become invalid after handle being mutated or destroyed
 export declare function get_image_encoded(handle: ImageBufferHandle): ArrayBuffer
-export declare function set_image_encoded(handle: ImageBufferHandle, data: ArrayBuffer): boolean
+export declare function get_image_encoded_copied(handle: ImageBufferHandle): ArrayBuffer
+export declare function set_image_encoded(
+    handle: ImageBufferHandle,
+    data: ArrayBuffer | Buffer
+): boolean
 export declare function create_image_list_buffer(): ImageListBufferHandle | null
 export declare function is_image_list_empty(handle: ImageListBufferHandle): boolean
 export declare function clear_image_list(handle: ImageListBufferHandle): boolean

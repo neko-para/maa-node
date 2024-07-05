@@ -2,13 +2,12 @@
 #include "../include/loader.h"
 
 #include <MaaFramework/MaaAPI.h>
+#include <cstdint>
+#include <cstring>
 #include <napi.h>
-
-#include <iostream>
 
 void ImageBufferFinalizer(Napi::Env, MaaImageBufferHandle handle)
 {
-    std::cerr << "destroy image" << std::endl;
     MaaDestroyImageBuffer(handle);
 }
 
@@ -54,18 +53,37 @@ Napi::Value get_image_encoded(const Napi::CallbackInfo& info)
         MaaGetImageEncodedSize(handle));
 }
 
+Napi::Value get_image_encoded_copied(const Napi::CallbackInfo& info)
+{
+    auto handle = info[0].As<Napi::External<MaaImageBuffer>>().Data();
+    auto length = MaaGetImageEncodedSize(handle);
+    auto buffer = Napi::ArrayBuffer::New(info.Env(), length);
+    std::memcpy(buffer.Data(), MaaGetImageEncoded(handle), length);
+    return buffer;
+}
+
 Napi::Value set_image_encoded(const Napi::CallbackInfo& info)
 {
     auto handle = info[0].As<Napi::External<MaaImageBuffer>>().Data();
-    auto data = info[1].As<Napi::ArrayBuffer>();
-    return Napi::Boolean::New(
-        info.Env(),
-        MaaSetImageEncoded(handle, reinterpret_cast<uint8_t*>(data.Data()), data.ByteLength()));
+    if (info[1].IsArrayBuffer()) {
+        auto data = info[1].As<Napi::ArrayBuffer>();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaSetImageEncoded(handle, reinterpret_cast<uint8_t*>(data.Data()), data.ByteLength()));
+    }
+    else if (info[1].IsBuffer()) {
+        auto data = info[1].As<Napi::Buffer<uint8_t>>();
+        return Napi::Boolean::New(
+            info.Env(),
+            MaaSetImageEncoded(handle, reinterpret_cast<uint8_t*>(data.Data()), data.ByteLength()));
+    }
+    else {
+        return Napi::Boolean::New(info.Env(), false);
+    }
 }
 
 void ImageListBufferFinalizer(Napi::Env, MaaImageListBufferHandle handle)
 {
-    std::cerr << "destroy image list" << std::endl;
     MaaDestroyImageListBuffer(handle);
 }
 
@@ -129,6 +147,7 @@ void load_utility_buffer(Napi::Env env, Napi::Object& exports)
     BIND(clear_image);
     BIND(get_image_info);
     BIND(get_image_encoded);
+    BIND(get_image_encoded_copied);
     BIND(set_image_encoded);
 
     BIND(create_image_list_buffer);

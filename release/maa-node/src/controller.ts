@@ -9,6 +9,10 @@ export class ControllerBase {
         this.handle = handle
     }
 
+    destroy() {
+        maa.controller_destroy(this.handle)
+    }
+
     notify(msg: string, detail: string): maa.MaybePromise<void> {}
 
     post_connection() {
