@@ -285,9 +285,7 @@ export declare function get_image_info(handle: ImageBufferHandle): {
     height: number
     type: number
 }
-// returned buffer is not copied, thus will become invalid after handle being mutated or destroyed
 export declare function get_image_encoded(handle: ImageBufferHandle): ArrayBuffer
-export declare function get_image_encoded_copied(handle: ImageBufferHandle): ArrayBuffer
 export declare function set_image_encoded(
     handle: ImageBufferHandle,
     data: ArrayBuffer | Buffer

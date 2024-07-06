@@ -47,15 +47,6 @@ Napi::Value get_image_info(const Napi::CallbackInfo& info)
 Napi::Value get_image_encoded(const Napi::CallbackInfo& info)
 {
     auto handle = info[0].As<Napi::External<MaaImageBuffer>>().Data();
-    return Napi::ArrayBuffer::New(
-        info.Env(),
-        MaaGetImageEncoded(handle),
-        MaaGetImageEncodedSize(handle));
-}
-
-Napi::Value get_image_encoded_copied(const Napi::CallbackInfo& info)
-{
-    auto handle = info[0].As<Napi::External<MaaImageBuffer>>().Data();
     auto length = MaaGetImageEncodedSize(handle);
     auto buffer = Napi::ArrayBuffer::New(info.Env(), length);
     std::memcpy(buffer.Data(), MaaGetImageEncoded(handle), length);
@@ -147,7 +138,6 @@ void load_utility_buffer(Napi::Env env, Napi::Object& exports)
     BIND(clear_image);
     BIND(get_image_info);
     BIND(get_image_encoded);
-    BIND(get_image_encoded_copied);
     BIND(set_image_encoded);
 
     BIND(create_image_list_buffer);
