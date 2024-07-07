@@ -75,7 +75,7 @@ Napi::Value set_image_encoded(const Napi::CallbackInfo& info)
             MaaSetImageEncoded(handle, reinterpret_cast<uint8_t*>(data.Data()), data.ByteLength()));
     }
     else {
-        throw MaaNodeException { std::format(
+        throw MaaNodeException { fmt::format(
             "expect array buffer or buffer, got {} [{}]",
             info[1].ToString().Utf8Value(),
             TypeOf(info[1])) };

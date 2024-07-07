@@ -2,7 +2,6 @@
 
 #include <MaaFramework/MaaAPI.h>
 #include <exception>
-#include <format>
 #include <napi.h>
 
 #include <future>
@@ -11,6 +10,9 @@
 #include <string_view>
 #include <tuple>
 #include <type_traits>
+
+#define FMT_HEADER_ONLY
+#include "fmt/format.h"
 
 template <typename Result>
 class SimpleAsyncWork : public Napi::AsyncWorker
@@ -258,13 +260,13 @@ struct MaaNodeException : public std::exception
     {
     }
 
-    virtual const char* what() const override { return error.c_str(); }
+    virtual const char* what() const noexcept override { return error.c_str(); }
 };
 
 inline void CheckCount(const Napi::CallbackInfo& info, size_t count)
 {
     if (info.Length() != count) {
-        throw MaaNodeException { std::format("expect {} arguments, got {}", count, info.Length()) };
+        throw MaaNodeException { fmt::format("expect {} arguments, got {}", count, info.Length()) };
     }
 }
 
@@ -299,7 +301,7 @@ inline std::string CheckAsString(const Napi::Value& val)
 {
     if (!val.IsString()) {
         throw MaaNodeException {
-            std::format("expect string, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect string, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::String>().Utf8Value();
@@ -309,7 +311,7 @@ inline Napi::Number CheckAsNumber(const Napi::Value& val)
 {
     if (!val.IsNumber()) {
         throw MaaNodeException {
-            std::format("expect number, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect number, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::Number>();
@@ -319,7 +321,7 @@ inline Napi::Boolean CheckAsBoolean(const Napi::Value& val)
 {
     if (!val.IsBoolean()) {
         throw MaaNodeException {
-            std::format("expect boolean, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect boolean, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::Boolean>();
@@ -329,7 +331,7 @@ inline Napi::Function CheckAsFunction(const Napi::Value& val)
 {
     if (!val.IsFunction()) {
         throw MaaNodeException {
-            std::format("expect function, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect function, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::Function>();
@@ -339,7 +341,7 @@ inline Napi::Array CheckAsArray(const Napi::Value& val)
 {
     if (!val.IsArray()) {
         throw MaaNodeException {
-            std::format("expect array, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect array, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::Array>();
@@ -349,7 +351,7 @@ inline Napi::Object CheckAsObject(const Napi::Value& val)
 {
     if (!val.IsObject()) {
         throw MaaNodeException {
-            std::format("expect object, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect object, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::Object>();
@@ -360,7 +362,7 @@ inline Napi::External<T> CheckAsExternal(const Napi::Value& val)
 {
     if (!val.IsExternal()) {
         throw MaaNodeException {
-            std::format("expect external, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
+            fmt::format("expect external, got {} [{}]", val.ToString().Utf8Value(), TypeOf(val))
         };
     }
     return val.As<Napi::External<T>>();
@@ -374,7 +376,7 @@ inline Napi::External<T> CheckAsExternal(const Napi::Value& val)
                 return name(info);                                                             \
             }                                                                                  \
             catch (MaaNodeException exc) {                                                     \
-                Napi::TypeError::New(info.Env(), std::format("maa.{}: {}", #name, exc.what())) \
+                Napi::TypeError::New(info.Env(), fmt::format("maa.{}: {}", #name, exc.what())) \
                     .ThrowAsJavaScriptException();                                             \
                 return info.Env().Null();                                                      \
             }                                                                                  \
