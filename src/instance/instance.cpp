@@ -6,12 +6,13 @@
 
 Napi::Value create(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     MaaInstanceCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
     MaaInstanceHandle handle = nullptr;
 
     if (!info[5].IsNull()) {
-        auto callback = info[0].As<Napi::Function>();
+        auto callback = CheckAsFunction(info[0]);
 
         cb = TrivialCallback;
         ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
@@ -33,6 +34,7 @@ Napi::Value create(const Napi::CallbackInfo& info)
 
 Napi::Value destroy(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = InstanceInfo::FromValue(info[0]);
     handle->dispose();
     return info.Env().Undefined();
@@ -40,13 +42,14 @@ Napi::Value destroy(const Napi::CallbackInfo& info)
 
 Napi::Value bind_resource(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle_info = InstanceInfo::FromValue(info[0]);
     auto value_info = ResourceInfo::FromValueOrNull(info[1]);
     auto value = value_info ? value_info->handle : nullptr;
     auto ret = MaaBindResource(handle_info->handle, value);
     if (ret) {
         if (value_info) {
-            handle_info->resource = Napi::Persistent(info[1].As<Napi::External<ResourceInfo>>());
+            handle_info->resource = Napi::Persistent(CheckAsExternal<ResourceInfo>(info[1]));
         }
         else {
             handle_info->resource.Reset();
@@ -57,14 +60,14 @@ Napi::Value bind_resource(const Napi::CallbackInfo& info)
 
 Napi::Value bind_controller(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle_info = InstanceInfo::FromValue(info[0]);
     auto value_info = ControllerInfo::FromValueOrNull(info[1]);
     auto value = value_info ? value_info->handle : nullptr;
     auto ret = MaaBindController(handle_info->handle, value);
     if (ret) {
         if (value_info) {
-            handle_info->controller =
-                Napi::Persistent(info[1].As<Napi::External<ControllerInfo>>());
+            handle_info->controller = Napi::Persistent(CheckAsExternal<ControllerInfo>(info[1]));
         }
         else {
             handle_info->controller.Reset();
@@ -75,15 +78,17 @@ Napi::Value bind_controller(const Napi::CallbackInfo& info)
 
 Napi::Value inited(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaInited(handle));
 }
 
 Napi::Value register_custom_recognizer(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle_info = InstanceInfo::FromValue(info[0]);
-    auto name = info[1].As<Napi::String>().Utf8Value();
-    auto func = info[2].As<Napi::Function>();
+    auto name = CheckAsString(info[1]);
+    auto func = CheckAsFunction(info[2]);
     auto ctx = new CallbackContext(info.Env(), func, "CustomActionRun");
     auto old_ctx = handle_info->custom_recognizers[name];
     handle_info->custom_actions[name] = ctx;
@@ -100,8 +105,9 @@ Napi::Value register_custom_recognizer(const Napi::CallbackInfo& info)
 
 Napi::Value unregister_custom_recognizer(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle_info = InstanceInfo::FromValue(info[0]);
-    auto name = info[1].As<Napi::String>().Utf8Value();
+    auto name = CheckAsString(info[1]);
 
     auto ret = MaaUnregisterCustomRecognizer(handle_info->handle, name.c_str());
     if (ret) {
@@ -113,6 +119,7 @@ Napi::Value unregister_custom_recognizer(const Napi::CallbackInfo& info)
 
 Napi::Value clear_custom_recognizer(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle_info = InstanceInfo::FromValue(info[0]);
 
     auto ret = MaaClearCustomRecognizer(handle_info->handle);
@@ -124,9 +131,10 @@ Napi::Value clear_custom_recognizer(const Napi::CallbackInfo& info)
 
 Napi::Value register_custom_action(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle_info = InstanceInfo::FromValue(info[0]);
-    auto name = info[1].As<Napi::String>().Utf8Value();
-    auto func = info[2].As<Napi::Function>();
+    auto name = CheckAsString(info[1]);
+    auto func = CheckAsFunction(info[2]);
     auto ctx = new CallbackContext(info.Env(), func, "CustomActionRun");
     auto old_ctx = handle_info->custom_actions[name];
     handle_info->custom_actions[name] = ctx;
@@ -142,8 +150,9 @@ Napi::Value register_custom_action(const Napi::CallbackInfo& info)
 
 Napi::Value unregister_custom_action(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle_info = InstanceInfo::FromValue(info[0]);
-    auto name = info[1].As<Napi::String>().Utf8Value();
+    auto name = CheckAsString(info[1]);
 
     auto ret = MaaUnregisterCustomAction(handle_info->handle, name.c_str());
     if (ret) {
@@ -155,6 +164,7 @@ Napi::Value unregister_custom_action(const Napi::CallbackInfo& info)
 
 Napi::Value clear_custom_action(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle_info = InstanceInfo::FromValue(info[0]);
 
     auto ret = MaaClearCustomAction(handle_info->handle);
@@ -166,50 +176,56 @@ Napi::Value clear_custom_action(const Napi::CallbackInfo& info)
 
 Napi::Value post_task(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto entry = info[1].As<Napi::String>().Utf8Value();
-    auto param = info[2].As<Napi::String>().Utf8Value();
+    auto entry = CheckAsString(info[1]);
+    auto param = CheckAsString(info[2]);
     auto taskid = MaaPostTask(handle, entry.c_str(), param.c_str());
     return Napi::Number::New(info.Env(), taskid);
 }
 
 Napi::Value post_recognition(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto entry = info[1].As<Napi::String>().Utf8Value();
-    auto param = info[2].As<Napi::String>().Utf8Value();
+    auto entry = CheckAsString(info[1]);
+    auto param = CheckAsString(info[2]);
     auto taskid = MaaPostRecognition(handle, entry.c_str(), param.c_str());
     return Napi::Number::New(info.Env(), taskid);
 }
 
 Napi::Value post_action(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto entry = info[1].As<Napi::String>().Utf8Value();
-    auto param = info[2].As<Napi::String>().Utf8Value();
+    auto entry = CheckAsString(info[1]);
+    auto param = CheckAsString(info[2]);
     auto taskid = MaaPostAction(handle, entry.c_str(), param.c_str());
     return Napi::Number::New(info.Env(), taskid);
 }
 
 Napi::Value set_task_param(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto id = info[1].As<Napi::Number>().Uint32Value();
-    auto param = info[2].As<Napi::String>().Utf8Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
+    auto param = CheckAsString(info[2]);
     return Napi::Boolean::New(info.Env(), MaaSetTaskParam(handle, id, param.c_str()));
 }
 
 Napi::Value task_status(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto id = info[1].As<Napi::Number>().Uint32Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
     return Napi::Number::New(info.Env(), MaaTaskStatus(handle, id));
 }
 
 Napi::Value wait_task(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto id = info[1].As<Napi::Number>().Uint32Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
     auto worker = new SimpleAsyncWork<MaaStatus>(
         info.Env(),
         [handle, id]() { return MaaWaitTask(handle, id); },
@@ -220,12 +236,14 @@ Napi::Value wait_task(const Napi::CallbackInfo& info)
 
 Napi::Value running(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaRunning(handle));
 }
 
 Napi::Value post_stop(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaPostStop(handle));
 }

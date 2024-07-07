@@ -6,8 +6,8 @@
 
 Napi::Value find_window(const Napi::CallbackInfo& info)
 {
-    auto class_name = info[0].As<Napi::String>().Utf8Value();
-    auto window_name = info[1].As<Napi::String>().Utf8Value();
+    auto class_name = CheckAsString(info[0]);
+    auto window_name = CheckAsString(info[1]);
     return Napi::Number::New(
         info.Env(),
         MaaToolkitFindWindow(class_name.c_str(), window_name.c_str()));
@@ -15,8 +15,8 @@ Napi::Value find_window(const Napi::CallbackInfo& info)
 
 Napi::Value search_window(const Napi::CallbackInfo& info)
 {
-    auto class_name = info[0].As<Napi::String>().Utf8Value();
-    auto window_name = info[1].As<Napi::String>().Utf8Value();
+    auto class_name = CheckAsString(info[0]);
+    auto window_name = CheckAsString(info[1]);
     return Napi::Number::New(
         info.Env(),
         MaaToolkitSearchWindow(class_name.c_str(), window_name.c_str()));
@@ -29,7 +29,7 @@ Napi::Value list_windows(const Napi::CallbackInfo& info)
 
 Napi::Value get_window(const Napi::CallbackInfo& info)
 {
-    auto index = info[0].As<Napi::Number>().Uint32Value();
+    auto index = CheckAsNumber(info[0]).Uint32Value();
     return Napi::External<void>::New(info.Env(), MaaToolkitGetWindow(index));
 }
 
@@ -50,7 +50,7 @@ Napi::Value get_foreground_window(const Napi::CallbackInfo& info)
 
 Napi::Value get_window_info(const Napi::CallbackInfo& info)
 {
-    MaaWin32Hwnd hwnd = info[0].As<Napi::External<void>>().Data();
+    MaaWin32Hwnd hwnd = CheckAsExternal<void>(info[0]).Data();
     StringBuffer class_name, window_name;
     auto result = Napi::Object::New(info.Env());
     if (MaaToolkitGetWindowClassName(hwnd, class_name)) {

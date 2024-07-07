@@ -13,17 +13,18 @@ static inline std::vector<std::string> ArrayToStringList(Napi::Array arr)
     std::vector<std::string> result;
     result.reserve(arr.Length());
     for (auto [prop, val] : arr) {
-        result.push_back(Napi::Value(val).As<Napi::String>().Utf8Value());
+        result.push_back(CheckAsString(val));
     }
     return result;
 }
 
 Napi::Value register_custom_recognizer_executor(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 4);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto recognizer_name = info[1].As<Napi::String>().Utf8Value();
-    auto exec_path = info[2].As<Napi::String>().Utf8Value();
-    auto exec_params = ArrayToStringList(info[3].As<Napi::Array>());
+    auto recognizer_name = CheckAsString(info[1]);
+    auto exec_path = CheckAsString(info[2]);
+    auto exec_params = ArrayToStringList(CheckAsArray(info[3]));
     std::vector<MaaStringView> exec_params_view;
     exec_params_view.reserve(exec_params.size());
     std::transform(
@@ -43,8 +44,9 @@ Napi::Value register_custom_recognizer_executor(const Napi::CallbackInfo& info)
 
 Napi::Value unregister_custom_recognizer_executor(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto recognizer_name = info[1].As<Napi::String>().Utf8Value();
+    auto recognizer_name = CheckAsString(info[1]);
     return Napi::Boolean::New(
         info.Env(),
         MaaToolkitUnregisterCustomRecognizerExecutor(handle, recognizer_name.c_str()));
@@ -52,16 +54,18 @@ Napi::Value unregister_custom_recognizer_executor(const Napi::CallbackInfo& info
 
 Napi::Value clear_custom_recognizer_executor(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaToolkitClearCustomRecognizerExecutor(handle));
 }
 
 Napi::Value register_custom_action_executor(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 4);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto action_name = info[1].As<Napi::String>().Utf8Value();
-    auto exec_path = info[2].As<Napi::String>().Utf8Value();
-    auto exec_params = ArrayToStringList(info[3].As<Napi::Array>());
+    auto action_name = CheckAsString(info[1]);
+    auto exec_path = CheckAsString(info[2]);
+    auto exec_params = ArrayToStringList(CheckAsArray(info[3]));
     std::vector<MaaStringView> exec_params_view;
     exec_params_view.reserve(exec_params.size());
     std::transform(
@@ -81,8 +85,9 @@ Napi::Value register_custom_action_executor(const Napi::CallbackInfo& info)
 
 Napi::Value unregister_custom_action_executor(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
-    auto action_name = info[1].As<Napi::String>().Utf8Value();
+    auto action_name = CheckAsString(info[1]);
     return Napi::Boolean::New(
         info.Env(),
         MaaToolkitUnregisterCustomActionExecutor(handle, action_name.c_str()));
@@ -90,6 +95,7 @@ Napi::Value unregister_custom_action_executor(const Napi::CallbackInfo& info)
 
 Napi::Value clear_custom_action_executor(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = InstanceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaToolkitClearCustomActionExecutor(handle));
 }

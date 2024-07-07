@@ -6,9 +6,10 @@
 
 Napi::Value sync_context_run_task(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto task_name = info[1].As<Napi::String>().Utf8Value();
-    auto param = info[2].As<Napi::String>().Utf8Value();
+    CheckCount(info, 3);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto task_name = CheckAsString(info[1]);
+    auto param = CheckAsString(info[2]);
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
         [=]() { return MaaSyncContextRunTask(handle, task_name.c_str(), param.c_str()); },
@@ -19,10 +20,11 @@ Napi::Value sync_context_run_task(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_run_recognition(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto image = info[1].As<Napi::External<MaaImageBuffer>>().Data();
-    auto task_name = info[2].As<Napi::String>().Utf8Value();
-    auto task_param = info[3].As<Napi::String>().Utf8Value();
+    CheckCount(info, 4);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto image = CheckAsExternal<MaaImageBuffer>(info[1]).Data();
+    auto task_name = CheckAsString(info[2]);
+    auto task_param = CheckAsString(info[3]);
 
     using R = std::optional<std::tuple<MaaRect, std::string>>;
 
@@ -63,11 +65,12 @@ Napi::Value sync_context_run_recognition(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_run_action(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto task_name = info[1].As<Napi::String>().Utf8Value();
-    auto task_param = info[2].As<Napi::String>().Utf8Value();
-    auto cur_box = ToRect(info[3].As<Napi::Object>());
-    auto cur_rec_detail = info[4].As<Napi::String>().Utf8Value();
+    CheckCount(info, 5);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto task_name = CheckAsString(info[1]);
+    auto task_param = CheckAsString(info[2]);
+    auto cur_box = ToRect(CheckAsObject(info[3]));
+    auto cur_rec_detail = CheckAsString(info[4]);
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -86,9 +89,10 @@ Napi::Value sync_context_run_action(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_click(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto x = info[1].As<Napi::Number>().Int32Value();
-    auto y = info[2].As<Napi::Number>().Int32Value();
+    CheckCount(info, 3);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto x = CheckAsNumber(info[1]).Int32Value();
+    auto y = CheckAsNumber(info[2]).Int32Value();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -100,12 +104,13 @@ Napi::Value sync_context_click(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_swipe(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto x1 = info[1].As<Napi::Number>().Int32Value();
-    auto y1 = info[2].As<Napi::Number>().Int32Value();
-    auto x2 = info[3].As<Napi::Number>().Int32Value();
-    auto y2 = info[4].As<Napi::Number>().Int32Value();
-    auto duration = info[5].As<Napi::Number>().Int32Value();
+    CheckCount(info, 6);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto x1 = CheckAsNumber(info[1]).Int32Value();
+    auto y1 = CheckAsNumber(info[2]).Int32Value();
+    auto x2 = CheckAsNumber(info[3]).Int32Value();
+    auto y2 = CheckAsNumber(info[4]).Int32Value();
+    auto duration = CheckAsNumber(info[5]).Int32Value();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -117,8 +122,9 @@ Napi::Value sync_context_swipe(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_press_key(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto key = info[1].As<Napi::Number>().Int32Value();
+    CheckCount(info, 2);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto key = CheckAsNumber(info[1]).Int32Value();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -130,8 +136,9 @@ Napi::Value sync_context_press_key(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_input_text(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto text = info[1].As<Napi::String>().Utf8Value();
+    CheckCount(info, 2);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto text = CheckAsString(info[1]);
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -143,11 +150,12 @@ Napi::Value sync_context_input_text(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_touch_down(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto contact = info[1].As<Napi::Number>().Int32Value();
-    auto x = info[2].As<Napi::Number>().Int32Value();
-    auto y = info[3].As<Napi::Number>().Int32Value();
-    auto pressure = info[4].As<Napi::Number>().Int32Value();
+    CheckCount(info, 5);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto contact = CheckAsNumber(info[1]).Int32Value();
+    auto x = CheckAsNumber(info[2]).Int32Value();
+    auto y = CheckAsNumber(info[3]).Int32Value();
+    auto pressure = CheckAsNumber(info[4]).Int32Value();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -159,11 +167,12 @@ Napi::Value sync_context_touch_down(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_touch_move(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto contact = info[1].As<Napi::Number>().Int32Value();
-    auto x = info[2].As<Napi::Number>().Int32Value();
-    auto y = info[3].As<Napi::Number>().Int32Value();
-    auto pressure = info[4].As<Napi::Number>().Int32Value();
+    CheckCount(info, 5);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto contact = CheckAsNumber(info[1]).Int32Value();
+    auto x = CheckAsNumber(info[2]).Int32Value();
+    auto y = CheckAsNumber(info[3]).Int32Value();
+    auto pressure = CheckAsNumber(info[4]).Int32Value();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -175,8 +184,9 @@ Napi::Value sync_context_touch_move(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_touch_up(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto contact = info[1].As<Napi::Number>().Int32Value();
+    CheckCount(info, 2);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto contact = CheckAsNumber(info[1]).Int32Value();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -188,8 +198,9 @@ Napi::Value sync_context_touch_up(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_screencap(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto value = info[1].As<Napi::External<MaaImageBuffer>>().Data();
+    CheckCount(info, 2);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto value = CheckAsExternal<MaaImageBuffer>(info[1]).Data();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),
@@ -201,8 +212,9 @@ Napi::Value sync_context_screencap(const Napi::CallbackInfo& info)
 
 Napi::Value sync_context_cached_image(const Napi::CallbackInfo& info)
 {
-    auto handle = info[0].As<Napi::External<MaaSyncContextAPI>>().Data();
-    auto value = info[1].As<Napi::External<MaaImageBuffer>>().Data();
+    CheckCount(info, 2);
+    auto handle = CheckAsExternal<MaaSyncContextAPI>(info[0]).Data();
+    auto value = CheckAsExternal<MaaImageBuffer>(info[1]).Data();
 
     auto worker = new SimpleAsyncWork<bool>(
         info.Env(),

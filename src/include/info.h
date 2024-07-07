@@ -4,7 +4,6 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-#include <iostream>
 #include <map>
 #include <string>
 
@@ -13,7 +12,7 @@ struct InfoBase
 {
     Type handle = nullptr;
 
-    static Impl* FromValue(Napi::Value value) { return value.As<Napi::External<Impl>>().Data(); }
+    static Impl* FromValue(Napi::Value value) { return CheckAsExternal<Impl>(value).Data(); }
 
     static Impl* FromValueOrNull(Napi::Value value)
     {

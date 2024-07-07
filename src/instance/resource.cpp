@@ -6,12 +6,13 @@
 
 Napi::Value resource_create(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     MaaResourceCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
     MaaResourceHandle handle = nullptr;
 
     if (!info[5].IsNull()) {
-        auto callback = info[0].As<Napi::Function>();
+        auto callback = CheckAsFunction(info[0]);
 
         cb = TrivialCallback;
         ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
@@ -33,6 +34,7 @@ Napi::Value resource_create(const Napi::CallbackInfo& info)
 
 Napi::Value resource_destroy(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ResourceInfo::FromValue(info[0]);
     handle->dispose();
     return info.Env().Undefined();
@@ -40,29 +42,33 @@ Napi::Value resource_destroy(const Napi::CallbackInfo& info)
 
 Napi::Value resource_post_path(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
-    auto path = info[1].As<Napi::String>().Utf8Value();
+    auto path = CheckAsString(info[1]);
     auto resid = MaaResourcePostPath(handle, path.c_str());
     return Napi::Number::New(info.Env(), resid);
 }
 
 Napi::Value resource_clear(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaResourceClear(handle));
 }
 
 Napi::Value resource_status(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
-    auto id = info[1].As<Napi::Number>().Uint32Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
     return Napi::Number::New(info.Env(), MaaResourceStatus(handle, id));
 }
 
 Napi::Value resource_wait(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
-    auto id = info[1].As<Napi::Number>().Uint32Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
     auto worker = new SimpleAsyncWork<MaaStatus>(
         info.Env(),
         [handle, id]() { return MaaResourceWait(handle, id); },
@@ -73,12 +79,14 @@ Napi::Value resource_wait(const Napi::CallbackInfo& info)
 
 Napi::Value resource_loaded(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaResourceLoaded(handle));
 }
 
 Napi::Value resource_get_hash(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
     StringBuffer buffer;
     auto ret = MaaResourceGetHash(handle, buffer);
@@ -92,6 +100,7 @@ Napi::Value resource_get_hash(const Napi::CallbackInfo& info)
 
 Napi::Value resource_get_task_list(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ResourceInfo::HandleFromValue(info[0]);
     StringBuffer buffer;
     auto ret = MaaResourceGetTaskList(handle, buffer);

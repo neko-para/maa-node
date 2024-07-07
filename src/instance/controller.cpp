@@ -6,18 +6,19 @@
 
 Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 {
-    auto adb_path = info[0].As<Napi::String>().Utf8Value();
-    auto address = info[1].As<Napi::String>().Utf8Value();
-    auto type = info[2].As<Napi::Number>().Int32Value();
-    auto config = info[3].As<Napi::String>().Utf8Value();
-    auto agent_path = info[4].As<Napi::String>().Utf8Value();
+    CheckCount(info, 6);
+    auto adb_path = CheckAsString(info[0]);
+    auto address = CheckAsString(info[1]);
+    auto type = CheckAsNumber(info[2]).Int32Value();
+    auto config = CheckAsString(info[3]);
+    auto agent_path = CheckAsString(info[4]);
 
     MaaControllerCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
     MaaControllerHandle handle = nullptr;
 
     if (!info[5].IsNull()) {
-        auto callback = info[5].As<Napi::Function>();
+        auto callback = CheckAsFunction(info[5]);
 
         cb = TrivialCallback;
         ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
@@ -46,15 +47,16 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 
 Napi::Value win32_controller_create(const Napi::CallbackInfo& info)
 {
-    auto hwnd = info[0].As<Napi::External<void>>().Data();
-    auto type = info[1].As<Napi::Number>().Int32Value();
+    CheckCount(info, 3);
+    auto hwnd = CheckAsExternal<void>(info[0]).Data();
+    auto type = CheckAsNumber(info[1]).Int32Value();
 
     MaaControllerCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
     MaaControllerHandle handle = nullptr;
 
     if (!info[2].IsNull()) {
-        auto callback = info[2].As<Napi::Function>();
+        auto callback = CheckAsFunction(info[2]);
 
         cb = TrivialCallback;
         ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
@@ -76,6 +78,7 @@ Napi::Value win32_controller_create(const Napi::CallbackInfo& info)
 
 Napi::Value controller_destroy(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ControllerInfo::FromValue(info[0]);
     handle->dispose();
     return info.Env().Undefined();
@@ -83,10 +86,11 @@ Napi::Value controller_destroy(const Napi::CallbackInfo& info)
 
 Napi::Value set_controller_option(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto key = info[1].As<Napi::String>().Utf8Value();
+    auto key = CheckAsString(info[1]);
     if (key == "ScreenshotTargetLongSide") {
-        auto val = info[2].As<Napi::Number>().Int32Value();
+        auto val = CheckAsNumber(info[2]).Int32Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaControllerSetOption(
@@ -96,7 +100,7 @@ Napi::Value set_controller_option(const Napi::CallbackInfo& info)
                 sizeof(val)));
     }
     else if (key == "ScreenshotTargetShortSide") {
-        auto val = info[2].As<Napi::Number>().Int32Value();
+        auto val = CheckAsNumber(info[2]).Int32Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaControllerSetOption(
@@ -106,7 +110,7 @@ Napi::Value set_controller_option(const Napi::CallbackInfo& info)
                 sizeof(val)));
     }
     else if (key == "DefaultAppPackageEntry") {
-        auto val = info[2].As<Napi::String>().Utf8Value();
+        auto val = CheckAsString(info[2]);
         return Napi::Boolean::New(
             info.Env(),
             MaaControllerSetOption(
@@ -116,7 +120,7 @@ Napi::Value set_controller_option(const Napi::CallbackInfo& info)
                 val.length()));
     }
     else if (key == "DefaultAppPackage") {
-        auto val = info[2].As<Napi::String>().Utf8Value();
+        auto val = CheckAsString(info[2]);
         return Napi::Boolean::New(
             info.Env(),
             MaaControllerSetOption(
@@ -126,7 +130,7 @@ Napi::Value set_controller_option(const Napi::CallbackInfo& info)
                 val.length()));
     }
     else if (key == "Recording") {
-        auto val = info[2].As<Napi::Boolean>().Value();
+        auto val = CheckAsBoolean(info[2]).Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaControllerSetOption(handle, MaaCtrlOption_Recording, &val, sizeof(val)));
@@ -138,6 +142,7 @@ Napi::Value set_controller_option(const Napi::CallbackInfo& info)
 
 Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto ctrlId = MaaControllerPostConnection(handle);
     return Napi::Number::New(info.Env(), ctrlId);
@@ -145,89 +150,99 @@ Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
 
 Napi::Value controller_post_click(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 3);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto x = info[1].As<Napi::Number>().Int32Value();
-    auto y = info[2].As<Napi::Number>().Int32Value();
+    auto x = CheckAsNumber(info[1]).Int32Value();
+    auto y = CheckAsNumber(info[2]).Int32Value();
     auto ctrlId = MaaControllerPostClick(handle, x, y);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_swipe(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 6);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto x1 = info[1].As<Napi::Number>().Int32Value();
-    auto y1 = info[2].As<Napi::Number>().Int32Value();
-    auto x2 = info[3].As<Napi::Number>().Int32Value();
-    auto y2 = info[4].As<Napi::Number>().Int32Value();
-    auto duration = info[5].As<Napi::Number>().Int32Value();
+    auto x1 = CheckAsNumber(info[1]).Int32Value();
+    auto y1 = CheckAsNumber(info[2]).Int32Value();
+    auto x2 = CheckAsNumber(info[3]).Int32Value();
+    auto y2 = CheckAsNumber(info[4]).Int32Value();
+    auto duration = CheckAsNumber(info[5]).Int32Value();
     auto ctrlId = MaaControllerPostSwipe(handle, x1, y1, x2, y2, duration);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_press_key(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto key = info[1].As<Napi::Number>().Int32Value();
+    auto key = CheckAsNumber(info[1]).Int32Value();
     auto ctrlId = MaaControllerPostPressKey(handle, key);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_input_text(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto text = info[1].As<Napi::String>().Utf8Value();
+    auto text = CheckAsString(info[1]);
     auto ctrlId = MaaControllerPostInputText(handle, text.c_str());
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_start_app(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto intent = info[1].As<Napi::String>().Utf8Value();
+    auto intent = CheckAsString(info[1]);
     auto ctrlId = MaaControllerPostStartApp(handle, intent.c_str());
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_stop_app(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto intent = info[1].As<Napi::String>().Utf8Value();
+    auto intent = CheckAsString(info[1]);
     auto ctrlId = MaaControllerPostStopApp(handle, intent.c_str());
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_touch_down(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 5);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto contact = info[1].As<Napi::Number>().Int32Value();
-    auto x = info[2].As<Napi::Number>().Int32Value();
-    auto y = info[3].As<Napi::Number>().Int32Value();
-    auto pressure = info[4].As<Napi::Number>().Int32Value();
+    auto contact = CheckAsNumber(info[1]).Int32Value();
+    auto x = CheckAsNumber(info[2]).Int32Value();
+    auto y = CheckAsNumber(info[3]).Int32Value();
+    auto pressure = CheckAsNumber(info[4]).Int32Value();
     auto ctrlId = MaaControllerPostTouchDown(handle, contact, x, y, pressure);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_touch_move(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 5);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto contact = info[1].As<Napi::Number>().Int32Value();
-    auto x = info[2].As<Napi::Number>().Int32Value();
-    auto y = info[3].As<Napi::Number>().Int32Value();
-    auto pressure = info[4].As<Napi::Number>().Int32Value();
+    auto contact = CheckAsNumber(info[1]).Int32Value();
+    auto x = CheckAsNumber(info[2]).Int32Value();
+    auto y = CheckAsNumber(info[3]).Int32Value();
+    auto pressure = CheckAsNumber(info[4]).Int32Value();
     auto ctrlId = MaaControllerPostTouchMove(handle, contact, x, y, pressure);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_touch_up(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto contact = info[1].As<Napi::Number>().Int32Value();
+    auto contact = CheckAsNumber(info[1]).Int32Value();
     auto ctrlId = MaaControllerPostTouchUp(handle, contact);
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_screencap(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
     auto ctrlId = MaaControllerPostScreencap(handle);
     return Napi::Number::New(info.Env(), ctrlId);
@@ -235,15 +250,17 @@ Napi::Value controller_post_screencap(const Napi::CallbackInfo& info)
 
 Napi::Value controller_status(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto id = info[1].As<Napi::Number>().Uint32Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
     return Napi::Number::New(info.Env(), MaaControllerStatus(handle, id));
 }
 
 Napi::Value controller_wait(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto id = info[1].As<Napi::Number>().Uint32Value();
+    auto id = CheckAsNumber(info[1]).Uint32Value();
     auto worker = new SimpleAsyncWork<MaaStatus>(
         info.Env(),
         [handle, id]() { return MaaControllerWait(handle, id); },
@@ -254,19 +271,22 @@ Napi::Value controller_wait(const Napi::CallbackInfo& info)
 
 Napi::Value controller_connected(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
     return Napi::Boolean::New(info.Env(), MaaControllerConnected(handle));
 }
 
 Napi::Value controller_get_image(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto value = info[1].As<Napi::External<MaaImageBuffer>>().Data();
+    auto value = CheckAsExternal<MaaImageBuffer>(info[1]).Data();
     return Napi::Boolean::New(info.Env(), MaaControllerGetImage(handle, value));
 }
 
 Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto handle = ControllerInfo::FromValue(info[0])->handle;
     StringBuffer buffer;
     auto ret = MaaControllerGetUUID(handle, buffer);

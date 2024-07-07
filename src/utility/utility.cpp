@@ -7,44 +7,46 @@
 
 Napi::Value version(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 0);
     return Napi::String::New(info.Env(), MaaVersion());
 }
 
 Napi::Value set_global_option(const Napi::CallbackInfo& info)
 {
-    auto key = info[0].As<Napi::String>().Utf8Value();
+    CheckCount(info, 2);
+    auto key = CheckAsString(info[0]);
     if (key == "LogDir") {
-        auto val = info[1].As<Napi::String>().Utf8Value();
+        auto val = CheckAsString(info[1]);
         return Napi::Boolean::New(
             info.Env(),
             MaaSetGlobalOption(MaaGlobalOption_LogDir, val.data(), val.length()));
     }
     else if (key == "SaveDraw") {
-        auto val = info[1].As<Napi::Boolean>().Value();
+        auto val = CheckAsBoolean(info[1]).Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaSetGlobalOption(MaaGlobalOption_SaveDraw, &val, sizeof(val)));
     }
     else if (key == "Recording") {
-        auto val = info[1].As<Napi::Boolean>().Value();
+        auto val = CheckAsBoolean(info[1]).Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaSetGlobalOption(MaaGlobalOption_Recording, &val, sizeof(val)));
     }
     else if (key == "StdoutLevel") {
-        auto val = info[1].As<Napi::Number>().Int32Value();
+        auto val = CheckAsNumber(info[1]).Int32Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &val, sizeof(val)));
     }
     else if (key == "ShowHitDraw") {
-        auto val = info[1].As<Napi::Boolean>().Value();
+        auto val = CheckAsBoolean(info[1]).Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &val, sizeof(val)));
     }
     else if (key == "DebugMessage") {
-        auto val = info[1].As<Napi::Boolean>().Value();
+        auto val = CheckAsBoolean(info[1]).Value();
         return Napi::Boolean::New(
             info.Env(),
             MaaSetGlobalOption(MaaGlobalOption_DebugMessage, &val, sizeof(val)));
@@ -56,7 +58,8 @@ Napi::Value set_global_option(const Napi::CallbackInfo& info)
 
 Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
 {
-    MaaRecoId reco_id = info[0].As<Napi::Number>().Int64Value();
+    CheckCount(info, 1);
+    MaaRecoId reco_id = CheckAsNumber(info[0]).Int64Value();
     StringBuffer name;
     MaaBool hit;
     MaaRect hit_box;
@@ -86,7 +89,8 @@ Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
 
 Napi::Value query_node_detail(const Napi::CallbackInfo& info)
 {
-    MaaNodeId node_id = info[0].As<Napi::Number>().Int64Value();
+    CheckCount(info, 1);
+    MaaNodeId node_id = CheckAsNumber(info[0]).Int64Value();
     StringBuffer name;
     MaaRecoId reco_id;
     MaaBool run_completed;
@@ -105,7 +109,8 @@ Napi::Value query_node_detail(const Napi::CallbackInfo& info)
 
 Napi::Value query_task_detail(const Napi::CallbackInfo& info)
 {
-    MaaTaskId task_id = info[0].As<Napi::Number>().Int64Value();
+    CheckCount(info, 1);
+    MaaTaskId task_id = CheckAsNumber(info[0]).Int64Value();
     MaaSize node_id_list_size = 0;
     auto ret = MaaQueryTaskDetail(task_id, nullptr, nullptr, &node_id_list_size);
     if (!ret) {

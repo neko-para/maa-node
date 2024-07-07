@@ -7,8 +7,9 @@
 
 Napi::Value init_option_config(const Napi::CallbackInfo& info)
 {
-    auto user_path = info[0].As<Napi::String>().Utf8Value();
-    auto default_json = info[1].As<Napi::String>().Utf8Value();
+    CheckCount(info, 2);
+    auto user_path = CheckAsString(info[0]);
+    auto default_json = CheckAsString(info[1]);
     return Napi::Boolean::New(
         info.Env(),
         MaaToolkitInitOptionConfig(user_path.c_str(), default_json.c_str()));

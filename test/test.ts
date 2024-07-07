@@ -44,7 +44,7 @@ async function main() {
     })
 
     await inst
-        .post_task('testCustom', {
+        .post_task('test', {
             test: {
                 action: 'StartApp',
                 package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'
@@ -63,6 +63,10 @@ async function main() {
             }
         })
         .wait()
+
+    inst.destroy()
+    ctrl.destroy()
+    res.destroy()
 }
 
 main()
