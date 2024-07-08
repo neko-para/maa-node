@@ -49,6 +49,10 @@ export type CustomActionRunCallback = (
     cur_box: Rect,
     cur_rec_detail: string
 ) => MaybePromise<boolean>
+export type CustomControllerCallback =
+    | ((action: 'connect') => MaybePromise<boolean>)
+    | ((action: 'request_uuid') => MaybePromise<string>)
+    | ((action: 'request_resolution') => MaybePromise<{ width: number; height: number }>)
 
 export declare function adb_controller_create(
     adb_path: string,
@@ -61,6 +65,10 @@ export declare function adb_controller_create(
 export declare function win32_controller_create(
     hwnd: Win32Hwnd,
     type: number,
+    callback: TrivialCallbak | null
+): ControllerHandle | null
+export declare function custom_controller_create(
+    custom_callback: CustomControllerCallback | null,
     callback: TrivialCallbak | null
 ): ControllerHandle | null
 export declare function controller_destroy(handle: ControllerHandle): void

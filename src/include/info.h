@@ -40,6 +40,7 @@ struct InfoBase
 struct ControllerInfo : InfoBase<MaaControllerHandle, ControllerInfo>
 {
     CallbackContext* callback = nullptr;
+    CallbackContext* custom_controller = nullptr;
     bool disposed = false;
 
     void dispose()
@@ -51,6 +52,9 @@ struct ControllerInfo : InfoBase<MaaControllerHandle, ControllerInfo>
         MaaControllerDestroy(handle);
         if (callback) {
             delete callback;
+        }
+        if (custom_controller) {
+            delete custom_controller;
         }
     }
 

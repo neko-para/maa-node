@@ -90,12 +90,11 @@ Napi::Value register_custom_recognizer(const Napi::CallbackInfo& info)
     auto name = CheckAsString(info[1]);
     auto func = CheckAsFunction(info[2]);
     auto ctx = new CallbackContext(info.Env(), func, "CustomActionRun");
-    auto old_ctx = handle_info->custom_recognizers[name];
-    handle_info->custom_actions[name] = ctx;
-
     auto ret =
         MaaRegisterCustomRecognizer(handle_info->handle, name.c_str(), &custom_recognizer_api, ctx);
     if (ret) {
+        auto old_ctx = handle_info->custom_recognizers[name];
+        handle_info->custom_actions[name] = ctx;
         if (old_ctx) {
             delete old_ctx;
         }
@@ -136,11 +135,10 @@ Napi::Value register_custom_action(const Napi::CallbackInfo& info)
     auto name = CheckAsString(info[1]);
     auto func = CheckAsFunction(info[2]);
     auto ctx = new CallbackContext(info.Env(), func, "CustomActionRun");
-    auto old_ctx = handle_info->custom_actions[name];
-    handle_info->custom_actions[name] = ctx;
-
     auto ret = MaaRegisterCustomAction(handle_info->handle, name.c_str(), &custom_action_api, ctx);
     if (ret) {
+        auto old_ctx = handle_info->custom_actions[name];
+        handle_info->custom_actions[name] = ctx;
         if (old_ctx) {
             delete old_ctx;
         }

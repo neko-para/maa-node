@@ -44,6 +44,40 @@ private:
     Napi::Promise::Deferred deferred;
 };
 
+struct StringBuffer
+{
+    MaaStringBufferHandle buffer;
+    bool own;
+
+    StringBuffer()
+        : buffer(MaaCreateStringBuffer())
+        , own(true)
+    {
+    }
+
+    StringBuffer(MaaStringBufferHandle handle)
+        : buffer(handle)
+        , own(false)
+    {
+    }
+
+    ~StringBuffer()
+    {
+        if (own) {
+            MaaDestroyStringBuffer(buffer);
+        }
+    }
+
+    operator MaaStringBufferHandle() const { return buffer; }
+
+    operator std::string() const
+    {
+        return std::string(MaaGetString(buffer), MaaGetStringSize(buffer));
+    }
+
+    void set(std::string_view data) const { MaaSetStringEx(buffer, data.data(), data.size()); }
+};
+
 struct CallbackContext
 {
     Napi::Function fn;
@@ -133,6 +167,13 @@ inline MaaRect ToRect(Napi::Object rc)
     };
 }
 
+inline std::tuple<int32_t, int32_t> ToSize(Napi::Object rc)
+{
+    return std::make_tuple(
+        Napi::Value(rc["width"]).As<Napi::Number>().Int32Value(),
+        Napi::Value(rc["height"]).As<Napi::Number>().Int32Value());
+}
+
 inline void TrivialCallback(MaaStringView msg, MaaStringView details, MaaCallbackTransparentArg arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(arg);
@@ -167,7 +208,7 @@ inline MaaBool CustomRecognizerAnalyze(
             }
             else {
                 auto obj = res.As<Napi::Object>();
-                return std::tuple<MaaRect, std::string> {
+                return R::value_type {
                     ToRect(Napi::Value(obj["out_box"]).As<Napi::Object>()),
                     Napi::Value(obj["out_detail"]).As<Napi::String>().Utf8Value()
                 };
@@ -210,8 +251,78 @@ inline MaaBool CustomActionRun(
     return res;
 }
 
+inline MaaBool CustomControllerConnect(MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "connect") }); },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool
+    CustomControllerRequestUUID(MaaTransparentArg handle_arg, MaaStringBufferHandle buffer)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+    using R = std::optional<std::string>;
+    auto res = ctx->Call<R>(
+        [](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "request_uuid") }); },
+        [=](Napi::Value res) -> R {
+            if (res.IsNull()) {
+                return std::nullopt;
+            }
+            else {
+                auto obj = res.As<Napi::String>();
+                return R::value_type { obj.Utf8Value() };
+            }
+        });
+
+    if (res.has_value()) {
+        StringBuffer buf(buffer);
+        buf.set(res.value());
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+inline MaaBool
+    CustomControllerRequestResolution(MaaTransparentArg handle_arg, int32_t* width, int32_t* height)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+    using R = std::optional<std::tuple<int32_t, int32_t>>;
+    auto res = ctx->Call<R>(
+        [](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "request_uuid") }); },
+        [=](Napi::Value res) -> R {
+            if (res.IsNull()) {
+                return std::nullopt;
+            }
+            else {
+                auto obj = res.As<Napi::Object>();
+                return R::value_type {
+                    ToSize(obj),
+                };
+            }
+        });
+
+    if (res.has_value()) {
+        *width = std::get<0>(res.value());
+        *height = std::get<1>(res.value());
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 inline MaaCustomRecognizerAPI custom_recognizer_api = { CustomRecognizerAnalyze };
 inline MaaCustomActionAPI custom_action_api = { CustomActionRun, nullptr };
+inline MaaCustomControllerAPI custom_controller_api = { CustomControllerConnect,
+                                                        CustomControllerRequestUUID,
+                                                        CustomControllerRequestResolution };
 
 template <typename Type>
 inline std::optional<Type*> ExternalOrNull(Napi::Value value)
@@ -223,27 +334,6 @@ inline std::optional<Type*> ExternalOrNull(Napi::Value value)
         return value.As<Napi::External<Type>>().Data();
     }
 }
-
-struct StringBuffer
-{
-    MaaStringBufferHandle buffer;
-
-    StringBuffer()
-        : buffer(MaaCreateStringBuffer())
-    {
-    }
-
-    ~StringBuffer() { MaaDestroyStringBuffer(buffer); }
-
-    operator MaaStringBufferHandle() const { return buffer; }
-
-    operator std::string() const
-    {
-        return std::string(MaaGetString(buffer), MaaGetStringSize(buffer));
-    }
-
-    void set(std::string_view data) const { MaaSetStringEx(buffer, data.data(), data.size()); }
-};
 
 template <typename Type>
 inline void DeleteFinalizer(Napi::Env env, Type data)
