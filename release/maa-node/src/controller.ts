@@ -113,3 +113,50 @@ export class Win32Controller extends ControllerBase {
         return maa.get_window_info(hwnd)
     }
 }
+
+export abstract class CustomControllerActor {
+    abstract connect(): maa.MaybePromise<boolean>
+    abstract request_uuid(): maa.MaybePromise<string>
+    abstract request_resolution(): maa.MaybePromise<{ width: number; height: number }>
+}
+
+export class CustomControllerActorDefaultImpl extends CustomControllerActor {
+    connect(): maa.MaybePromise<boolean> {
+        return false
+    }
+    request_uuid(): maa.MaybePromise<string> {
+        return 'CustomControllerActorDefaultImpl'
+    }
+    request_resolution(): maa.MaybePromise<{ width: number; height: number }> {
+        return {
+            width: 1280,
+            height: 720
+        }
+    }
+}
+
+export class CustomController extends ControllerBase {
+    constructor(actor: CustomControllerActor) {
+        let ws: WeakRef<this>
+        const h = maa.custom_controller_create(
+            (action, param) => {
+                switch (action) {
+                    case 'connect':
+                        return actor.connect()
+                    case 'request_uuid':
+                        return actor.request_uuid()
+                    case 'request_resolution':
+                        return actor.request_resolution()
+                }
+            },
+            (msg, detail) => {
+                ws.deref()?.notify(msg, detail)
+            }
+        )
+        if (!h) {
+            throw 'CustomController create failed'
+        }
+        super(h)
+        ws = new WeakRef(this)
+    }
+}
