@@ -1,5 +1,6 @@
 import path from 'path'
 
+import { ImageBuffer } from './image'
 import maa from './maa'
 
 export class ControllerBase {
@@ -116,22 +117,81 @@ export class Win32Controller extends ControllerBase {
 
 export abstract class CustomControllerActor {
     abstract connect(): maa.MaybePromise<boolean>
-    abstract request_uuid(): maa.MaybePromise<string>
-    abstract request_resolution(): maa.MaybePromise<{ width: number; height: number }>
+    abstract request_uuid(): maa.MaybePromise<string | null>
+    abstract request_resolution(): maa.MaybePromise<{ width: number; height: number } | null>
+    abstract start_app(intent: string): maa.MaybePromise<boolean>
+    abstract stop_app(intent: string): maa.MaybePromise<boolean>
+    abstract screencap(image: ImageBuffer): maa.MaybePromise<boolean>
+    abstract click(x: number, y: number): maa.MaybePromise<boolean>
+    abstract swipe(
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+        duration: number
+    ): maa.MaybePromise<boolean>
+    abstract touch_down(
+        contact: number,
+        x: number,
+        y: number,
+        pressure: number
+    ): maa.MaybePromise<boolean>
+    abstract touch_move(
+        contact: number,
+        x: number,
+        y: number,
+        pressure: number
+    ): maa.MaybePromise<boolean>
+    abstract touch_up(contact: number): maa.MaybePromise<boolean>
+    abstract press_key(keycode: number): maa.MaybePromise<boolean>
+    abstract input_text(text: string): maa.MaybePromise<boolean>
 }
 
 export class CustomControllerActorDefaultImpl extends CustomControllerActor {
     connect(): maa.MaybePromise<boolean> {
         return false
     }
-    request_uuid(): maa.MaybePromise<string> {
-        return 'CustomControllerActorDefaultImpl'
+    request_uuid(): maa.MaybePromise<string | null> {
+        return null
     }
-    request_resolution(): maa.MaybePromise<{ width: number; height: number }> {
-        return {
-            width: 1280,
-            height: 720
-        }
+    request_resolution(): maa.MaybePromise<{ width: number; height: number } | null> {
+        return null
+    }
+    start_app(intent: string): maa.MaybePromise<boolean> {
+        return false
+    }
+    stop_app(intent: string): maa.MaybePromise<boolean> {
+        return false
+    }
+    screencap(image: ImageBuffer): maa.MaybePromise<boolean> {
+        return false
+    }
+    click(x: number, y: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    swipe(
+        x1: number,
+        y1: number,
+        x2: number,
+        y2: number,
+        duration: number
+    ): maa.MaybePromise<boolean> {
+        return false
+    }
+    touch_down(contact: number, x: number, y: number, pressure: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    touch_move(contact: number, x: number, y: number, pressure: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    touch_up(contact: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    press_key(keycode: number): maa.MaybePromise<boolean> {
+        return false
+    }
+    input_text(text: string): maa.MaybePromise<boolean> {
+        return false
     }
 }
 
@@ -139,15 +199,11 @@ export class CustomController extends ControllerBase {
     constructor(actor: CustomControllerActor) {
         let ws: WeakRef<this>
         const h = maa.custom_controller_create(
-            (action, param) => {
-                switch (action) {
-                    case 'connect':
-                        return actor.connect()
-                    case 'request_uuid':
-                        return actor.request_uuid()
-                    case 'request_resolution':
-                        return actor.request_resolution()
+            (action, ...param) => {
+                if (action === 'screencap') {
+                    return actor.screencap(new ImageBuffer(param[0]))
                 }
+                return (actor[action] as any)(...param)
             },
             (msg, detail) => {
                 ws.deref()?.notify(msg, detail)

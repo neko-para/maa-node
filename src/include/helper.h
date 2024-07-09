@@ -318,11 +318,178 @@ inline MaaBool
     }
 }
 
+inline MaaBool CustomControllerStartApp(MaaStringView intent, MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "start_app"), Napi::String::New(env, intent) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerStopApp(MaaStringView intent, MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "stop_app"), Napi::String::New(env, intent) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerScreencap(MaaTransparentArg handle_arg, MaaImageBufferHandle buffer)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "screencap"),
+                             Napi::External<MaaImageBuffer>::New(env, buffer) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerClick(int32_t x, int32_t y, MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "click"),
+                             Napi::Number::New(env, x),
+                             Napi::Number::New(env, y) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerSwipe(
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration,
+    MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "swipe"),
+                             Napi::Number::New(env, x1),
+                             Napi::Number::New(env, y1),
+                             Napi::Number::New(env, x2),
+                             Napi::Number::New(env, y2),
+                             Napi::Number::New(env, duration) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerTouchDown(
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure,
+    MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "touch_down"),
+                             Napi::Number::New(env, contact),
+                             Napi::Number::New(env, y),
+                             Napi::Number::New(env, x),
+                             Napi::Number::New(env, pressure) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerTouchMove(
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure,
+    MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "touch_move"),
+                             Napi::Number::New(env, contact),
+                             Napi::Number::New(env, y),
+                             Napi::Number::New(env, x),
+                             Napi::Number::New(env, pressure) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerTouchUp(int32_t contact, MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "touch_up"), Napi::Number::New(env, contact) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerPressKey(int32_t keycode, MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call(
+                { Napi::String::New(env, "press_key"), Napi::Number::New(env, keycode) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
+inline MaaBool CustomControllerInputText(MaaStringView text, MaaTransparentArg handle_arg)
+{
+    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
+
+    auto res = ctx->Call<bool>(
+        [=](auto env, auto fn) {
+            return fn.Call({ Napi::String::New(env, "input_text"), Napi::String::New(env, text) });
+        },
+        [](Napi::Value res) { return res.As<Napi::Boolean>().Value(); });
+
+    return res;
+}
+
 inline MaaCustomRecognizerAPI custom_recognizer_api = { CustomRecognizerAnalyze };
 inline MaaCustomActionAPI custom_action_api = { CustomActionRun, nullptr };
-inline MaaCustomControllerAPI custom_controller_api = { CustomControllerConnect,
-                                                        CustomControllerRequestUUID,
-                                                        CustomControllerRequestResolution };
+inline MaaCustomControllerAPI custom_controller_api = {
+    CustomControllerConnect,   CustomControllerRequestUUID, CustomControllerRequestResolution,
+    CustomControllerStartApp,  CustomControllerStopApp,     CustomControllerScreencap,
+    CustomControllerClick,     CustomControllerSwipe,       CustomControllerTouchDown,
+    CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerPressKey,
+    CustomControllerInputText
+};
 
 template <typename Type>
 inline std::optional<Type*> ExternalOrNull(Napi::Value value)

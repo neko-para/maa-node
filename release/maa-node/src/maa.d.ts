@@ -50,14 +50,24 @@ export type CustomActionRunCallback = (
     cur_rec_detail: string
 ) => MaybePromise<boolean>
 export type CustomControllerParamResultMap = {
-    connect: [undefined, boolean]
-    request_uuid: [undefined, string]
-    request_resolution: [undefined, { width: number; height: number }]
+    connect: [[], boolean]
+    request_uuid: [[], string | null]
+    request_resolution: [[], { width: number; height: number } | null]
+    start_app: [[intent: string], boolean]
+    screencap: [[intent: string], boolean]
+    screencap: [[image: ImageBufferHandle], boolean]
+    click: [[x: number, y: number], boolean]
+    swipe: [[x1: number, y1: number, x2: number, y2: number, duration: number], boolean]
+    touch_down: [[contact: number, x: number, y: number, pressure: number], boolean]
+    touch_move: [[contact: number, x: number, y: number, pressure: number], boolean]
+    touch_up: [[contact: number], boolean]
+    press_key: [[keycode: number], boolean]
+    input_text: [[text: string], boolean]
 }
 export type CustomControllerCallback = (
     action: keyof CustomControllerParamResultMap,
-    param: CustomControllerParamResultMap[keyof CustomControllerParamResultMap][0]
-) => MaybePromise<CustomControllerParamResultMap[keyof CustomControllerParamResultMap][1]>
+    ...param: any[]
+) => MaybePromise<any>
 
 export declare function adb_controller_create(
     adb_path: string,
