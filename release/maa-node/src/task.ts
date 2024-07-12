@@ -1,4 +1,4 @@
-import { FlatRect } from './maa'
+import type { FlatRect } from './maa'
 
 export type RGBColor = [r: number, g: number, b: number]
 export type HSVColor = [h: number, s: number, v: number]
