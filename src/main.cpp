@@ -64,7 +64,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     DE(MaaAdbControllerType, Screencap_EmulatorExtras);
     DE(MaaAdbControllerType, Screencap_FastestLosslessWay);
     DE(MaaAdbControllerType, Screencap_FastestWay);
-    exports["MaaAdbControllerType"] = MaaAdbControllerType;
+    exports["AdbControllerType"] = MaaAdbControllerType;
 
     auto MaaWin32ControllerType = Napi::Object::New(env);
     DE(MaaWin32ControllerType, Touch_SendMessage);

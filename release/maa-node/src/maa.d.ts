@@ -381,7 +381,7 @@ export declare const LoggingLevel: Record<
     'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All',
     number
 >
-export declare const MaaAdbControllerType: Record<
+export declare const AdbControllerType: Record<
     | 'Touch_Adb'
     | 'Touch_MiniTouch'
     | 'Touch_MaaTouch'
