@@ -381,6 +381,33 @@ export declare const LoggingLevel: Record<
     'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All',
     number
 >
+export declare const MaaAdbControllerType: Record<
+    | 'Touch_Adb'
+    | 'Touch_MiniTouch'
+    | 'Touch_MaaTouch'
+    | 'Touch_EmulatorExtras'
+    | 'Touch_AutoDetect'
+    | 'Key_Adb'
+    | 'Key_MaaTouch'
+    | 'Key_EmulatorExtras'
+    | 'Key_AutoDetect'
+    | 'Input_Preset_Adb'
+    | 'Input_Preset_MiniTouch'
+    | 'Input_Preset_MaaTouch'
+    | 'Input_Preset_AutoDetect'
+    | 'Input_Preset_EmulatorExtras'
+    | 'Screencap_FastestWay_Compatible'
+    | 'Screencap_RawByNetcat'
+    | 'Screencap_RawWithGzip'
+    | 'Screencap_Encode'
+    | 'Screencap_EncodeToFile'
+    | 'Screencap_MinicapDirect'
+    | 'Screencap_MinicapStream'
+    | 'Screencap_EmulatorExtras'
+    | 'Screencap_FastestLosslessWay'
+    | 'Screencap_FastestWay',
+    number
+>
 export declare const Win32ControllerType: Record<
     | 'Touch_SendMessage'
     | 'Touch_Seize'
