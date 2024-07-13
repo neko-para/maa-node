@@ -76,10 +76,10 @@ Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
         draws.value_or(nullptr));
     if (ret) {
         auto result = Napi::Object::New(info.Env());
-        result["name"] = name;
+        result["name"] = name.str();
         result["hit"] = !!hit;
         result["hit_box"] = FromRect(info.Env(), hit_box);
-        result["detail_json"] = detail_json;
+        result["detail_json"] = detail_json.str();
         return result;
     }
     else {
@@ -97,7 +97,7 @@ Napi::Value query_node_detail(const Napi::CallbackInfo& info)
     auto ret = MaaQueryNodeDetail(node_id, name, &reco_id, &run_completed);
     if (ret) {
         auto result = Napi::Object::New(info.Env());
-        result["name"] = name;
+        result["name"] = name.str();
         result["reco_id"] = reco_id;
         result["run_completed"] = !!run_completed;
         return result;
@@ -121,7 +121,7 @@ Napi::Value query_task_detail(const Napi::CallbackInfo& info)
     ret = MaaQueryTaskDetail(task_id, entry, node_id_list.data(), &node_id_list_size);
     if (ret) {
         auto result = Napi::Object::New(info.Env());
-        result["entry"] = entry;
+        result["entry"] = entry.str();
         auto list = Napi::Array::New(info.Env(), node_id_list_size);
         for (MaaSize i = 0; i < node_id_list_size; i++) {
             list.Set(static_cast<uint32_t>(i), Napi::Number::New(info.Env(), node_id_list[i]));

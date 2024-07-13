@@ -3,9 +3,11 @@
 
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
+#include <string>
 
 Napi::Value find_window(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto class_name = CheckAsString(info[0]);
     auto window_name = CheckAsString(info[1]);
     return Napi::Number::New(
@@ -15,6 +17,7 @@ Napi::Value find_window(const Napi::CallbackInfo& info)
 
 Napi::Value search_window(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 2);
     auto class_name = CheckAsString(info[0]);
     auto window_name = CheckAsString(info[1]);
     return Napi::Number::New(
@@ -24,42 +27,55 @@ Napi::Value search_window(const Napi::CallbackInfo& info)
 
 Napi::Value list_windows(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 0);
     return Napi::Number::New(info.Env(), MaaToolkitListWindows());
 }
 
 Napi::Value get_window(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     auto index = CheckAsNumber(info[0]).Uint32Value();
     return Napi::External<void>::New(info.Env(), MaaToolkitGetWindow(index));
 }
 
 Napi::Value get_cursor_window(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 0);
     return Napi::External<void>::New(info.Env(), MaaToolkitGetCursorWindow());
 }
 
 Napi::Value get_desktop_window(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 0);
     return Napi::External<void>::New(info.Env(), MaaToolkitGetDesktopWindow());
 }
 
 Napi::Value get_foreground_window(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 0);
     return Napi::External<void>::New(info.Env(), MaaToolkitGetForegroundWindow());
 }
 
 Napi::Value get_window_info(const Napi::CallbackInfo& info)
 {
+    CheckCount(info, 1);
     MaaWin32Hwnd hwnd = CheckAsExternal<void>(info[0]).Data();
     StringBuffer class_name, window_name;
     auto result = Napi::Object::New(info.Env());
     if (MaaToolkitGetWindowClassName(hwnd, class_name)) {
-        result["class_name"] = class_name;
+        result["class_name"] = class_name.str();
     }
     if (MaaToolkitGetWindowWindowName(hwnd, window_name)) {
-        result["window_name"] = window_name;
+        result["window_name"] = window_name.str();
     }
     return result;
+}
+
+Napi::Value get_window_hwnd(const Napi::CallbackInfo& info)
+{
+    CheckCount(info, 1);
+    MaaWin32Hwnd hwnd = CheckAsExternal<void>(info[0]).Data();
+    return Napi::String::New(info.Env(), fmt::format("{:16x}", reinterpret_cast<size_t>(hwnd)));
 }
 
 void load_win32_win32Window(Napi::Env env, Napi::Object& exports)
@@ -72,4 +88,5 @@ void load_win32_win32Window(Napi::Env env, Napi::Object& exports)
     BIND(get_desktop_window);
     BIND(get_foreground_window);
     BIND(get_window_info);
+    BIND(get_window_hwnd);
 }

@@ -70,10 +70,7 @@ struct StringBuffer
 
     operator MaaStringBufferHandle() const { return buffer; }
 
-    operator std::string() const
-    {
-        return std::string(MaaGetString(buffer), MaaGetStringSize(buffer));
-    }
+    std::string str() const { return std::string(MaaGetString(buffer), MaaGetStringSize(buffer)); }
 
     void set(std::string_view data) const { MaaSetStringEx(buffer, data.data(), data.size()); }
 };

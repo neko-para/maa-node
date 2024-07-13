@@ -372,6 +372,7 @@ export declare function get_window_info(hwnd: Win32Hwnd): {
     class_name?: string
     window_name?: string
 }
+export declare function get_window_hwnd(hwnd: Win32Hwnd): string
 
 export declare const Status: Record<
     'Invalid' | 'Pending' | 'Running' | 'Success' | 'Failed',

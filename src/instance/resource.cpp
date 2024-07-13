@@ -91,7 +91,7 @@ Napi::Value resource_get_hash(const Napi::CallbackInfo& info)
     StringBuffer buffer;
     auto ret = MaaResourceGetHash(handle, buffer);
     if (ret) {
-        return Napi::String::New(info.Env(), buffer);
+        return Napi::String::New(info.Env(), buffer.str());
     }
     else {
         return info.Env().Null();
@@ -105,7 +105,7 @@ Napi::Value resource_get_task_list(const Napi::CallbackInfo& info)
     StringBuffer buffer;
     auto ret = MaaResourceGetTaskList(handle, buffer);
     if (ret) {
-        return Napi::String::New(info.Env(), buffer);
+        return Napi::String::New(info.Env(), buffer.str());
     }
     else {
         return info.Env().Null();

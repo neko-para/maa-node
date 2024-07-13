@@ -41,7 +41,7 @@ Napi::Value sync_context_run_recognition(const Napi::CallbackInfo& info)
                 &out_box,
                 out_detail);
             if (ret) {
-                return std::tuple<MaaRect, std::string> { out_box, out_detail };
+                return std::tuple<MaaRect, std::string> { out_box, out_detail.str() };
             }
             else {
                 return std::nullopt;

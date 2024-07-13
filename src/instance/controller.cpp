@@ -325,7 +325,7 @@ Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
     StringBuffer buffer;
     auto ret = MaaControllerGetUUID(handle, buffer);
     if (ret) {
-        return Napi::String::New(info.Env(), buffer);
+        return Napi::String::New(info.Env(), buffer.str());
     }
     else {
         return info.Env().Null();
