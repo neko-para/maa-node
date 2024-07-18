@@ -52,7 +52,6 @@ export type CustomActionRunCallback = (
 export type CustomControllerParamResultMap = {
     connect: [[], boolean]
     request_uuid: [[], string | null]
-    request_resolution: [[], { width: number; height: number } | null]
     start_app: [[intent: string], boolean]
     screencap: [[intent: string], boolean]
     screencap: [[image: ImageBufferHandle], boolean]

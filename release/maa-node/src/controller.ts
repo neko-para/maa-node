@@ -118,7 +118,6 @@ export class Win32Controller extends ControllerBase {
 export abstract class CustomControllerActor {
     abstract connect(): maa.MaybePromise<boolean>
     abstract request_uuid(): maa.MaybePromise<string | null>
-    abstract request_resolution(): maa.MaybePromise<{ width: number; height: number } | null>
     abstract start_app(intent: string): maa.MaybePromise<boolean>
     abstract stop_app(intent: string): maa.MaybePromise<boolean>
     abstract screencap(image: ImageBuffer): maa.MaybePromise<boolean>
@@ -152,9 +151,6 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
         return false
     }
     request_uuid(): maa.MaybePromise<string | null> {
-        return null
-    }
-    request_resolution(): maa.MaybePromise<{ width: number; height: number } | null> {
         return null
     }
     start_app(intent: string): maa.MaybePromise<boolean> {

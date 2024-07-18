@@ -58,7 +58,7 @@ Napi::Value set_global_option(const Napi::CallbackInfo& info)
 
 Napi::Value query_recognition_detail(const Napi::CallbackInfo& info)
 {
-    CheckCount(info, 1);
+    CheckCount(info, 3);
     MaaRecoId reco_id = CheckAsNumber(info[0]).Int64Value();
     StringBuffer name;
     MaaBool hit;

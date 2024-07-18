@@ -286,35 +286,6 @@ inline MaaBool
     }
 }
 
-inline MaaBool
-    CustomControllerRequestResolution(MaaTransparentArg handle_arg, int32_t* width, int32_t* height)
-{
-    auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
-    using R = std::optional<std::tuple<int32_t, int32_t>>;
-    auto res = ctx->Call<R>(
-        [](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "request_uuid") }); },
-        [=](Napi::Value res) -> R {
-            if (res.IsNull()) {
-                return std::nullopt;
-            }
-            else {
-                auto obj = res.As<Napi::Object>();
-                return R::value_type {
-                    ToSize(obj),
-                };
-            }
-        });
-
-    if (res.has_value()) {
-        *width = std::get<0>(res.value());
-        *height = std::get<1>(res.value());
-        return true;
-    }
-    else {
-        return false;
-    }
-}
-
 inline MaaBool CustomControllerStartApp(MaaStringView intent, MaaTransparentArg handle_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(handle_arg);
@@ -481,11 +452,10 @@ inline MaaBool CustomControllerInputText(MaaStringView text, MaaTransparentArg h
 inline MaaCustomRecognizerAPI custom_recognizer_api = { CustomRecognizerAnalyze };
 inline MaaCustomActionAPI custom_action_api = { CustomActionRun, nullptr };
 inline MaaCustomControllerAPI custom_controller_api = {
-    CustomControllerConnect,   CustomControllerRequestUUID, CustomControllerRequestResolution,
-    CustomControllerStartApp,  CustomControllerStopApp,     CustomControllerScreencap,
-    CustomControllerClick,     CustomControllerSwipe,       CustomControllerTouchDown,
-    CustomControllerTouchMove, CustomControllerTouchUp,     CustomControllerPressKey,
-    CustomControllerInputText
+    CustomControllerConnect, CustomControllerRequestUUID, CustomControllerStartApp,
+    CustomControllerStopApp, CustomControllerScreencap,   CustomControllerClick,
+    CustomControllerSwipe,   CustomControllerTouchDown,   CustomControllerTouchMove,
+    CustomControllerTouchUp, CustomControllerPressKey,    CustomControllerInputText
 };
 
 template <typename Type>
