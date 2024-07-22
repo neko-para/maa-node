@@ -20,12 +20,22 @@ export class ControllerBase {
         return maa.controller_wait(this.handle, maa.controller_post_connection(this.handle))
     }
 
+    post_screencap() {
+        return maa.controller_wait(this.handle, maa.controller_post_screencap(this.handle))
+    }
+
     get connected() {
         return maa.controller_connected(this.handle)
     }
 
     get uuid() {
         return maa.controller_get_uuid(this.handle)
+    }
+
+    get_image(img: ImageBuffer) {
+        if (!maa.controller_get_image(this.handle, img.handle)) {
+            throw 'Controller get_image failed'
+        }
     }
 }
 
