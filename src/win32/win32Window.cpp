@@ -82,7 +82,7 @@ Napi::Value unwrap_window_hwnd(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 1);
     MaaWin32Hwnd hwnd = CheckAsExternal<void>(info[0]).Data();
-    return Napi::String::New(info.Env(), fmt::format("{:16x}", reinterpret_cast<size_t>(hwnd)));
+    return Napi::String::New(info.Env(), fmt::format("{:016x}", reinterpret_cast<size_t>(hwnd)));
 }
 
 Napi::Value wrap_window_hwnd(const Napi::CallbackInfo& info)
