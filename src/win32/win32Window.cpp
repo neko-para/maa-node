@@ -115,4 +115,5 @@ void load_win32_win32Window(Napi::Env env, Napi::Object& exports)
     BIND(get_foreground_window);
     BIND(get_window_info);
     BIND(unwrap_window_hwnd);
+    BIND(wrap_window_hwnd);
 }
