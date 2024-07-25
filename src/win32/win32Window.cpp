@@ -3,7 +3,14 @@
 
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
+#include <charconv>
+#include <cstdint>
 #include <string>
+
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+#endif
 
 Napi::Value find_window(const Napi::CallbackInfo& info)
 {
@@ -71,11 +78,30 @@ Napi::Value get_window_info(const Napi::CallbackInfo& info)
     return result;
 }
 
-Napi::Value get_window_hwnd(const Napi::CallbackInfo& info)
+Napi::Value unwrap_window_hwnd(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 1);
     MaaWin32Hwnd hwnd = CheckAsExternal<void>(info[0]).Data();
     return Napi::String::New(info.Env(), fmt::format("{:16x}", reinterpret_cast<size_t>(hwnd)));
+}
+
+Napi::Value wrap_window_hwnd(const Napi::CallbackInfo& info)
+{
+    CheckCount(info, 1);
+#ifdef _WIN32
+    auto hwnd_str = CheckAsString(info[0]);
+    uint64_t hwnd_ptr = 0;
+    std::from_chars(hwnd_str.c_str(), hwnd_str.c_str() + hwnd_str.size(), hwnd_ptr, 16);
+    auto hwnd = reinterpret_cast<MaaWin32Hwnd>(hwnd_ptr);
+    if (IsWindow(reinterpret_cast<HWND>(hwnd))) {
+        return Napi::External<void>::New(info.Env(), hwnd);
+    }
+    else {
+        return info.Env().Null();
+    }
+#else
+    return info.Env().Null();
+#endif
 }
 
 void load_win32_win32Window(Napi::Env env, Napi::Object& exports)
@@ -88,5 +114,5 @@ void load_win32_win32Window(Napi::Env env, Napi::Object& exports)
     BIND(get_desktop_window);
     BIND(get_foreground_window);
     BIND(get_window_info);
-    BIND(get_window_hwnd);
+    BIND(unwrap_window_hwnd);
 }
