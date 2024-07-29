@@ -23,7 +23,9 @@ async function main() {
             Task1: {}
         })
     )
-    fs.rm('MaaCommonAssets', { recursive: true })
+    fs.rm('MaaCommonAssets', { recursive: true }, err => {
+        console.log(err)
+    })
 }
 
 main()
