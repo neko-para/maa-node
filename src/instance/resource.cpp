@@ -11,7 +11,7 @@ Napi::Value resource_create(const Napi::CallbackInfo& info)
     CallbackContext* ctx = nullptr;
     MaaResourceHandle handle = nullptr;
 
-    if (!info[5].IsNull()) {
+    if (!info[0].IsNull()) {
         auto callback = CheckAsFunction(info[0]);
 
         cb = TrivialCallback;
