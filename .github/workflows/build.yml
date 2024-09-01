@@ -46,6 +46,7 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   repo: MaaXYZ/MaaFramework
+                  branch: main
                   workflow: build.yml
                   workflow_conclusion: success
                   path: maa
@@ -103,6 +104,7 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   repo: MaaXYZ/MaaFramework
+                  branch: main
                   workflow: build.yml
                   workflow_conclusion: success
                   path: maa
@@ -162,6 +164,7 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   repo: MaaXYZ/MaaFramework
+                  branch: main
                   workflow: build.yml
                   workflow_conclusion: success
                   path: maa
@@ -232,6 +235,7 @@ jobs:
               with:
                   github_token: ${{ secrets.GITHUB_TOKEN }}
                   repo: MaaXYZ/MaaFramework
+                  branch: main
                   workflow: build.yml
                   workflow_conclusion: success
                   path: maa
