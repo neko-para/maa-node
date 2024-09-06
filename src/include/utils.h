@@ -120,3 +120,40 @@ inline void NotificationCallback(const char* msg, const char* details, void* arg
         },
         [](auto res) { std::ignore = res; });
 }
+
+struct StringBuffer
+{
+    MaaStringBuffer* buffer;
+    bool own;
+
+    StringBuffer()
+        : buffer(MaaStringBufferCreate())
+        , own(true)
+    {
+    }
+
+    StringBuffer(MaaStringBuffer* handle)
+        : buffer(handle)
+        , own(false)
+    {
+    }
+
+    ~StringBuffer()
+    {
+        if (own) {
+            MaaStringBufferDestroy(buffer);
+        }
+    }
+
+    operator MaaStringBuffer*() const { return buffer; }
+
+    std::string str() const
+    {
+        return std::string(MaaStringBufferGet(buffer), MaaStringBufferSize(buffer));
+    }
+
+    void set(std::string_view data) const
+    {
+        MaaStringBufferSetEx(buffer, data.data(), data.size());
+    }
+};

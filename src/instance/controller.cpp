@@ -1,33 +1,33 @@
-#include "../include/helper.h"
 #include "../include/info.h"
 #include "../include/loader.h"
+#include "../include/wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
 
-Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
+std::optional<Napi::External<ControllerInfo>> adb_controller_create(
+    Napi::Env env,
+    std::string adb_path,
+    std::string address,
+    MaaAdbScreencapMethod screencap_methods,
+    MaaAdbInputMethod input_methods,
+    std::string config,
+    std::string agent_path,
+    std::optional<Napi::Function> callback)
 {
-    CheckCount(info, 6);
-    auto adb_path = CheckAsString(info[0]);
-    auto address = CheckAsString(info[1]);
-    auto type = CheckAsNumber(info[2]).Int32Value();
-    auto config = CheckAsString(info[3]);
-    auto agent_path = CheckAsString(info[4]);
-
-    MaaControllerCallback cb = nullptr;
+    MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
-    MaaControllerHandle handle = nullptr;
+    MaaController* handle = nullptr;
 
-    if (!info[5].IsNull()) {
-        auto callback = CheckAsFunction(info[5]);
-
-        cb = TrivialCallback;
-        ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+    if (callback) {
+        cb = NotificationCallback;
+        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaAdbControllerCreateV2(
+    handle = MaaAdbControllerCreate(
         adb_path.c_str(),
         address.c_str(),
-        type,
+        screencap_methods,
+        input_methods,
         config.c_str(),
         agent_path.c_str(),
         cb,
@@ -35,47 +35,148 @@ Napi::Value adb_controller_create(const Napi::CallbackInfo& info)
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(
-            info.Env(),
+            env,
             new ControllerInfo { handle, ctx },
             &DeleteFinalizer<ControllerInfo*>);
     }
     else {
         delete ctx;
-        return info.Env().Null();
+        return std::nullopt;
     }
 }
 
-Napi::Value win32_controller_create(const Napi::CallbackInfo& info)
+std::optional<Napi::External<ControllerInfo>> win32_controller_create(
+    Napi::Env env,
+    Napi::External<void> hwnd,
+    MaaWin32ScreencapMethod screencap_methods,
+    MaaWin32InputMethod input_methods,
+    std::optional<Napi::Function> callback)
 {
-    CheckCount(info, 3);
-    auto hwnd = CheckAsExternal<void>(info[0]).Data();
-    auto type = CheckAsNumber(info[1]).Int32Value();
-
-    MaaControllerCallback cb = nullptr;
+    MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
-    MaaControllerHandle handle = nullptr;
+    MaaController* handle = nullptr;
 
-    if (!info[2].IsNull()) {
-        auto callback = CheckAsFunction(info[2]);
-
-        cb = TrivialCallback;
-        ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+    if (callback) {
+        cb = NotificationCallback;
+        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaWin32ControllerCreate(hwnd, type, cb, ctx);
+    handle = MaaWin32ControllerCreate(hwnd.Data(), screencap_methods, input_methods, cb, ctx);
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(
-            info.Env(),
+            env,
             new ControllerInfo { handle, ctx },
             &DeleteFinalizer<ControllerInfo*>);
     }
     else {
         delete ctx;
-        return info.Env().Null();
+        return std::nullopt;
     }
 }
 
+void controller_destroy(Napi::External<ControllerInfo> info)
+{
+    info.Data()->dispose();
+}
+
+bool controller_set_option_screenshot_target_long_side(
+    Napi::External<ControllerInfo> info,
+    int32_t size)
+{
+    return MaaControllerSetOption(
+        info.Data()->handle,
+        MaaCtrlOption_ScreenshotTargetLongSide,
+        &size,
+        sizeof(size));
+}
+
+bool controller_set_option_screenshot_target_short_side(
+    Napi::External<ControllerInfo> info,
+    int32_t size)
+{
+    return MaaControllerSetOption(
+        info.Data()->handle,
+        MaaCtrlOption_ScreenshotTargetShortSide,
+        &size,
+        sizeof(size));
+}
+
+bool controller_set_option_default_app_package_entry(
+    Napi::External<ControllerInfo> info,
+    std::string entry)
+{
+    return MaaControllerSetOption(
+        info.Data()->handle,
+        MaaCtrlOption_DefaultAppPackageEntry,
+        entry.data(),
+        entry.size());
+}
+
+bool controller_set_option_default_app_package(
+    Napi::External<ControllerInfo> info,
+    std::string entry)
+{
+    return MaaControllerSetOption(
+        info.Data()->handle,
+        MaaCtrlOption_DefaultAppPackage,
+        entry.data(),
+        entry.size());
+}
+
+bool controller_set_option_recording(Napi::External<ControllerInfo> info, bool flag)
+{
+    return MaaControllerSetOption(
+        info.Data()->handle,
+        MaaCtrlOption_Recording,
+        &flag,
+        sizeof(flag));
+}
+
+MaaCtrlId controller_post_connection(Napi::External<ControllerInfo> info)
+{
+    return MaaControllerPostConnection(info.Data()->handle);
+}
+
+MaaCtrlId controller_post_screencap(Napi::External<ControllerInfo> info)
+{
+    return MaaControllerPostScreencap(info.Data()->handle);
+}
+
+MaaStatus controller_status(Napi::External<ControllerInfo> info, MaaCtrlId id)
+{
+    return MaaControllerStatus(info.Data()->handle, id);
+}
+
+Napi::Promise controller_wait(Napi::External<ControllerInfo> info, MaaCtrlId id)
+{
+    auto handle = info.Data()->handle;
+    auto worker = new SimpleAsyncWork<MaaStatus>(
+        info.Env(),
+        [handle, id]() { return MaaControllerWait(handle, id); },
+        [](auto env, auto res) { return Napi::Number::New(env, res); });
+    worker->Queue();
+    return worker->Promise();
+}
+
+bool controller_connected(Napi::External<ControllerInfo> info)
+{
+    return MaaControllerConnected(info.Data()->handle);
+}
+
+std::optional<std::string> controller_get_uuid(Napi::External<ControllerInfo> info)
+{
+    StringBuffer buffer;
+    auto ret = MaaControllerGetUuid(info.Data()->handle, buffer);
+    if (ret) {
+        return Napi::String::New(info.Env(), buffer.str());
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+/*
 Napi::Value custom_controller_create(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 2);
@@ -108,78 +209,6 @@ Napi::Value custom_controller_create(const Napi::CallbackInfo& info)
         delete ctx;
         return info.Env().Null();
     }
-}
-
-Napi::Value controller_destroy(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 1);
-    auto handle = ControllerInfo::FromValue(info[0]);
-    handle->dispose();
-    return info.Env().Undefined();
-}
-
-Napi::Value set_controller_option(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 3);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto key = CheckAsString(info[1]);
-    if (key == "ScreenshotTargetLongSide") {
-        auto val = CheckAsNumber(info[2]).Int32Value();
-        return Napi::Boolean::New(
-            info.Env(),
-            MaaControllerSetOption(
-                handle,
-                MaaCtrlOption_ScreenshotTargetLongSide,
-                &val,
-                sizeof(val)));
-    }
-    else if (key == "ScreenshotTargetShortSide") {
-        auto val = CheckAsNumber(info[2]).Int32Value();
-        return Napi::Boolean::New(
-            info.Env(),
-            MaaControllerSetOption(
-                handle,
-                MaaCtrlOption_ScreenshotTargetShortSide,
-                &val,
-                sizeof(val)));
-    }
-    else if (key == "DefaultAppPackageEntry") {
-        auto val = CheckAsString(info[2]);
-        return Napi::Boolean::New(
-            info.Env(),
-            MaaControllerSetOption(
-                handle,
-                MaaCtrlOption_DefaultAppPackageEntry,
-                val.data(),
-                val.length()));
-    }
-    else if (key == "DefaultAppPackage") {
-        auto val = CheckAsString(info[2]);
-        return Napi::Boolean::New(
-            info.Env(),
-            MaaControllerSetOption(
-                handle,
-                MaaCtrlOption_DefaultAppPackage,
-                val.data(),
-                val.length()));
-    }
-    else if (key == "Recording") {
-        auto val = CheckAsBoolean(info[2]).Value();
-        return Napi::Boolean::New(
-            info.Env(),
-            MaaControllerSetOption(handle, MaaCtrlOption_Recording, &val, sizeof(val)));
-    }
-    else {
-        return Napi::Boolean::New(info.Env(), false);
-    }
-}
-
-Napi::Value controller_post_connection(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 1);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto ctrlId = MaaControllerPostConnection(handle);
-    return Napi::Number::New(info.Env(), ctrlId);
 }
 
 Napi::Value controller_post_click(const Napi::CallbackInfo& info)
@@ -274,42 +303,6 @@ Napi::Value controller_post_touch_up(const Napi::CallbackInfo& info)
     return Napi::Number::New(info.Env(), ctrlId);
 }
 
-Napi::Value controller_post_screencap(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 1);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto ctrlId = MaaControllerPostScreencap(handle);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_status(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto id = CheckAsNumber(info[1]).Uint32Value();
-    return Napi::Number::New(info.Env(), MaaControllerStatus(handle, id));
-}
-
-Napi::Value controller_wait(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto id = CheckAsNumber(info[1]).Uint32Value();
-    auto worker = new SimpleAsyncWork<MaaStatus>(
-        info.Env(),
-        [handle, id]() { return MaaControllerWait(handle, id); },
-        [](auto env, auto res) { return Napi::Number::New(env, res); });
-    worker->Queue();
-    return worker->Promise();
-}
-
-Napi::Value controller_connected(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 1);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    return Napi::Boolean::New(info.Env(), MaaControllerConnected(handle));
-}
-
 Napi::Value controller_get_image(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 2);
@@ -317,42 +310,33 @@ Napi::Value controller_get_image(const Napi::CallbackInfo& info)
     auto value = CheckAsExternal<MaaImageBuffer>(info[1]).Data();
     return Napi::Boolean::New(info.Env(), MaaControllerGetImage(handle, value));
 }
-
-Napi::Value controller_get_uuid(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 1);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    StringBuffer buffer;
-    auto ret = MaaControllerGetUUID(handle, buffer);
-    if (ret) {
-        return Napi::String::New(info.Env(), buffer.str());
-    }
-    else {
-        return info.Env().Null();
-    }
-}
+*/
 
 void load_instance_controller(Napi::Env env, Napi::Object& exports)
 {
     BIND(adb_controller_create);
     BIND(win32_controller_create);
-    BIND(custom_controller_create);
+    // BIND(custom_controller_create);
     BIND(controller_destroy);
-    BIND(set_controller_option);
+    BIND(controller_set_option_screenshot_target_long_side);
+    BIND(controller_set_option_screenshot_target_short_side);
+    BIND(controller_set_option_default_app_package_entry);
+    BIND(controller_set_option_default_app_package);
+    BIND(controller_set_option_recording);
     BIND(controller_post_connection);
-    BIND(controller_post_click);
-    BIND(controller_post_swipe);
-    BIND(controller_post_press_key);
-    BIND(controller_post_input_text);
-    BIND(controller_post_start_app);
-    BIND(controller_post_stop_app);
-    BIND(controller_post_touch_down);
-    BIND(controller_post_touch_move);
-    BIND(controller_post_touch_up);
+    // BIND(controller_post_click);
+    // BIND(controller_post_swipe);
+    // BIND(controller_post_press_key);
+    // BIND(controller_post_input_text);
+    // BIND(controller_post_start_app);
+    // BIND(controller_post_stop_app);
+    // BIND(controller_post_touch_down);
+    // BIND(controller_post_touch_move);
+    // BIND(controller_post_touch_up);
     BIND(controller_post_screencap);
     BIND(controller_status);
     BIND(controller_wait);
     BIND(controller_connected);
-    BIND(controller_get_image);
+    // BIND(controller_get_image);
     BIND(controller_get_uuid);
 }

@@ -7,7 +7,6 @@
 #include <vector>   // IWYU pragma: export
 
 #include <exception>
-#include <future>
 #include <tuple>
 
 #define FMT_HEADER_ONLY
@@ -88,6 +87,17 @@ struct JSConvert<Napi::Function>
     static Napi::Function from_value(Napi::Value val) { return val.As<Napi::Function>(); }
 
     static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Function& val)
+    {
+        return val;
+    }
+};
+
+template <>
+struct JSConvert<Napi::Promise>
+{
+    static Napi::Promise from_value(Napi::Value val) { return val.As<Napi::Promise>(); }
+
+    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Promise& val)
     {
         return val;
     }

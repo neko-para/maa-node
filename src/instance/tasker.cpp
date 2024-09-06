@@ -30,15 +30,12 @@ std::optional<Napi::External<TaskerInfo>>
     }
 }
 
-/*
-Napi::Value destroy(const Napi::CallbackInfo& info)
+void tasker_destroy(Napi::External<TaskerInfo> info)
 {
-    CheckCount(info, 1);
-    auto handle = TaskerInfo::FromValue(info[0]);
-    handle->dispose();
-    return info.Env().Undefined();
+    info.Data()->dispose();
 }
 
+/*
 Napi::Value bind_resource(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 2);
@@ -249,7 +246,7 @@ Napi::Value post_stop(const Napi::CallbackInfo& info)
 void load_instance_tasker(Napi::Env env, Napi::Object& exports)
 {
     BIND(tasker_create);
-    // BIND(destroy);
+    BIND(tasker_destroy);
     // BIND(bind_resource);
     // BIND(bind_controller);
     // BIND(inited);

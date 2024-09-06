@@ -54,7 +54,8 @@ add_definitions(-DNAPI_VERSION=8)
 
 include_directories(${CMAKE_JS_INC})
 
-set(maa_src src/main.cpp src/utility/utility.cpp src/instance/tasker.cpp)
+set(maa_src src/main.cpp src/utility/utility.cpp src/instance/tasker.cpp
+            src/instance/controller.cpp)
 # file(GLOB_RECURSE maa_src src/*.cpp)
 
 add_library(maa SHARED ${maa_src} ${CMAKE_JS_SRC})
