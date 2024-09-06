@@ -313,7 +313,7 @@ struct FuncTraits
 };
 
 template <typename R, typename... Args>
-struct FuncTraits<R(Args...)>
+struct FuncTraits<R (*)(Args...)>
 {
     using ret = R;
     using args = std::tuple<Args...>;
@@ -322,7 +322,7 @@ struct FuncTraits<R(Args...)>
 };
 
 template <typename R, typename... Args>
-struct FuncTraits<R(Napi::Env, Args...)>
+struct FuncTraits<R (*)(Napi::Env, Args...)>
 {
     using ret = R;
     using args = std::tuple<Args...>;
@@ -397,4 +397,4 @@ struct JSWrapFunction
 
 #define BIND(name)   \
     exports[#name] = \
-        Napi::Function::New(env, JSWrapFunction<decltype(name), &name, #name>::make(), #name)
+        Napi::Function::New(env, JSWrapFunction<decltype(&name), &name, #name>::make(), #name)
