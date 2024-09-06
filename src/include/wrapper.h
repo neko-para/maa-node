@@ -67,6 +67,12 @@ struct JSConvert
     static Napi::Value to_value(Napi::Env env, const Type& val) = delete;
 };
 
+template <>
+struct JSConvert<void>
+{
+    static Napi::Value to_value(Napi::Env env) { return env.Undefined(); }
+};
+
 template <typename Type>
 struct JSConvert<Napi::External<Type>>
 {
