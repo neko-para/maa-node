@@ -7,8 +7,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
     Napi::Value a = exports;
     // load_instance_controller(env, exports);
-    // load_instance_instance(env, exports);
     // load_instance_resource(env, exports);
+    load_instance_tasker(env, exports);
     // load_task_syncContext(env, exports);
     // load_utility_buffer(env, exports);
     load_utility_utility(env, exports);

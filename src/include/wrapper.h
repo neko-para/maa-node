@@ -7,10 +7,13 @@
 #include <vector>   // IWYU pragma: export
 
 #include <exception>
+#include <future>
 #include <tuple>
 
 #define FMT_HEADER_ONLY
 #include "fmt/format.h"
+
+#include <MaaFramework/MaaDef.h>
 
 struct MaaNodeException : public std::exception
 {
@@ -63,6 +66,31 @@ struct JSConvert
 {
     static Type from_value(Napi::Value val) = delete;
     static Napi::Value to_value(Napi::Env env, const Type& val) = delete;
+};
+
+template <typename Type>
+struct JSConvert<Napi::External<Type>>
+{
+    static Napi::External<Type> from_value(Napi::Value val)
+    {
+        return val.As<Napi::External<Type>>();
+    }
+
+    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::External<Type>& val)
+    {
+        return val;
+    }
+};
+
+template <>
+struct JSConvert<Napi::Function>
+{
+    static Napi::Function from_value(Napi::Value val) { return val.As<Napi::Function>(); }
+
+    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Function& val)
+    {
+        return val;
+    }
 };
 
 template <>
@@ -279,6 +307,17 @@ struct FuncTraits<R(Args...)>
 {
     using ret = R;
     using args = std::tuple<Args...>;
+    using call_args = args;
+    static constexpr bool want_env = false;
+};
+
+template <typename R, typename... Args>
+struct FuncTraits<R(Napi::Env, Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = std::tuple<Napi::Env, Args...>;
+    static constexpr bool want_env = true;
 };
 
 template <size_t N>
@@ -315,12 +354,24 @@ struct JSWrapFunction
 
                 Napi::Value ret;
 
+                typename FuncTraits<Func>::call_args call_params = [p = std::move(params),
+                                                                    &info]() {
+                    if constexpr (FuncTraits<Func>::want_env) {
+                        return std::tuple_cat(std::make_tuple(info.Env()), std::move(p));
+                    }
+                    else {
+                        return p;
+                    }
+                }();
+
                 if constexpr (std::is_same_v<Ret, void>) {
-                    std::apply(func, std::move(params));
+                    std::apply(func, std::move(call_params));
                     ret = info.Env().Undefined();
                 }
                 else {
-                    ret = JSConvert<Ret>::to_value(info.Env(), std::apply(func, std::move(params)));
+                    ret = JSConvert<Ret>::to_value(
+                        info.Env(),
+                        std::apply(func, std::move(call_params)));
                 }
 
                 return ret;

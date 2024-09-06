@@ -2,8 +2,8 @@
 #include <napi.h>
 
 void load_instance_controller(Napi::Env env, Napi::Object& exports);
-void load_instance_instance(Napi::Env env, Napi::Object& exports);
 void load_instance_resource(Napi::Env env, Napi::Object& exports);
+void load_instance_tasker(Napi::Env env, Napi::Object& exports);
 
 void load_task_syncContext(Napi::Env env, Napi::Object& exports);
 

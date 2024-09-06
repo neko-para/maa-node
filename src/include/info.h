@@ -1,43 +1,17 @@
 #pragma once
 
-#include "./helper.h"
+#include "utils.h"
+#include "wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
-
-#include <map>
-#include <string>
 
 template <typename Type, typename Impl>
 struct InfoBase
 {
     Type handle = nullptr;
-
-    static Impl* FromValue(Napi::Value value) { return CheckAsExternal<Impl>(value).Data(); }
-
-    static Impl* FromValueOrNull(Napi::Value value)
-    {
-        if (value.IsNull()) {
-            return nullptr;
-        }
-        else {
-            return FromValue(value);
-        }
-    }
-
-    static Type HandleFromValue(Napi::Value value) { return FromValue(value)->handle; }
-
-    static Type HandleFromValueOrNull(Napi::Value value)
-    {
-        if (value.IsNull()) {
-            return nullptr;
-        }
-        else {
-            return HandleFromValue(value);
-        }
-    }
 };
 
-struct ControllerInfo : InfoBase<MaaControllerHandle, ControllerInfo>
+struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 {
     CallbackContext* callback = nullptr;
     CallbackContext* custom_controller = nullptr;
@@ -61,7 +35,7 @@ struct ControllerInfo : InfoBase<MaaControllerHandle, ControllerInfo>
     ~ControllerInfo() { dispose(); }
 };
 
-struct ResourceInfo : InfoBase<MaaResourceHandle, ResourceInfo>
+struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 {
     CallbackContext* callback = nullptr;
     bool disposed = false;
@@ -81,13 +55,13 @@ struct ResourceInfo : InfoBase<MaaResourceHandle, ResourceInfo>
     ~ResourceInfo() { dispose(); }
 };
 
-struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
+struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
 {
     CallbackContext* callback = nullptr;
     Napi::Reference<Napi::External<ResourceInfo>> resource;
     Napi::Reference<Napi::External<ControllerInfo>> controller;
-    std::map<std::string, CallbackContext*> custom_recognizers;
-    std::map<std::string, CallbackContext*> custom_actions;
+    // std::map<std::string, CallbackContext*> custom_recognizers;
+    // std::map<std::string, CallbackContext*> custom_actions;
     bool disposed = false;
 
     void dispose()
@@ -96,29 +70,29 @@ struct InstanceInfo : InfoBase<MaaInstanceHandle, InstanceInfo>
             return;
         }
         disposed = true;
-        MaaDestroy(handle);
+        MaaTaskerDestroy(handle);
         if (callback) {
             delete callback;
         }
-        ClearRecos();
-        ClearActs();
+        // ClearRecos();
+        // ClearActs();
     }
 
-    ~InstanceInfo() { dispose(); }
+    ~TaskerInfo() { dispose(); }
 
-    void ClearRecos()
-    {
-        for (const auto& [name, cb] : custom_recognizers) {
-            delete cb;
-        }
-        custom_recognizers.clear();
-    }
+    // void ClearRecos()
+    // {
+    //     for (const auto& [name, cb] : custom_recognizers) {
+    //         delete cb;
+    //     }
+    //     custom_recognizers.clear();
+    // }
 
-    void ClearActs()
-    {
-        for (const auto& [name, cb] : custom_actions) {
-            delete cb;
-        }
-        custom_actions.clear();
-    }
+    // void ClearActs()
+    // {
+    //     for (const auto& [name, cb] : custom_actions) {
+    //         delete cb;
+    //     }
+    //     custom_actions.clear();
+    // }
 };

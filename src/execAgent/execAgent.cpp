@@ -21,7 +21,7 @@ static inline std::vector<std::string> ArrayToStringList(Napi::Array arr)
 Napi::Value register_custom_recognizer_executor(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 4);
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
+    auto handle = TaskerInfo::HandleFromValue(info[0]);
     auto recognizer_name = CheckAsString(info[1]);
     auto exec_path = CheckAsString(info[2]);
     auto exec_params = ArrayToStringList(CheckAsArray(info[3]));
@@ -45,7 +45,7 @@ Napi::Value register_custom_recognizer_executor(const Napi::CallbackInfo& info)
 Napi::Value unregister_custom_recognizer_executor(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 2);
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
+    auto handle = TaskerInfo::HandleFromValue(info[0]);
     auto recognizer_name = CheckAsString(info[1]);
     return Napi::Boolean::New(
         info.Env(),
@@ -55,14 +55,14 @@ Napi::Value unregister_custom_recognizer_executor(const Napi::CallbackInfo& info
 Napi::Value clear_custom_recognizer_executor(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 1);
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
+    auto handle = TaskerInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaToolkitClearCustomRecognizerExecutor(handle));
 }
 
 Napi::Value register_custom_action_executor(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 4);
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
+    auto handle = TaskerInfo::HandleFromValue(info[0]);
     auto action_name = CheckAsString(info[1]);
     auto exec_path = CheckAsString(info[2]);
     auto exec_params = ArrayToStringList(CheckAsArray(info[3]));
@@ -86,7 +86,7 @@ Napi::Value register_custom_action_executor(const Napi::CallbackInfo& info)
 Napi::Value unregister_custom_action_executor(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 2);
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
+    auto handle = TaskerInfo::HandleFromValue(info[0]);
     auto action_name = CheckAsString(info[1]);
     return Napi::Boolean::New(
         info.Env(),
@@ -96,7 +96,7 @@ Napi::Value unregister_custom_action_executor(const Napi::CallbackInfo& info)
 Napi::Value clear_custom_action_executor(const Napi::CallbackInfo& info)
 {
     CheckCount(info, 1);
-    auto handle = InstanceInfo::HandleFromValue(info[0]);
+    auto handle = TaskerInfo::HandleFromValue(info[0]);
     return Napi::Boolean::New(info.Env(), MaaToolkitClearCustomActionExecutor(handle));
 }
 
