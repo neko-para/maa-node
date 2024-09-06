@@ -164,6 +164,19 @@ bool controller_connected(Napi::External<ControllerInfo> info)
     return MaaControllerConnected(info.Data()->handle);
 }
 
+std::optional<Napi::ArrayBuffer>
+    controller_cached_image(Napi::Env env, Napi::External<ControllerInfo> info)
+{
+    ImageBuffer buffer;
+    auto ret = MaaControllerCachedImage(info.Data()->handle, buffer);
+    if (ret) {
+        return buffer.data(env);
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 std::optional<std::string> controller_get_uuid(Napi::External<ControllerInfo> info)
 {
     StringBuffer buffer;
@@ -337,6 +350,6 @@ void load_instance_controller(Napi::Env env, Napi::Object& exports)
     BIND(controller_status);
     BIND(controller_wait);
     BIND(controller_connected);
-    // BIND(controller_get_image);
+    BIND(controller_cached_image);
     BIND(controller_get_uuid);
 }

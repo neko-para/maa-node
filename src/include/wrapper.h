@@ -67,6 +67,7 @@ struct JSConvert
     static Napi::Value to_value(Napi::Env env, const Type& val) = delete;
 };
 
+// msvc want this
 template <>
 struct JSConvert<void>
 {
@@ -104,6 +105,17 @@ struct JSConvert<Napi::Promise>
     static Napi::Promise from_value(Napi::Value val) { return val.As<Napi::Promise>(); }
 
     static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::Promise& val)
+    {
+        return val;
+    }
+};
+
+template <>
+struct JSConvert<Napi::ArrayBuffer>
+{
+    static Napi::ArrayBuffer from_value(Napi::Value val) { return val.As<Napi::ArrayBuffer>(); }
+
+    static Napi::Value to_value([[maybe_unused]] Napi::Env env, const Napi::ArrayBuffer& val)
     {
         return val;
     }

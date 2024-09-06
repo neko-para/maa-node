@@ -1,74 +1,58 @@
-#include "../include/helper.h"
 #include "../include/info.h"
 #include "../include/loader.h"
+#include "../include/wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
 
-Napi::Value resource_create(const Napi::CallbackInfo& info)
+std::optional<Napi::External<ResourceInfo>>
+    resource_create(Napi::Env env, std::optional<Napi::Function> callback)
 {
-    CheckCount(info, 1);
-    MaaResourceCallback cb = nullptr;
+    MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
-    MaaResourceHandle handle = nullptr;
+    MaaResource* handle = nullptr;
 
-    if (!info[0].IsNull()) {
-        auto callback = CheckAsFunction(info[0]);
-
-        cb = TrivialCallback;
-        ctx = new CallbackContext { info.Env(), callback, "TrivialCallback" };
+    if (callback) {
+        cb = NotificationCallback;
+        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
     handle = MaaResourceCreate(cb, ctx);
 
     if (handle) {
         return Napi::External<ResourceInfo>::New(
-            info.Env(),
+            env,
             new ResourceInfo { handle, ctx },
             &DeleteFinalizer<ResourceInfo*>);
     }
     else {
         delete ctx;
-        return info.Env().Null();
+        return std::nullopt;
     }
 }
 
-Napi::Value resource_destroy(const Napi::CallbackInfo& info)
+void resource_destroy(Napi::External<ResourceInfo> info)
 {
-    CheckCount(info, 1);
-    auto handle = ResourceInfo::FromValue(info[0]);
-    handle->dispose();
-    return info.Env().Undefined();
+    info.Data()->dispose();
 }
 
-Napi::Value resource_post_path(const Napi::CallbackInfo& info)
+MaaResId resource_post_path(Napi::External<ResourceInfo> info, std::string path)
 {
-    CheckCount(info, 2);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
-    auto path = CheckAsString(info[1]);
-    auto resid = MaaResourcePostPath(handle, path.c_str());
-    return Napi::Number::New(info.Env(), resid);
+    return MaaResourcePostPath(info.Data()->handle, path.c_str());
 }
 
-Napi::Value resource_clear(const Napi::CallbackInfo& info)
+bool resource_clear(Napi::External<ResourceInfo> info)
 {
-    CheckCount(info, 1);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
-    return Napi::Boolean::New(info.Env(), MaaResourceClear(handle));
+    return MaaResourceClear(info.Data()->handle);
 }
 
-Napi::Value resource_status(const Napi::CallbackInfo& info)
+MaaStatus resource_status(Napi::External<ResourceInfo> info, MaaResId id)
 {
-    CheckCount(info, 2);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
-    auto id = CheckAsNumber(info[1]).Uint32Value();
-    return Napi::Number::New(info.Env(), MaaResourceStatus(handle, id));
+    return MaaResourceStatus(info.Data()->handle, id);
 }
 
-Napi::Value resource_wait(const Napi::CallbackInfo& info)
+Napi::Promise resource_wait(Napi::External<ResourceInfo> info, MaaResId id)
 {
-    CheckCount(info, 2);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
-    auto id = CheckAsNumber(info[1]).Uint32Value();
+    auto handle = info.Data()->handle;
     auto worker = new SimpleAsyncWork<MaaStatus>(
         info.Env(),
         [handle, id]() { return MaaResourceWait(handle, id); },
@@ -77,38 +61,32 @@ Napi::Value resource_wait(const Napi::CallbackInfo& info)
     return worker->Promise();
 }
 
-Napi::Value resource_loaded(const Napi::CallbackInfo& info)
+bool resource_loaded(Napi::External<ResourceInfo> info)
 {
-    CheckCount(info, 1);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
-    return Napi::Boolean::New(info.Env(), MaaResourceLoaded(handle));
+    return MaaResourceLoaded(info.Data()->handle);
 }
 
-Napi::Value resource_get_hash(const Napi::CallbackInfo& info)
+std::optional<std::string> resource_get_hash(Napi::External<ResourceInfo> info)
 {
-    CheckCount(info, 1);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
     StringBuffer buffer;
-    auto ret = MaaResourceGetHash(handle, buffer);
+    auto ret = MaaResourceGetHash(info.Data()->handle, buffer);
     if (ret) {
         return Napi::String::New(info.Env(), buffer.str());
     }
     else {
-        return info.Env().Null();
+        return std::nullopt;
     }
 }
 
-Napi::Value resource_get_task_list(const Napi::CallbackInfo& info)
+std::optional<std::vector<std::string>> resource_get_task_list(Napi::External<ResourceInfo> info)
 {
-    CheckCount(info, 1);
-    auto handle = ResourceInfo::HandleFromValue(info[0]);
-    StringBuffer buffer;
-    auto ret = MaaResourceGetTaskList(handle, buffer);
+    StringListBuffer buffer;
+    auto ret = MaaResourceGetTaskList(info.Data()->handle, buffer);
     if (ret) {
-        return Napi::String::New(info.Env(), buffer.str());
+        return buffer.as_vector([](StringBufferRefer buf) { return buf.str(); });
     }
     else {
-        return info.Env().Null();
+        return std::nullopt;
     }
 }
 
