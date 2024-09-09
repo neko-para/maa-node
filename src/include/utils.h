@@ -54,16 +54,6 @@ inline void DeleteFinalizer(Napi::Env env, Type data)
     delete data;
 }
 
-inline void NotificationCallback(const char* msg, const char* details, void* arg)
-{
-    auto ctx = reinterpret_cast<CallbackContext*>(arg);
-    ctx->Call<void>(
-        [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, msg), Napi::String::New(env, details) });
-        },
-        [](auto res) { std::ignore = res; });
-}
-
 template <typename Handle, Handle* (*Create)(), void (*Destroy)(Handle*)>
 struct HandlerHolder
 {

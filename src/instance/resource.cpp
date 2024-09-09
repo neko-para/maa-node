@@ -1,3 +1,4 @@
+#include "../include/cb.h"
 #include "../include/info.h"
 #include "../include/loader.h"
 #include "../include/utils.h"
@@ -34,6 +35,102 @@ std::optional<Napi::External<ResourceInfo>>
 void resource_destroy(Napi::External<ResourceInfo> info)
 {
     info.Data()->dispose();
+}
+
+bool resource_register_custom_recognizer(
+    Napi::Env env,
+    Napi::External<ResourceInfo> info,
+    std::string name,
+    Napi::Function callback)
+{
+    auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
+    if (MaaResourceRegisterCustomRecognizer(
+            info.Data()->handle,
+            name.c_str(),
+            CustomRecognizerCallback,
+            ctx)) {
+        auto old = info.Data()->custom_recognizers[name];
+        info.Data()->custom_recognizers[name] = ctx;
+        if (old) {
+            delete old;
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool resource_unregister_custom_recognizer(Napi::External<ResourceInfo> info, std::string name)
+{
+    auto& map = info.Data()->custom_recognizers;
+    if (MaaResourceUnregisterCustomRecognizer(info.Data()->handle, name.c_str())) {
+        delete map[name];
+        map.erase(name);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool resource_clear_custom_recognizer(Napi::External<ResourceInfo> info)
+{
+    if (MaaResourceClearCustomRecognizer(info.Data()->handle)) {
+        info.Data()->ClearRecos();
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool resource_register_custom_action(
+    Napi::Env env,
+    Napi::External<ResourceInfo> info,
+    std::string name,
+    Napi::Function callback)
+{
+    auto ctx = new CallbackContext(env, callback, "CustomActionCallback");
+    if (MaaResourceRegisterCustomAction(
+            info.Data()->handle,
+            name.c_str(),
+            CustomActionCallback,
+            ctx)) {
+        auto old = info.Data()->custom_actions[name];
+        info.Data()->custom_actions[name] = ctx;
+        if (old) {
+            delete old;
+        }
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool resource_unregister_custom_action(Napi::External<ResourceInfo> info, std::string name)
+{
+    auto& map = info.Data()->custom_actions;
+    if (MaaResourceUnregisterCustomAction(info.Data()->handle, name.c_str())) {
+        delete map[name];
+        map.erase(name);
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+bool resource_clear_custom_action(Napi::External<ResourceInfo> info)
+{
+    if (MaaResourceClearCustomAction(info.Data()->handle)) {
+        info.Data()->ClearActs();
+        return true;
+    }
+    else {
+        return false;
+    }
 }
 
 MaaResId resource_post_path(Napi::External<ResourceInfo> info, std::string path)
@@ -97,6 +194,12 @@ void load_instance_resource(
 {
     BIND(resource_create);
     BIND(resource_destroy);
+    BIND(resource_register_custom_recognizer);
+    BIND(resource_unregister_custom_recognizer);
+    BIND(resource_clear_custom_recognizer);
+    BIND(resource_register_custom_action);
+    BIND(resource_unregister_custom_action);
+    BIND(resource_clear_custom_action);
     BIND(resource_post_path);
     BIND(resource_clear);
     BIND(resource_status);

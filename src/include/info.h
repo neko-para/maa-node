@@ -47,6 +47,7 @@ struct CallbackContext
                                 }
                                 return info.Env().Undefined();
                             }),
+                        // 即使reject依然尝试将其转化为目标值; 回调函数总是需要一个返回结果.
                         Napi::Function::New(
                             env,
                             [&promise, &parser](const Napi::CallbackInfo& info) {
@@ -113,6 +114,8 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 
     CallbackContext* callback = nullptr;
     bool disposed = false;
+    std::map<std::string, CallbackContext*> custom_recognizers;
+    std::map<std::string, CallbackContext*> custom_actions;
 
     void dispose()
     {
@@ -124,9 +127,27 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
         if (callback) {
             delete callback;
         }
+        ClearRecos();
+        ClearActs();
     }
 
     ~ResourceInfo() { dispose(); }
+
+    void ClearRecos()
+    {
+        for (const auto& [name, cb] : custom_recognizers) {
+            delete cb;
+        }
+        custom_recognizers.clear();
+    }
+
+    void ClearActs()
+    {
+        for (const auto& [name, cb] : custom_actions) {
+            delete cb;
+        }
+        custom_actions.clear();
+    }
 };
 
 struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
@@ -136,8 +157,6 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
     CallbackContext* callback = nullptr;
     Napi::Reference<Napi::External<ResourceInfo>> resource;
     Napi::Reference<Napi::External<ControllerInfo>> controller;
-    // std::map<std::string, CallbackContext*> custom_recognizers;
-    // std::map<std::string, CallbackContext*> custom_actions;
     bool disposed = false;
 
     void dispose()
@@ -150,27 +169,9 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
         if (callback) {
             delete callback;
         }
-        // ClearRecos();
-        // ClearActs();
     }
 
     ~TaskerInfo() { dispose(); }
-
-    // void ClearRecos()
-    // {
-    //     for (const auto& [name, cb] : custom_recognizers) {
-    //         delete cb;
-    //     }
-    //     custom_recognizers.clear();
-    // }
-
-    // void ClearActs()
-    // {
-    //     for (const auto& [name, cb] : custom_actions) {
-    //         delete cb;
-    //     }
-    //     custom_actions.clear();
-    // }
 };
 
 struct ExtContextInfo
