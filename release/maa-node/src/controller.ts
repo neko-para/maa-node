@@ -1,55 +1,96 @@
 import path from 'path'
 
-import { ImageBuffer } from './image'
+import { Job, JobSource } from './job'
 import maa from './maa'
 
 export class ControllerBase {
     handle: maa.ControllerHandle
+    #source: JobSource<maa.CtrlId>
+
+    notify(message: string, details_json: string): maa.MaybePromise<void> {}
 
     constructor(handle: maa.ControllerHandle) {
         this.handle = handle
+        this.#source = {
+            status: id => maa.controller_status(this.handle, id),
+            wait: id => maa.controller_wait(this.handle, id)
+        }
     }
 
     destroy() {
         maa.controller_destroy(this.handle)
     }
 
-    notify(msg: string, detail: string): maa.MaybePromise<void> {}
+    set screenshot_target_long_side(value: number) {
+        if (!maa.controller_set_option_screenshot_target_long_side(this.handle, value)) {
+            throw 'Controller set screenshot_target_long_side failed'
+        }
+    }
+
+    set screenshot_target_short_side(value: number) {
+        if (!maa.controller_set_option_screenshot_target_short_side(this.handle, value)) {
+            throw 'Controller set screenshot_target_short_side failed'
+        }
+    }
+
+    set default_app_package_entry(value: string) {
+        if (!maa.controller_set_option_default_app_package_entry(this.handle, value)) {
+            throw 'Controller set default_app_package_entry failed'
+        }
+    }
+
+    set default_app_package(value: string) {
+        if (!maa.controller_set_option_default_app_package(this.handle, value)) {
+            throw 'Controller set default_app_package failed'
+        }
+    }
+
+    set recording(value: boolean) {
+        if (!maa.controller_set_option_recording(this.handle, value)) {
+            throw 'Controller set recording failed'
+        }
+    }
 
     post_connection() {
-        return maa.controller_wait(this.handle, maa.controller_post_connection(this.handle))
+        return new Job(this.#source, maa.controller_post_connection(this.handle))
     }
 
     post_screencap() {
-        return maa.controller_wait(this.handle, maa.controller_post_screencap(this.handle))
+        return new Job(this.#source, maa.controller_post_screencap(this.handle))
     }
 
     get connected() {
         return maa.controller_connected(this.handle)
     }
 
-    get uuid() {
-        return maa.controller_get_uuid(this.handle)
+    get cached_image() {
+        return maa.controller_cached_image(this.handle)
     }
 
-    get_image(img: ImageBuffer) {
-        if (!maa.controller_get_image(this.handle, img.handle)) {
-            throw 'Controller get_image failed'
-        }
+    get uuid() {
+        return maa.controller_get_uuid(this.handle)
     }
 }
 
 export class AdbController extends ControllerBase {
-    constructor(info: maa.AdbInfo, agent?: string) {
+    constructor(
+        adb_path: string,
+        address: string,
+        screencap_methods: maa.ScreencapOrInputMethods,
+        input_methods: maa.ScreencapOrInputMethods,
+        config: string,
+        agent?: string
+    ) {
         let ws: WeakRef<this>
         const h = maa.adb_controller_create(
-            info.adb_path,
-            info.adb_serial,
-            info.adb_controller_type,
-            info.adb_config,
+            adb_path,
+            address,
+            screencap_methods,
+            input_methods,
+            config,
             agent ?? AdbController.agent_path(),
-            (msg, detail) => {
-                ws.deref()?.notify(msg, detail)
+            (message, details_json) => {
+                ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {
@@ -64,26 +105,25 @@ export class AdbController extends ControllerBase {
     }
 
     static async find(adb?: string) {
-        let ret: boolean
-        if (adb) {
-            ret = maa.post_find_device_with_adb(adb)
-        } else {
-            ret = maa.post_find_device()
-        }
-        if (!ret) {
-            throw 'AdbController find failed'
-        }
-        const size = await maa.wait_for_find_device_to_complete()
-        return Array.from({ length: size }, (_, index) => maa.get_device(index))
+        return maa.find_adb(adb ?? null)
     }
 }
 
 export class Win32Controller extends ControllerBase {
-    constructor(hwnd: maa.Win32Hwnd, type: number) {
+    constructor(
+        hwnd: maa.DesktopHandle,
+        screencap_methods: maa.ScreencapOrInputMethods,
+        input_methods: maa.ScreencapOrInputMethods
+    ) {
         let ws: WeakRef<this>
-        const h = maa.win32_controller_create(hwnd, type, (msg, detail) => {
-            ws.deref()?.notify(msg, detail)
-        })
+        const h = maa.win32_controller_create(
+            hwnd,
+            screencap_methods,
+            input_methods,
+            (message, details_json) => {
+                ws.deref()?.notify(message, details_json)
+            }
+        )
         if (!h) {
             throw 'Win32Controller create failed'
         }
@@ -91,40 +131,12 @@ export class Win32Controller extends ControllerBase {
         ws = new WeakRef(this)
     }
 
-    static find(type: 'find' | 'search', class_name?: string, window_name?: string): maa.Win32Hwnd[]
-    static find(type: 'list'): maa.Win32Hwnd[]
-    static find(type: 'find' | 'search' | 'list', class_name?: string, window_name?: string) {
-        let size: number
-        switch (type) {
-            case 'find':
-                size = maa.find_window(class_name ?? '', window_name ?? '')
-                break
-            case 'search':
-                size = maa.search_window(class_name ?? '', window_name ?? '')
-                break
-            case 'list':
-                size = maa.list_windows()
-                break
-        }
-        return Array.from({ length: size }, (_, index) => maa.get_window(index))
-    }
-
-    static get(type: 'cursor' | 'desktop' | 'foreground') {
-        switch (type) {
-            case 'cursor':
-                return maa.get_cursor_window()
-            case 'desktop':
-                return maa.get_desktop_window()
-            case 'foreground':
-                return maa.get_foreground_window()
-        }
-    }
-
-    static info(hwnd: maa.Win32Hwnd) {
-        return maa.get_window_info(hwnd)
+    static find() {
+        return maa.find_desktop()
     }
 }
 
+/*
 export abstract class CustomControllerActor {
     abstract connect(): maa.MaybePromise<boolean>
     abstract request_uuid(): maa.MaybePromise<string | null>
@@ -222,3 +234,4 @@ export class CustomController extends ControllerBase {
         ws = new WeakRef(this)
     }
 }
+*/
