@@ -32,7 +32,7 @@ MaaNodeId context_run_action(
     return MaaContextRunAction(info.Data(), entry.c_str(), overr.c_str(), &box, detail.c_str());
 }
 
-MaaNodeId context_override_pipeline(Napi::External<MaaContext> info, std::string overr)
+bool context_override_pipeline(Napi::External<MaaContext> info, std::string overr)
 {
     return MaaContextOverridePipeline(info.Data(), overr.c_str());
 }
@@ -72,6 +72,6 @@ void load_instance_context(
     BIND(context_run_action);
     BIND(context_override_pipeline);
     BIND(context_get_task_id);
-    // BIND(context_get_tasker);
+    BIND(context_get_tasker);
     BIND(context_clone);
 }

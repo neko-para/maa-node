@@ -35,7 +35,6 @@ inline MaaBool CustomRecognizerCallback(
                 Napi::External<MaaContext>::New(env, context),
                 JSConvert<MaaTaskId>::to_value(env, task_id),
                 Napi::String::New(env, recognizer_name),
-                Napi::String::New(env, recognizer_name),
                 Napi::String::New(env, custom_recognition_param),
                 ImageBufferRefer(image).data(env),
             });

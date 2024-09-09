@@ -28,12 +28,12 @@ bool set_global_option_stdout_level(MaaLoggingLevel level)
     return MaaSetGlobalOption(MaaGlobalOption_StdoutLevel, &level, sizeof(level));
 }
 
-bool set_global_option_show_hit_draw(MaaLoggingLevel flag)
+bool set_global_option_show_hit_draw(bool flag)
 {
     return MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &flag, sizeof(flag));
 }
 
-bool set_global_option_debug_message(MaaLoggingLevel flag)
+bool set_global_option_debug_message(bool flag)
 {
     return MaaSetGlobalOption(MaaGlobalOption_DebugMessage, &flag, sizeof(flag));
 }

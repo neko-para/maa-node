@@ -135,6 +135,7 @@ bool tasker_post_stop(Napi::External<TaskerInfo> info)
     return MaaTaskerPostStop(info.Data()->handle);
 }
 
+// TODO: 考虑下要不要下面两个也做成全局记录的, 而非基于ref的
 std::optional<Napi::External<ResourceInfo>> tasker_get_resource(Napi::External<TaskerInfo> info)
 {
     if (info.Data()->resource.IsEmpty()) {
