@@ -18,9 +18,9 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_instance_resource(env, exports, extCtx);
     load_instance_tasker(env, exports, extCtx);
     load_utility_utility(env, exports, extCtx);
-    // load_config_config(env, exports);
-    // load_device_device(env, exports);
-    // load_win32_win32Window(env, exports);
+
+    load_toolkit_config(env, exports, extCtx);
+    load_toolkit_find(env, exports, extCtx);
 
     /*
     #define DE(prefix, key) prefix[#key] = Napi::Number::New(env, prefix##_##key)

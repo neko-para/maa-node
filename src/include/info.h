@@ -1,10 +1,79 @@
 #pragma once
 
-#include "utils.h"
-
 #include <MaaFramework/MaaAPI.h>
+#include <napi.h>
 
+#include <future>
 #include <map>
+
+struct CallbackContext
+{
+    Napi::Function fn;
+    Napi::ThreadSafeFunction tsfn;
+    const char* name;
+
+    CallbackContext(Napi::Env env, Napi::Function cb, const char* name)
+        : fn(cb)
+        , tsfn(Napi::ThreadSafeFunction::New(env, fn, name, 0, 1))
+        , name(name)
+    {
+    }
+
+    ~CallbackContext() { tsfn.Release(); }
+
+    template <typename Result>
+    Result Call(
+        std::function<Napi::Value(Napi::Env, Napi::Function)> caller,
+        std::function<Result(Napi::Value)> parser)
+    {
+        std::promise<Result> promise;
+        std::future<Result> future = promise.get_future();
+        tsfn.BlockingCall([&caller, &parser, &promise](Napi::Env env, Napi::Function fn) {
+            Napi::Value result = caller(env, fn);
+            if (result.IsPromise()) {
+                Napi::Object resultObject = result.As<Napi::Object>();
+                resultObject.Get("then").As<Napi::Function>().Call(
+                    resultObject,
+                    {
+                        Napi::Function::New(
+                            env,
+                            [&promise, &parser](const Napi::CallbackInfo& info) {
+                                if constexpr (std::is_same_v<Result, void>) {
+                                    parser(info[0]);
+                                    promise.set_value();
+                                }
+                                else {
+                                    promise.set_value(parser(info[0]));
+                                }
+                                return info.Env().Undefined();
+                            }),
+                        Napi::Function::New(
+                            env,
+                            [&promise, &parser](const Napi::CallbackInfo& info) {
+                                if constexpr (std::is_same_v<Result, void>) {
+                                    parser(info[0]);
+                                    promise.set_value();
+                                }
+                                else {
+                                    promise.set_value(parser(info[0]));
+                                }
+                                info.Env().Undefined();
+                            }),
+                    });
+            }
+            else {
+                if constexpr (std::is_same_v<Result, void>) {
+                    parser(result);
+                    promise.set_value();
+                }
+                else {
+                    promise.set_value(parser(result));
+                }
+            }
+        });
+        return future.get();
+    }
+};
 
 template <typename Type, typename Impl>
 struct InfoBase

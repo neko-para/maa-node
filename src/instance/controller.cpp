@@ -1,5 +1,6 @@
 #include "../include/info.h"
 #include "../include/loader.h"
+#include "../include/utils.h"
 #include "../include/wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
@@ -148,13 +149,12 @@ MaaStatus controller_status(Napi::External<ControllerInfo> info, MaaCtrlId id)
     return MaaControllerStatus(info.Data()->handle, id);
 }
 
-Napi::Promise controller_wait(Napi::External<ControllerInfo> info, MaaCtrlId id)
+Napi::Promise controller_wait(Napi::Env env, Napi::External<ControllerInfo> info, MaaCtrlId id)
 {
     auto handle = info.Data()->handle;
-    auto worker = new SimpleAsyncWork<MaaStatus>(
-        info.Env(),
-        [handle, id]() { return MaaControllerWait(handle, id); },
-        [](auto env, auto res) { return Napi::Number::New(env, res); });
+    auto worker = new SimpleAsyncWork<MaaStatus, "controller_wait">(env, [handle, id]() {
+        return MaaControllerWait(handle, id);
+    });
     worker->Queue();
     return worker->Promise();
 }

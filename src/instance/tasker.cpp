@@ -1,5 +1,6 @@
 #include "../include/info.h"
 #include "../include/loader.h"
+#include "../include/utils.h"
 #include "../include/wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
@@ -113,13 +114,12 @@ MaaStatus tasker_status(Napi::External<TaskerInfo> info, MaaTaskId id)
     return MaaTaskerStatus(info.Data()->handle, id);
 }
 
-Napi::Promise tasker_wait(Napi::External<TaskerInfo> info, MaaTaskId id)
+Napi::Promise tasker_wait(Napi::Env env, Napi::External<TaskerInfo> info, MaaTaskId id)
 {
     auto handle = info.Data()->handle;
-    auto worker = new SimpleAsyncWork<MaaStatus>(
-        info.Env(),
-        [handle, id]() { return MaaTaskerWait(handle, id); },
-        [](auto env, auto res) { return Napi::Number::New(env, res); });
+    auto worker = new SimpleAsyncWork<MaaStatus, "tasker_wait">(env, [handle, id]() {
+        return MaaTaskerWait(handle, id);
+    });
     worker->Queue();
     return worker->Promise();
 }

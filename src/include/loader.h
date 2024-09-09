@@ -19,26 +19,16 @@ void load_instance_tasker(
     Napi::Object& exports,
     Napi::External<ExtContextInfo> context);
 
-void load_utility_buffer(
-    Napi::Env env,
-    Napi::Object& exports,
-    Napi::External<ExtContextInfo> context);
 void load_utility_utility(
     Napi::Env env,
     Napi::Object& exports,
     Napi::External<ExtContextInfo> context);
 
-void load_config_config(
+void load_toolkit_config(
     Napi::Env env,
     Napi::Object& exports,
     Napi::External<ExtContextInfo> context);
-
-void load_device_device(
-    Napi::Env env,
-    Napi::Object& exports,
-    Napi::External<ExtContextInfo> context);
-
-void load_win32_win32Window(
+void load_toolkit_find(
     Napi::Env env,
     Napi::Object& exports,
     Napi::External<ExtContextInfo> context);

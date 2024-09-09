@@ -1,5 +1,6 @@
 #include "../include/info.h"
 #include "../include/loader.h"
+#include "../include/utils.h"
 #include "../include/wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
@@ -50,13 +51,12 @@ MaaStatus resource_status(Napi::External<ResourceInfo> info, MaaResId id)
     return MaaResourceStatus(info.Data()->handle, id);
 }
 
-Napi::Promise resource_wait(Napi::External<ResourceInfo> info, MaaResId id)
+Napi::Promise resource_wait(Napi::Env env, Napi::External<ResourceInfo> info, MaaResId id)
 {
     auto handle = info.Data()->handle;
-    auto worker = new SimpleAsyncWork<MaaStatus>(
-        info.Env(),
-        [handle, id]() { return MaaResourceWait(handle, id); },
-        [](auto env, auto res) { return Napi::Number::New(env, res); });
+    auto worker = new SimpleAsyncWork<MaaStatus, "resource_wait">(env, [handle, id]() {
+        return MaaResourceWait(handle, id);
+    });
     worker->Queue();
     return worker->Promise();
 }
