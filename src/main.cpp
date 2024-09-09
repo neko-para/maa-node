@@ -22,66 +22,58 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     load_toolkit_config(env, exports, extCtx);
     load_toolkit_find(env, exports, extCtx);
 
-    /*
-    #define DE(prefix, key) prefix[#key] = Napi::Number::New(env, prefix##_##key)
-    #define DEN(prefix, key, name) prefix[name] = Napi::Number::New(env, prefix##_##key)
+#define DE(prefix, key) prefix##_obj[#key] = JSConvert<prefix>::to_value(env, prefix##_##key)
 
-        auto MaaStatus = Napi::Object::New(env);
-        DE(MaaStatus, Invalid);
-        DE(MaaStatus, Pending);
-        DE(MaaStatus, Running);
-        DE(MaaStatus, Success);
-        DE(MaaStatus, Failed);
-        exports["Status"] = MaaStatus;
+    auto MaaStatus_obj = Napi::Object::New(env);
+    DE(MaaStatus, Invalid);
+    DE(MaaStatus, Pending);
+    DE(MaaStatus, Running);
+    DE(MaaStatus, Success);
+    DE(MaaStatus, Failed);
+    exports["Status"] = MaaStatus_obj;
 
-        auto MaaLoggingLevel = Napi::Object::New(env);
-        DE(MaaLoggingLevel, Off);
-        DE(MaaLoggingLevel, Fatal);
-        DE(MaaLoggingLevel, Error);
-        DE(MaaLoggingLevel, Warn);
-        DE(MaaLoggingLevel, Info);
-        DE(MaaLoggingLevel, Debug);
-        DE(MaaLoggingLevel, Trace);
-        DE(MaaLoggingLevel, All);
-        exports["LoggingLevel"] = MaaLoggingLevel;
+    auto MaaLoggingLevel_obj = Napi::Object::New(env);
+    DE(MaaLoggingLevel, Off);
+    DE(MaaLoggingLevel, Fatal);
+    DE(MaaLoggingLevel, Error);
+    DE(MaaLoggingLevel, Warn);
+    DE(MaaLoggingLevel, Info);
+    DE(MaaLoggingLevel, Debug);
+    DE(MaaLoggingLevel, Trace);
+    DE(MaaLoggingLevel, All);
+    exports["LoggingLevel"] = MaaLoggingLevel_obj;
 
-        auto MaaAdbControllerType = Napi::Object::New(env);
-        DE(MaaAdbControllerType, Touch_Adb);
-        DE(MaaAdbControllerType, Touch_MiniTouch);
-        DE(MaaAdbControllerType, Touch_MaaTouch);
-        DE(MaaAdbControllerType, Touch_EmulatorExtras);
-        DE(MaaAdbControllerType, Touch_AutoDetect);
-        DE(MaaAdbControllerType, Key_Adb);
-        DE(MaaAdbControllerType, Key_MaaTouch);
-        DE(MaaAdbControllerType, Key_EmulatorExtras);
-        DE(MaaAdbControllerType, Key_AutoDetect);
-        DE(MaaAdbControllerType, Input_Preset_Adb);
-        DEN(MaaAdbControllerType, Input_Preset_Minitouch, "Input_Preset_MiniTouch");
-        DEN(MaaAdbControllerType, Input_Preset_Maatouch, "Input_Preset_MaaTouch");
-        DE(MaaAdbControllerType, Input_Preset_AutoDetect);
-        DE(MaaAdbControllerType, Input_Preset_EmulatorExtras);
-        DE(MaaAdbControllerType, Screencap_FastestWay_Compatible);
-        DE(MaaAdbControllerType, Screencap_RawByNetcat);
-        DE(MaaAdbControllerType, Screencap_RawWithGzip);
-        DE(MaaAdbControllerType, Screencap_Encode);
-        DE(MaaAdbControllerType, Screencap_EncodeToFile);
-        DE(MaaAdbControllerType, Screencap_MinicapDirect);
-        DE(MaaAdbControllerType, Screencap_MinicapStream);
-        DE(MaaAdbControllerType, Screencap_EmulatorExtras);
-        DE(MaaAdbControllerType, Screencap_FastestLosslessWay);
-        DE(MaaAdbControllerType, Screencap_FastestWay);
-        exports["AdbControllerType"] = MaaAdbControllerType;
+    auto MaaAdbScreencapMethod_obj = Napi::Object::New(env);
+    DE(MaaAdbScreencapMethod, EncodeToFileAndPull);
+    DE(MaaAdbScreencapMethod, Encode);
+    DE(MaaAdbScreencapMethod, RawWithGzip);
+    DE(MaaAdbScreencapMethod, RawByNetcat);
+    DE(MaaAdbScreencapMethod, MinicapDirect);
+    DE(MaaAdbScreencapMethod, MinicapStream);
+    DE(MaaAdbScreencapMethod, EmulatorExtras);
+    DE(MaaAdbScreencapMethod, All);
+    DE(MaaAdbScreencapMethod, Default);
+    exports["AdbScreencapMethod"] = MaaAdbScreencapMethod_obj;
 
-        auto MaaWin32ControllerType = Napi::Object::New(env);
-        DE(MaaWin32ControllerType, Touch_SendMessage);
-        DE(MaaWin32ControllerType, Touch_Seize);
-        DE(MaaWin32ControllerType, Key_SendMessage);
-        DE(MaaWin32ControllerType, Key_Seize);
-        DE(MaaWin32ControllerType, Screencap_GDI);
-        DE(MaaWin32ControllerType, Screencap_DXGI_DesktopDup);
-        DE(MaaWin32ControllerType, Screencap_DXGI_FramePool);
-        exports["Win32ControllerType"] = MaaWin32ControllerType;
-    */
+    auto MaaAdbInputMethod_obj = Napi::Object::New(env);
+    DE(MaaAdbInputMethod, AdbShell);
+    DE(MaaAdbInputMethod, MinitouchAndAdbKey);
+    DE(MaaAdbInputMethod, Maatouch);
+    DE(MaaAdbInputMethod, EmulatorExtras);
+    DE(MaaAdbInputMethod, All);
+    DE(MaaAdbInputMethod, Default);
+    exports["AdbInputMethod"] = MaaAdbInputMethod_obj;
+
+    auto MaaWin32ScreencapMethod_obj = Napi::Object::New(env);
+    DE(MaaWin32ScreencapMethod, GDI);
+    DE(MaaWin32ScreencapMethod, FramePool);
+    DE(MaaWin32ScreencapMethod, DXGI_DesktopDup);
+    exports["Win32ScreencapMethod"] = MaaWin32ScreencapMethod_obj;
+
+    auto MaaWin32InputMethod_obj = Napi::Object::New(env);
+    DE(MaaWin32InputMethod, Seize);
+    DE(MaaWin32InputMethod, SendMessage);
+    exports["Win32InputMethod"] = MaaWin32InputMethod_obj;
 
     return exports;
 }

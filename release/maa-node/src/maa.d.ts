@@ -13,6 +13,9 @@ export type TaskId = Id & { __brand: 'TaskId' }
 export type RecoId = Id & { __brand: 'RecoId' }
 export type NodeId = Id & { __brand: 'NodeId' }
 
+export type Status = number & { __brand: 'Status' }
+export type LoggingLevel = number & { __brand: 'LoggingLevel' }
+
 export type ImageData = ArrayBuffer
 
 export type Rect = {
@@ -266,7 +269,7 @@ export declare function version(): string
 export declare function set_global_option_log_dir(value: string): boolean
 export declare function set_global_option_save_draw(value: boolean): boolean
 export declare function set_global_option_recording(value: boolean): boolean
-export declare function set_global_option_stdout_level(value: number): boolean
+export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
 export declare function set_global_option_show_hit_draw(value: boolean): boolean
 export declare function set_global_option_debug_message(value: boolean): boolean
 
@@ -279,42 +282,26 @@ export declare const Status: Record<
 >
 export declare const LoggingLevel: Record<
     'Off' | 'Fatal' | 'Error' | 'Warn' | 'Info' | 'Debug' | 'Trace' | 'All',
-    number
+    LoggingLevel
 >
-export declare const AdbControllerType: Record<
-    | 'Touch_Adb'
-    | 'Touch_MiniTouch'
-    | 'Touch_MaaTouch'
-    | 'Touch_EmulatorExtras'
-    | 'Touch_AutoDetect'
-    | 'Key_Adb'
-    | 'Key_MaaTouch'
-    | 'Key_EmulatorExtras'
-    | 'Key_AutoDetect'
-    | 'Input_Preset_Adb'
-    | 'Input_Preset_MiniTouch'
-    | 'Input_Preset_MaaTouch'
-    | 'Input_Preset_AutoDetect'
-    | 'Input_Preset_EmulatorExtras'
-    | 'Screencap_FastestWay_Compatible'
-    | 'Screencap_RawByNetcat'
-    | 'Screencap_RawWithGzip'
-    | 'Screencap_Encode'
-    | 'Screencap_EncodeToFile'
-    | 'Screencap_MinicapDirect'
-    | 'Screencap_MinicapStream'
-    | 'Screencap_EmulatorExtras'
-    | 'Screencap_FastestLosslessWay'
-    | 'Screencap_FastestWay',
-    number
+export declare const AdbScreencapMethod: Record<
+    | 'EncodeToFileAndPull'
+    | 'Encode'
+    | 'RawWithGzip'
+    | 'RawByNetcat'
+    | 'MinicapDirect'
+    | 'MinicapStream'
+    | 'EmulatorExtras'
+    | 'All'
+    | 'Default',
+    ScreencapOrInputMethods
 >
-export declare const Win32ControllerType: Record<
-    | 'Touch_SendMessage'
-    | 'Touch_Seize'
-    | 'Key_SendMessage'
-    | 'Key_Seize'
-    | 'Screencap_GDI'
-    | 'Screencap_DXGI_DesktopDup'
-    | 'Screencap_DXGI_FramePool',
-    number
+export declare const AdbInputMethod: Record<
+    'AdbShell' | 'MinitouchAndAdbKey' | 'Maatouch' | 'EmulatorExtras' | 'All' | 'Default',
+    ScreencapOrInputMethods
 >
+export declare const Win32ScreencapMethod: Record<
+    'GDI' | 'FramePool' | 'DXGI_DesktopDup',
+    ScreencapOrInputMethods
+>
+export declare const Win32InputMethod: Record<'Seize' | 'SendMessage', ScreencapOrInputMethods>
