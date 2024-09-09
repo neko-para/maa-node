@@ -14,6 +14,13 @@
 
 #include <MaaFramework/MaaDef.h>
 
+#include "info.h"
+
+inline std::string PtrAsKey(void* ptr)
+{
+    return fmt::format("{:#018x}", reinterpret_cast<uintptr_t>(ptr));
+}
+
 struct MaaNodeException : public std::exception
 {
     std::string error;
@@ -409,6 +416,7 @@ struct FuncTraits<R (*)(Args...)>
     using args = std::tuple<Args...>;
     using call_args = args;
     static constexpr bool want_env = false;
+    static constexpr bool want_ctx = false;
 };
 
 template <typename R, typename... Args>
@@ -418,6 +426,27 @@ struct FuncTraits<R (*)(Napi::Env, Args...)>
     using args = std::tuple<Args...>;
     using call_args = std::tuple<Napi::Env, Args...>;
     static constexpr bool want_env = true;
+    static constexpr bool want_ctx = false;
+};
+
+template <typename R, typename... Args>
+struct FuncTraits<R (*)(ExtContextInfo*, Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = std::tuple<ExtContextInfo*, Args...>;
+    static constexpr bool want_env = false;
+    static constexpr bool want_ctx = true;
+};
+
+template <typename R, typename... Args>
+struct FuncTraits<R (*)(Napi::Env, ExtContextInfo*, Args...)>
+{
+    using ret = R;
+    using args = std::tuple<Args...>;
+    using call_args = std::tuple<Napi::Env, ExtContextInfo*, Args...>;
+    static constexpr bool want_env = true;
+    static constexpr bool want_ctx = true;
 };
 
 template <size_t N>
@@ -431,9 +460,9 @@ struct StringHolder
 template <typename Func, Func func, StringHolder name>
 struct JSWrapFunction
 {
-    static auto make()
+    static auto make(Napi::External<ExtContextInfo> context)
     {
-        return +[](const Napi::CallbackInfo& info) -> Napi::Value {
+        return [context](const Napi::CallbackInfo& info) -> Napi::Value {
             try {
                 using Args = typename FuncTraits<Func>::args;
                 using Ret = typename FuncTraits<Func>::ret;
@@ -455,12 +484,25 @@ struct JSWrapFunction
                 Napi::Value ret;
 
                 typename FuncTraits<Func>::call_args call_params = [p = std::move(params),
-                                                                    &info]() {
+                                                                    &info,
+                                                                    &context]() {
                     if constexpr (FuncTraits<Func>::want_env) {
-                        return std::tuple_cat(std::make_tuple(info.Env()), std::move(p));
+                        if constexpr (FuncTraits<Func>::want_ctx) {
+                            return std::tuple_cat(
+                                std::make_tuple(info.Env(), context.Data()),
+                                std::move(p));
+                        }
+                        else {
+                            return std::tuple_cat(std::make_tuple(info.Env()), std::move(p));
+                        }
                     }
                     else {
-                        return p;
+                        if constexpr (FuncTraits<Func>::want_ctx) {
+                            return std::tuple_cat(std::make_tuple(context.Data()), std::move(p));
+                        }
+                        else {
+                            return p;
+                        }
                     }
                 }();
 
@@ -485,6 +527,8 @@ struct JSWrapFunction
     }
 };
 
-#define BIND(name)   \
-    exports[#name] = \
-        Napi::Function::New(env, JSWrapFunction<decltype(&name), &name, #name>::make(), #name)
+#define BIND(name)                                                    \
+    exports[#name] = Napi::Function::New(                             \
+        env,                                                          \
+        JSWrapFunction<decltype(&name), &name, #name>::make(context), \
+        #name)

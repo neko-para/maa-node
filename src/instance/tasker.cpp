@@ -5,7 +5,7 @@
 #include <MaaFramework/MaaAPI.h>
 
 std::optional<Napi::External<TaskerInfo>>
-    tasker_create(Napi::Env env, std::optional<Napi::Function> callback)
+    tasker_create(Napi::Env env, ExtContextInfo* context, std::optional<Napi::Function> callback)
 {
     MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
@@ -19,10 +19,12 @@ std::optional<Napi::External<TaskerInfo>>
     handle = MaaTaskerCreate(cb, ctx);
 
     if (handle) {
-        return Napi::External<TaskerInfo>::New(
+        auto info = Napi::External<TaskerInfo>::New(
             env,
             new TaskerInfo { handle, ctx },
             &DeleteFinalizer<TaskerInfo*>);
+        context->taskers[handle] = Napi::Weak(info);
+        return info;
     }
     else {
         delete ctx;
@@ -30,8 +32,9 @@ std::optional<Napi::External<TaskerInfo>>
     }
 }
 
-void tasker_destroy(Napi::External<TaskerInfo> info)
+void tasker_destroy(ExtContextInfo* context, Napi::External<TaskerInfo> info)
 {
+    context->taskers.erase(info.Data()->handle);
     info.Data()->dispose();
 }
 
@@ -330,7 +333,10 @@ Napi::Value clear_custom_action(const Napi::CallbackInfo& info)
 }
 */
 
-void load_instance_tasker(Napi::Env env, Napi::Object& exports)
+void load_instance_tasker(
+    Napi::Env env,
+    Napi::Object& exports,
+    Napi::External<ExtContextInfo> context)
 {
     BIND(tasker_create);
     BIND(tasker_destroy);

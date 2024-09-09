@@ -90,7 +90,10 @@ std::optional<std::vector<std::string>> resource_get_task_list(Napi::External<Re
     }
 }
 
-void load_instance_resource(Napi::Env env, Napi::Object& exports)
+void load_instance_resource(
+    Napi::Env env,
+    Napi::Object& exports,
+    Napi::External<ExtContextInfo> context)
 {
     BIND(resource_create);
     BIND(resource_destroy);

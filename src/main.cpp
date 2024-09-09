@@ -1,20 +1,25 @@
+#include "include/info.h"
 #include "include/loader.h"
+#include "include/utils.h"
 
 #include <MaaFramework/MaaAPI.h>
 #include <napi.h>
 
 Napi::Object Init(Napi::Env env, Napi::Object exports)
 {
-    Napi::Value a = exports;
-    load_instance_controller(env, exports);
-    // load_instance_resource(env, exports);
-    load_instance_tasker(env, exports);
-    // load_task_syncContext(env, exports);
-    // load_utility_buffer(env, exports);
-    load_utility_utility(env, exports);
+    auto extCtx = Napi::External<ExtContextInfo>::New(
+        env,
+        new ExtContextInfo,
+        &DeleteFinalizer<ExtContextInfo*>);
+    exports["__context"] = extCtx;
+
+    load_instance_context(env, exports, extCtx);
+    load_instance_controller(env, exports, extCtx);
+    load_instance_resource(env, exports, extCtx);
+    load_instance_tasker(env, exports, extCtx);
+    load_utility_utility(env, exports, extCtx);
     // load_config_config(env, exports);
     // load_device_device(env, exports);
-    // load_execAgent_execAgent(env, exports);
     // load_win32_win32Window(env, exports);
 
     /*

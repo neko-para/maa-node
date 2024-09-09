@@ -1,9 +1,10 @@
 #pragma once
 
 #include "utils.h"
-#include "wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
+
+#include <map>
 
 template <typename Type, typename Impl>
 struct InfoBase
@@ -95,4 +96,9 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
     //     }
     //     custom_actions.clear();
     // }
+};
+
+struct ExtContextInfo
+{
+    std::map<MaaTasker*, Napi::Reference<Napi::External<TaskerInfo>>> taskers;
 };

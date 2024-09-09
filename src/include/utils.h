@@ -343,4 +343,3 @@ using ImageListBuffer = ListBuffer<
     &MaaImageListBufferAppend,
     &MaaImageListBufferRemove,
     &MaaImageListBufferClear>;
-

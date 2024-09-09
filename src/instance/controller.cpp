@@ -325,7 +325,10 @@ Napi::Value controller_get_image(const Napi::CallbackInfo& info)
 }
 */
 
-void load_instance_controller(Napi::Env env, Napi::Object& exports)
+void load_instance_controller(
+    Napi::Env env,
+    Napi::Object& exports,
+    Napi::External<ExtContextInfo> context)
 {
     BIND(adb_controller_create);
     BIND(win32_controller_create);

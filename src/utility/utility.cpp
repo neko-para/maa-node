@@ -38,7 +38,10 @@ bool set_global_option_debug_message(MaaLoggingLevel flag)
     return MaaSetGlobalOption(MaaGlobalOption_DebugMessage, &flag, sizeof(flag));
 }
 
-void load_utility_utility(Napi::Env env, Napi::Object& exports)
+void load_utility_utility(
+    Napi::Env env,
+    Napi::Object& exports,
+    Napi::External<ExtContextInfo> context)
 {
     BIND(version);
     BIND(set_global_option_log_dir);
