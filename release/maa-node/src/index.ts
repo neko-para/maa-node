@@ -1,4 +1,4 @@
-export * from './maa'
+export * as api from './maa'
 export * from './controller'
 export * from './resource'
 export * from './tasker'

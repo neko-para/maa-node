@@ -27,13 +27,13 @@ Napi::Promise context_run_recognition(
     std::string overr,
     Napi::ArrayBuffer image_buf)
 {
-    ImageBuffer image;
-    image.set(image_buf);
+    auto image = std::make_shared<ImageBuffer>();
+    image->set(image_buf);
     auto handle = info.Data();
     auto worker = new SimpleAsyncWork<MaaRecoId, "context_run_recognition">(
         env,
-        [handle, entry, overr, image = std::move(image)]() {
-            return MaaContextRunRecognition(handle, entry.c_str(), overr.c_str(), image);
+        [handle, entry, overr, image]() mutable {
+            return MaaContextRunRecognition(handle, entry.c_str(), overr.c_str(), *image);
         });
     worker->Queue();
     return worker->Promise();

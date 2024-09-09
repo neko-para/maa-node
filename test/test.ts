@@ -1,50 +1,55 @@
 import * as maa from './maa'
 
-console.log(maa.version())
+console.log(maa.Global.version)
 
 async function main() {
     const devices = await maa.AdbController.find()
 
-    if (!devices) {
+    console.log(devices)
+
+    if (!devices || devices.length === 0) {
         return
     }
 
-    const ctrl = new maa.AdbController(devices[0])
+    const [name, adb_path, address, screencap_methods, input_methods, config] = devices[0]
+
+    const ctrl = new maa.AdbController(adb_path, address, screencap_methods, input_methods, config)
     ctrl.notify = (msg, detail) => {
         console.log(msg, detail)
     }
-    await ctrl.post_connection()
+    await ctrl.post_connection().wait()
     const res = new maa.Resource()
     res.notify = (msg, detail) => {
         console.log(msg, detail)
     }
-    const inst = new maa.Instance()
-    inst.notify = (msg, detail) => {
+    const tskr = new maa.Tasker()
+    tskr.notify = (msg, detail) => {
         console.log(msg, detail)
     }
-    inst.bind(ctrl)
-    inst.bind(res)
+    tskr.bind(ctrl)
+    tskr.bind(res)
 
-    console.log(inst.inited)
+    console.log(tskr.inited)
 
-    inst.register_custom_recognizer('direct', (ctx, name, param, image) => {
-        return {
-            out_box: {
+    res.register_custom_recognizer('direct', function () {
+        return [
+            {
                 x: 0,
                 y: 0,
                 width: 0,
                 height: 0
             },
-            out_detail: '111'
-        }
+            '111'
+        ]
     })
 
-    inst.register_custom_action('print', (ctx, name, param, box, detail) => {
+    res.register_custom_action('print', function () {
+        console.log(this.param)
         return true
     })
 
-    await inst
-        .post_task('test', {
+    await tskr
+        .post_pipeline('test', {
             test: {
                 action: 'StartApp',
                 package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'
@@ -64,7 +69,7 @@ async function main() {
         })
         .wait()
 
-    inst.destroy()
+    tskr.destroy()
     ctrl.destroy()
     res.destroy()
 }
