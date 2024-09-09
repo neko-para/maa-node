@@ -67,6 +67,57 @@ export class TaskerBase {
             throw 'Tasker post_stop failed'
         }
     }
+
+    clear_cache() {
+        if (!maa.tasker_clear_cache(this.handle)) {
+            throw 'Tasker clear_cache failed'
+        }
+    }
+
+    recognition_detail(id: maa.RecoId) {
+        const dt = maa.tasker_get_recognition_detail(this.handle, id)
+        if (dt) {
+            const [name, hit, box, detail, raw, draws] = dt
+            return {
+                name,
+                hit,
+                box,
+                detail,
+                raw,
+                draws
+            }
+        } else {
+            return null
+        }
+    }
+
+    node_detail(id: maa.NodeId) {
+        const dt = maa.tasker_get_node_detail(this.handle, id)
+        if (dt) {
+            const [name, reco_id, times, completed] = dt
+            return {
+                name,
+                reco: this.recognition_detail(reco_id),
+                times,
+                completed
+            }
+        } else {
+            return null
+        }
+    }
+
+    task_detail(id: maa.TaskId) {
+        const dt = maa.tasker_get_task_detail(this.handle, id)
+        if (dt) {
+            const [entry, node_ids] = dt
+            return {
+                entry,
+                nodes: node_ids.map(i => this.node_detail(i))
+            }
+        } else {
+            return null
+        }
+    }
 }
 
 export class Tasker extends TaskerBase {

@@ -50,20 +50,20 @@ export declare function context_run_pipeline(
     context: ContextHandle,
     entry: string,
     pipeline_override: string
-): TaskId
+): Promise<TaskId>
 export declare function context_run_recognition(
     context: ContextHandle,
     entry: string,
     pipeline_override: string,
     image: ImageData
-): RecoId
+): Promise<RecoId>
 export declare function context_run_action(
     context: ContextHandle,
     entry: string,
     pipeline_override: string,
     box: Rect,
     reco_detail: string
-): NodeId
+): Promise<NodeId>
 export declare function context_override_pipeline(
     context: ContextHandle,
     pipeline_override: string
@@ -161,7 +161,7 @@ export declare function resource_destroy(handle: ResourceHandle): void
 export declare function resource_register_custom_recognizer(
     handle: ResourceHandle,
     name: string,
-    recognizer: CustomRecognizerAnalyzeCallback
+    recognizer: CustomRecognizerCallback
 ): boolean
 export declare function resource_unregister_custom_recognizer(
     handle: ResourceHandle,
@@ -171,7 +171,7 @@ export declare function resource_clear_custom_recognizer(handle: ResourceHandle)
 export declare function resource_register_custom_action(
     handle: ResourceHandle,
     name: string,
-    action: CustomActionRunCallback
+    action: CustomActionCallback
 ): boolean
 export declare function resource_unregister_custom_action(
     handle: ResourceHandle,

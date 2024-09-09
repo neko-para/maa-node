@@ -5,13 +5,23 @@
 
 #include <MaaFramework/MaaAPI.h>
 
-MaaTaskId
-    context_run_pipeline(Napi::External<MaaContext> info, std::string entry, std::string overr)
+Napi::Promise context_run_pipeline(
+    Napi::Env env,
+    Napi::External<MaaContext> info,
+    std::string entry,
+    std::string overr)
 {
-    return MaaContextRunPipeline(info.Data(), entry.c_str(), overr.c_str());
+    auto handle = info.Data();
+    auto worker =
+        new SimpleAsyncWork<MaaTaskId, "context_run_pipeline">(env, [handle, entry, overr]() {
+            return MaaContextRunPipeline(handle, entry.c_str(), overr.c_str());
+        });
+    worker->Queue();
+    return worker->Promise();
 }
 
-MaaRecoId context_run_recognition(
+Napi::Promise context_run_recognition(
+    Napi::Env env,
     Napi::External<MaaContext> info,
     std::string entry,
     std::string overr,
@@ -19,17 +29,32 @@ MaaRecoId context_run_recognition(
 {
     ImageBuffer image;
     image.set(image_buf);
-    return MaaContextRunRecognition(info.Data(), entry.c_str(), overr.c_str(), image);
+    auto handle = info.Data();
+    auto worker = new SimpleAsyncWork<MaaRecoId, "context_run_recognition">(
+        env,
+        [handle, entry, overr, image = std::move(image)]() {
+            return MaaContextRunRecognition(handle, entry.c_str(), overr.c_str(), image);
+        });
+    worker->Queue();
+    return worker->Promise();
 }
 
-MaaNodeId context_run_action(
+Napi::Promise context_run_action(
+    Napi::Env env,
     Napi::External<MaaContext> info,
     std::string entry,
     std::string overr,
     MaaRect box,
     std::string detail)
 {
-    return MaaContextRunAction(info.Data(), entry.c_str(), overr.c_str(), &box, detail.c_str());
+    auto handle = info.Data();
+    auto worker = new SimpleAsyncWork<MaaNodeId, "context_run_action">(
+        env,
+        [handle, entry, overr, box, detail]() {
+            return MaaContextRunAction(handle, entry.c_str(), overr.c_str(), &box, detail.c_str());
+        });
+    worker->Queue();
+    return worker->Promise();
 }
 
 bool context_override_pipeline(Napi::External<MaaContext> info, std::string overr)

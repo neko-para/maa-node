@@ -1,5 +1,23 @@
+import { Context } from './context'
 import { Job, JobSource } from './job'
 import maa from './maa'
+
+export interface CustomRecognizerSelf {
+    context: Context
+    id: maa.TaskId
+    name: string
+    param: unknown
+    image: maa.ImageData
+}
+
+export interface CustomActionSelf {
+    context: Context
+    id: maa.TaskId
+    name: string
+    param: unknown
+    box: maa.Rect
+    detail: string
+}
 
 export class ResourceBase {
     handle: maa.ResourceHandle
@@ -17,6 +35,81 @@ export class ResourceBase {
 
     destroy() {
         maa.resource_destroy(this.handle)
+    }
+
+    register_custom_recognizer(
+        name: string,
+        func: (
+            this: CustomRecognizerSelf
+        ) => maa.MaybePromise<[out_box: maa.Rect, out_detail: string] | null>
+    ) {
+        if (
+            !maa.resource_register_custom_recognizer(
+                this.handle,
+                name,
+                (context, id, name, param, image) => {
+                    const self: CustomRecognizerSelf = {
+                        context: new Context(context),
+                        id,
+                        name,
+                        param: JSON.parse(param),
+                        image
+                    }
+                    return func.apply(self)
+                }
+            )
+        ) {
+            throw 'Resource register_custom_recognizer failed'
+        }
+    }
+
+    unregister_custom_recognizer(name: string) {
+        if (!maa.resource_unregister_custom_recognizer(this.handle, name)) {
+            throw 'Resource unregister_custom_recognizer failed'
+        }
+    }
+
+    clear_custom_recognizer() {
+        if (!maa.resource_clear_custom_recognizer(this.handle)) {
+            throw 'Resource clear_custom_recognizer failed'
+        }
+    }
+
+    register_custom_action(
+        name: string,
+        func: (this: CustomActionSelf) => maa.MaybePromise<boolean>
+    ) {
+        if (
+            !maa.resource_register_custom_action(
+                this.handle,
+                name,
+                (context, id, name, param, box, detail) => {
+                    const self: CustomActionSelf = {
+                        context: new Context(context),
+                        id,
+                        name,
+                        param: JSON.parse(param),
+                        box,
+                        detail
+                    }
+                    return func.apply(self)
+                }
+            )
+        ) {
+            throw 'Resource register_custom_action failed'
+        }
+    }
+
+    unregister_custom_action(name: string) {
+        if (!maa.resource_unregister_custom_action(this.handle, name)) {
+            throw 'Resource unregister_custom_action failed'
+        }
+    }
+
+    clear_custom_action() {
+        if (!maa.resource_clear_custom_action(this.handle)) {
+            throw 'Resource clear_custom_action failed'
+        }
     }
 
     post_path(path: string) {
