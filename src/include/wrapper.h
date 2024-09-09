@@ -325,6 +325,78 @@ struct JSConvert<std::vector<T>>
     }
 };
 
+template <typename... Args>
+struct JSConvert<std::tuple<Args...>>
+{
+    using T = std::tuple<Args...>;
+
+    static T from_value(Napi::Value val)
+    {
+        if (!val.IsArray()) {
+            throw MaaNodeException { fmt::format(
+                "expect array({}), got {} [{}]",
+                typeid(T).name(),
+                val.ToString().Utf8Value(),
+                TypeOf(val)) };
+        }
+        auto arr = val.As<Napi::Array>();
+        if (arr.Length() != std::tuple_size_v<T>) {
+            throw MaaNodeException { fmt::format(
+                "expect array of length {}, got {} [{}]",
+                std::tuple_size_v<T>,
+                val.ToString().Utf8Value(),
+                TypeOf(val)) };
+        }
+        T result;
+        [&]<std::size_t... I>(std::index_sequence<I...>) {
+            ((std::get<I>(result) = JSConvert<std::tuple_element_t<I, T>>::from_value(arr[I])),
+             ...);
+        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        return result;
+    }
+
+    static Napi::Value to_value(Napi::Env env, const T& val)
+    {
+        auto arr = Napi::Array::New(env, std::tuple_size_v<T>);
+        [&]<std::size_t... I>(std::index_sequence<I...>) {
+            ((arr.Set(I, JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))),
+             ...);
+        }(std::make_index_sequence<std::tuple_size_v<T>> {});
+        return arr;
+    }
+};
+
+template <>
+struct JSConvert<MaaRect>
+{
+    static MaaRect from_value(Napi::Value val)
+    {
+        if (!val.IsObject()) {
+            throw MaaNodeException { fmt::format(
+                "expect object(MaaRect), got {} [{}]",
+                val.ToString().Utf8Value(),
+                TypeOf(val)) };
+        }
+        auto obj = val.As<Napi::Object>();
+        return MaaRect {
+            JSConvert<int32_t>::from_value(obj.Get("x")),
+            JSConvert<int32_t>::from_value(obj.Get("y")),
+            JSConvert<int32_t>::from_value(obj.Get("width")),
+            JSConvert<int32_t>::from_value(obj.Get("height")),
+        };
+    }
+
+    static Napi::Value to_value(Napi::Env env, const MaaRect& val)
+    {
+        auto obj = Napi::Object::New(env);
+        obj["x"] = val.x;
+        obj["y"] = val.y;
+        obj["width"] = val.width;
+        obj["height"] = val.height;
+        return obj;
+    }
+};
+
 template <typename F>
 struct FuncTraits
 {

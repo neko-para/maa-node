@@ -161,6 +161,86 @@ bool tasker_clear_cache(Napi::External<TaskerInfo> info)
     return MaaTaskerClearCache(info.Data()->handle);
 }
 
+std::optional<std::tuple<
+    std::string,
+    bool,
+    MaaRect,
+    std::string,
+    Napi::ArrayBuffer,
+    std::vector<Napi::ArrayBuffer>>>
+    tasker_get_recognition_detail(Napi::Env env, Napi::External<TaskerInfo> info, MaaRecoId id)
+{
+    StringBuffer name;
+    MaaBool hit;
+    MaaRect box;
+    StringBuffer detail;
+    ImageBuffer raw;
+    ImageListBuffer draws;
+    if (MaaTaskerGetRecognitionDetail(
+            info.Data()->handle,
+            id,
+            name,
+            &hit,
+            &box,
+            detail,
+            raw,
+            draws)) {
+        return std::make_tuple(
+            name.str(),
+            !!hit,
+            box,
+            detail.str(),
+            raw.data(env),
+            draws.as_vector([&](auto draw) { return draw.data(env); }));
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<std::tuple<std::string, MaaRecoId, MaaSize, bool>>
+    tasker_get_node_detail(Napi::External<TaskerInfo> info, MaaNodeId id)
+{
+    StringBuffer name;
+    MaaRecoId reco_id;
+    MaaSize times;
+    MaaBool completed;
+    if (MaaTaskerGetNodeDetail(info.Data()->handle, id, name, &reco_id, &times, &completed)) {
+        return std::make_tuple(name.str(), reco_id, times, completed);
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<std::tuple<std::string, std::vector<MaaNodeId>>>
+    tasker_get_task_detail(Napi::External<TaskerInfo> info, MaaTaskId id)
+{
+    MaaSize node_size;
+    if (!MaaTaskerGetTaskDetail(info.Data()->handle, id, nullptr, nullptr, &node_size)) {
+        return std::nullopt;
+    }
+    StringBuffer entry;
+    std::vector<MaaNodeId> nodes(node_size);
+    if (MaaTaskerGetTaskDetail(info.Data()->handle, id, entry, nodes.data(), &node_size)) {
+        return std::make_tuple(entry.str(), nodes);
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
+std::optional<MaaNodeId> tasker_get_latest_node(Napi::External<TaskerInfo> info, std::string name)
+{
+    MaaNodeId latest_id;
+    if (MaaTaskerGetLatestNode(info.Data()->handle, name.c_str(), &latest_id)) {
+        return latest_id;
+    }
+    else {
+        return std::nullopt;
+    }
+}
+
 /*
 Napi::Value register_custom_recognizer(const Napi::CallbackInfo& info)
 {
@@ -268,4 +348,8 @@ void load_instance_tasker(Napi::Env env, Napi::Object& exports)
     BIND(tasker_get_resource);
     BIND(tasker_get_controller);
     BIND(tasker_clear_cache);
+    BIND(tasker_get_recognition_detail);
+    BIND(tasker_get_node_detail);
+    BIND(tasker_get_task_detail);
+    BIND(tasker_get_latest_node);
 }
