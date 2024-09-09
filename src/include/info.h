@@ -14,6 +14,8 @@ struct InfoBase
 
 struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 {
+    constexpr static std::string_view name = "Controller";
+
     CallbackContext* callback = nullptr;
     CallbackContext* custom_controller = nullptr;
     bool disposed = false;
@@ -38,6 +40,8 @@ struct ControllerInfo : InfoBase<MaaController*, ControllerInfo>
 
 struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 {
+    constexpr static std::string_view name = "Resource";
+
     CallbackContext* callback = nullptr;
     bool disposed = false;
 
@@ -58,6 +62,8 @@ struct ResourceInfo : InfoBase<MaaResource*, ResourceInfo>
 
 struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
 {
+    constexpr static std::string_view name = "Tasker";
+
     CallbackContext* callback = nullptr;
     Napi::Reference<Napi::External<ResourceInfo>> resource;
     Napi::Reference<Napi::External<ControllerInfo>> controller;
@@ -100,5 +106,7 @@ struct TaskerInfo : InfoBase<MaaTasker*, TaskerInfo>
 
 struct ExtContextInfo
 {
+    constexpr static std::string_view name = "ExtContextInfo";
+
     std::map<MaaTasker*, Napi::Reference<Napi::External<TaskerInfo>>> taskers;
 };
