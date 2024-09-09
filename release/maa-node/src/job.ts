@@ -18,8 +18,9 @@ export class Job<Id, Source extends JobSource<Id>> {
         return this.source.status(this.id)
     }
 
-    wait(): Promise<maa.Status> {
-        return this.source.wait(this.id)
+    async wait(): Promise<this> {
+        await this.source.wait(this.id)
+        return this
     }
 
     get done() {

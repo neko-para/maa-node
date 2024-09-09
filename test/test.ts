@@ -2,6 +2,8 @@ import * as maa from './maa'
 
 console.log(maa.Global.version)
 
+maa.Global.stdout_level = 'All'
+
 async function main() {
     const devices = await maa.AdbController.find()
 
