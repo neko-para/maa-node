@@ -468,7 +468,9 @@ struct JSConvert<std::tuple<Args...>>
     {
         auto arr = Napi::Array::New(env, std::tuple_size_v<T>);
         [&]<std::size_t... I>(std::index_sequence<I...>) {
-            ((arr.Set(I, JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))),
+            ((arr.Set(
+                 static_cast<uint32_t>(I),
+                 JSConvert<std::tuple_element_t<I, T>>::to_value(env, std::get<I>(val)))),
              ...);
         }(std::make_index_sequence<std::tuple_size_v<T>> {});
         return arr;

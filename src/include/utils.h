@@ -299,9 +299,9 @@ struct ListBuffer
 
     Wrapper at(size_t i) const { return Wrapper(At(buffer, i)); }
 
-    bool append(const Wrapper& wrapper) { Append(buffer, wrapper); }
+    bool append(const Wrapper& wrapper) { return Append(buffer, wrapper); }
 
-    bool remove(size_t i) { Remove(buffer, i); }
+    bool remove(size_t i) { return Remove(buffer, i); }
 
     void clear() { Clear(buffer); }
 

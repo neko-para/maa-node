@@ -108,11 +108,6 @@ MaaTaskId tasker_post_action(Napi::External<TaskerInfo> info, std::string entry,
     return MaaTaskerPostAction(info.Data()->handle, entry.c_str(), overr.c_str());
 }
 
-MaaTaskId tasker_override_pipeline(Napi::External<TaskerInfo> info, MaaTaskId id, std::string overr)
-{
-    return MaaTaskerOverridePipeline(info.Data()->handle, id, overr.c_str());
-}
-
 MaaStatus tasker_status(Napi::External<TaskerInfo> info, MaaTaskId id)
 {
     return MaaTaskerStatus(info.Data()->handle, id);
@@ -346,7 +341,6 @@ void load_instance_tasker(
     BIND(tasker_post_pipeline);
     BIND(tasker_post_recognition);
     BIND(tasker_post_action);
-    BIND(tasker_override_pipeline);
     BIND(tasker_status);
     BIND(tasker_wait);
     BIND(tasker_running);
