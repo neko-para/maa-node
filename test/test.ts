@@ -2,12 +2,10 @@ import * as maa from './maa'
 
 console.log(maa.Global.version)
 
-maa.Global.stdout_level = 'All'
+maa.Global.log_dir = 'debug'
 
 async function main() {
     const devices = await maa.AdbController.find()
-
-    console.log(devices)
 
     if (!devices || devices.length === 0) {
         return
@@ -15,7 +13,13 @@ async function main() {
 
     const [name, adb_path, address, screencap_methods, input_methods, config] = devices[0]
 
-    const ctrl = new maa.AdbController(adb_path, address, screencap_methods, input_methods, config)
+    const ctrl = new maa.AdbController(
+        adb_path,
+        address,
+        (screencap_methods as bigint) - BigInt(maa.api.AdbScreencapMethod.RawByNetcat),
+        input_methods,
+        config
+    )
     ctrl.notify = (msg, detail) => {
         console.log(msg, detail)
     }
@@ -51,7 +55,7 @@ async function main() {
     })
 
     await tskr
-        .post_pipeline('test', {
+        .post_pipeline('testCustom', {
             test: {
                 action: 'StartApp',
                 package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'

@@ -40,7 +40,8 @@ export class ResourceBase {
     register_custom_recognizer(
         name: string,
         func: (
-            this: CustomRecognizerSelf
+            this: CustomRecognizerSelf,
+            self: CustomRecognizerSelf
         ) => maa.MaybePromise<[out_box: maa.Rect, out_detail: string] | null>
     ) {
         if (
@@ -55,7 +56,7 @@ export class ResourceBase {
                         param: JSON.parse(param),
                         image
                     }
-                    return func.apply(self)
+                    return func.apply(self, [self])
                 }
             )
         ) {
@@ -77,7 +78,7 @@ export class ResourceBase {
 
     register_custom_action(
         name: string,
-        func: (this: CustomActionSelf) => maa.MaybePromise<boolean>
+        func: (this: CustomActionSelf, self: CustomActionSelf) => maa.MaybePromise<boolean>
     ) {
         if (
             !maa.resource_register_custom_action(
@@ -92,7 +93,7 @@ export class ResourceBase {
                         box,
                         detail
                     }
-                    return func.apply(self)
+                    return func.apply(self, [self])
                 }
             )
         ) {

@@ -33,18 +33,6 @@ export class ControllerBase {
         }
     }
 
-    set default_app_package_entry(value: string) {
-        if (!maa.controller_set_option_default_app_package_entry(this.handle, value)) {
-            throw 'Controller set default_app_package_entry failed'
-        }
-    }
-
-    set default_app_package(value: string) {
-        if (!maa.controller_set_option_default_app_package(this.handle, value)) {
-            throw 'Controller set default_app_package failed'
-        }
-    }
-
     set recording(value: boolean) {
         if (!maa.controller_set_option_recording(this.handle, value)) {
             throw 'Controller set recording failed'

@@ -104,28 +104,6 @@ bool controller_set_option_screenshot_target_short_side(
         sizeof(size));
 }
 
-bool controller_set_option_default_app_package_entry(
-    Napi::External<ControllerInfo> info,
-    std::string entry)
-{
-    return MaaControllerSetOption(
-        info.Data()->handle,
-        MaaCtrlOption_DefaultAppPackageEntry,
-        entry.data(),
-        entry.size());
-}
-
-bool controller_set_option_default_app_package(
-    Napi::External<ControllerInfo> info,
-    std::string entry)
-{
-    return MaaControllerSetOption(
-        info.Data()->handle,
-        MaaCtrlOption_DefaultAppPackage,
-        entry.data(),
-        entry.size());
-}
-
 bool controller_set_option_recording(Napi::External<ControllerInfo> info, bool flag)
 {
     return MaaControllerSetOption(
@@ -337,8 +315,6 @@ void load_instance_controller(
     BIND(controller_destroy);
     BIND(controller_set_option_screenshot_target_long_side);
     BIND(controller_set_option_screenshot_target_short_side);
-    BIND(controller_set_option_default_app_package_entry);
-    BIND(controller_set_option_default_app_package);
     BIND(controller_set_option_recording);
     BIND(controller_post_connection);
     // BIND(controller_post_click);

@@ -102,14 +102,6 @@ export declare function controller_set_option_screenshot_target_short_side(
     handle: ControllerHandle,
     value: number
 ): boolean
-export declare function controller_set_option_default_app_package_entry(
-    handle: ControllerHandle,
-    value: string
-): boolean
-export declare function controller_set_option_default_app_package(
-    handle: ControllerHandle,
-    value: string
-): boolean
 export declare function controller_set_option_recording(
     handle: ControllerHandle,
     value: boolean
