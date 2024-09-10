@@ -8,18 +8,20 @@ export interface JobSource<Id> {
 export class Job<Id, Source extends JobSource<Id>> {
     source: Source
     id: Id
+    #status: maa.Status | null
 
     constructor(source: Source, id: Id) {
         this.source = source
         this.id = id
+        this.#status = null
     }
 
     get status(): maa.Status {
-        return this.source.status(this.id)
+        return this.#status ?? this.source.status(this.id)
     }
 
     async wait(): Promise<this> {
-        await this.source.wait(this.id)
+        this.#status = await this.source.wait(this.id)
         return this
     }
 

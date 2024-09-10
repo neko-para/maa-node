@@ -54,26 +54,32 @@ async function main() {
         return true
     })
 
-    await tskr
-        .post_pipeline('testCustom', {
-            test: {
-                action: 'StartApp',
-                package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'
-            },
-            testCustom: {
-                recognition: 'Custom',
-                custom_recognition: 'direct',
-                custom_recognition_param: {
-                    msg: 'Hello world!'
-                },
-                action: 'Custom',
-                custom_action: 'print',
-                custom_action_param: {
-                    msg: 'Hello world!'
-                }
-            }
-        })
-        .wait()
+    if (
+        (
+            await tskr
+                .post_pipeline('testCustom', {
+                    test: {
+                        action: 'StartApp',
+                        package: 'com.android.gallery3d/com.android.gallery3d.app.GalleryActivity'
+                    },
+                    testCustom: {
+                        recognition: 'Custom',
+                        custom_recognition: 'direct',
+                        custom_recognition_param: {
+                            msg: 'Hello world!'
+                        },
+                        action: 'Custom',
+                        custom_action: 'print',
+                        custom_action_param: {
+                            msg: 'Hello world!'
+                        }
+                    }
+                })
+                .wait()
+        ).success
+    ) {
+        console.log('success!')
+    }
 
     tskr.destroy()
     ctrl.destroy()

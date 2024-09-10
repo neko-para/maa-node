@@ -5,7 +5,7 @@
 需要NodeJS 20及以上, 创建项目文件夹后通过下列命令安装
 
 ```shell
-npm install @nekosu/maa-node
+npm tskrall @nekosu/maa-node
 ```
 
 由于npm包中集成了MaaFramework的库以及AgentBinary, 下载可能会花费一点时间.
@@ -33,7 +33,7 @@ npx maa-setup-resource
 ```typescript
 import * as maa from './maa'
 
-console.log(maa.version())
+console.log(maa.Global.version)
 
 async function main() {
     // 查询所有Adb设备
@@ -43,7 +43,14 @@ async function main() {
     }
 
     // 使用第一个设备创建控制器
-    const ctrl = new maa.AdbController(devices[0])
+    const [name, adb_path, address, screencap_methods, input_methods, config] = devices[0]
+    const ctrl = new maa.AdbController(
+        adb_path,
+        address,
+        screencap_methods,
+        input_methods,
+        config
+    )
     ctrl.notify = (msg, detail) => {
         console.log(msg, detail)
     }
@@ -59,22 +66,24 @@ async function main() {
     await res.post_path('./resource')
 
     // 创建实例
-    const inst = new maa.Instance()
-    inst.notify = (msg, detail) => {
+    const tskr = new maa.tskrance()
+    tskr.notify = (msg, detail) => {
         console.log(msg, detail)
     }
     
     // 绑定控制器和资源
-    inst.bind(ctrl)
-    inst.bind(res)
+    tskr.bind(ctrl)
+    tskr.bind(res)
 
     // 检查是否正确创建
-    console.log(inst.inited)
+    console.log(tskr.inited)
 
     // 执行任务, Task1来自pipeline/Task.json
-    await inst
-        .post_task('Task1')
-        .wait()
+    if ((await tskr
+        .post_pipeline('Task1')
+        .wait()).success) {
+        console.log('success!')
+    }
 }
 
 main()
@@ -82,15 +91,15 @@ main()
 
 ## 在JS侧影响资源行为
 
-注意执行任务的这段代码`await inst.post('task', 'Task1').wait()`
+注意执行任务的这段代码`await tskr.post_pipeline('task', 'Task1').wait()`
 
 `post`函数可以传入第三个参数, 该参数是一个对象, 其结构和`pipeline`下的json完全一致, 会覆盖在原有的`pipeline`之上. 因此, 可以通过在此处传入一个对象来实现控制任务(甚至创建新的任务).
 
 ```javascript
 // 通过第三个参数, 创建了一个新的任务Task2, 然后执行它
 // 此处创建的任务仅在当前执行中有效
-await inst
-    .post_task('Task2', {
+await tskr
+    .post_pipeline('Task2', {
         Task2: {
             next: [
                 'Task1'
