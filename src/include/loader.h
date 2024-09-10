@@ -32,3 +32,4 @@ void load_toolkit_find(
     Napi::Env env,
     Napi::Object& exports,
     Napi::External<ExtContextInfo> context);
+void load_toolkit_pi(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context);

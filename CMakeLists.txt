@@ -62,7 +62,8 @@ set(maa_src
     src/instance/resource.cpp
     src/instance/tasker.cpp
     src/toolkit/config.cpp
-    src/toolkit/find.cpp)
+    src/toolkit/find.cpp
+    src/toolkit/pi.cpp)
 
 add_library(maa SHARED ${maa_src} ${CMAKE_JS_SRC})
 set_target_properties(maa PROPERTIES PREFIX "" SUFFIX ".node")

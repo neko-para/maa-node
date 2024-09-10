@@ -7,4 +7,4 @@ node_modules
 .DS_Store
 *.png
 dist
-maa.log
+debug

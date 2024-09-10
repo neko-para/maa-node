@@ -27,7 +27,7 @@ export type Rect = {
 
 type MaybePromise<T> = T | Promise<T>
 
-export type NotificationCallbak = (message: string, details_json: string) => MaybePromise<void>
+export type NotificationCallback = (message: string, details_json: string) => MaybePromise<void>
 export type CustomRecognizerCallback = (
     context: ContextHandle,
     task_id: TaskId,
@@ -81,13 +81,13 @@ export declare function adb_controller_create(
     input_methods: ScreencapOrInputMethods,
     config: string,
     agent_path: string,
-    callback: NotificationCallbak | null
+    callback: NotificationCallback | null
 ): ControllerHandle | null
 export declare function win32_controller_create(
     handle: DesktopHandle,
     screencap_methods: ScreencapOrInputMethods,
     input_methods: ScreencapOrInputMethods,
-    callback: NotificationCallbak | null
+    callback: NotificationCallback | null
 ): ControllerHandle | null
 // export declare function custom_controller_create(
 //     custom_callback: CustomControllerCallback,
@@ -148,7 +148,9 @@ export declare function controller_get_uuid(handle: ControllerHandle): string | 
 
 // resource.cpp
 
-export declare function resource_create(callback: NotificationCallbak | null): ResourceHandle | null
+export declare function resource_create(
+    callback: NotificationCallback | null
+): ResourceHandle | null
 export declare function resource_destroy(handle: ResourceHandle): void
 export declare function resource_register_custom_recognizer(
     handle: ResourceHandle,
@@ -180,7 +182,7 @@ export declare function resource_get_task_list(handle: ResourceHandle): string[]
 
 // tasker.cpp
 
-export declare function tasker_create(callback: NotificationCallbak | null): TaskerHandle | null
+export declare function tasker_create(callback: NotificationCallback | null): TaskerHandle | null
 export declare function tasker_destroy(handle: TaskerHandle): void
 export declare function tasker_bind_resource(
     handle: TaskerHandle,
@@ -264,6 +266,15 @@ export declare function set_global_option_recording(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
 export declare function set_global_option_show_hit_draw(value: boolean): boolean
 export declare function set_global_option_debug_message(value: boolean): boolean
+
+// pi.cpp
+
+export declare function pi_run_cli(
+    resource_path: string,
+    user_path: string,
+    directly: boolean,
+    callback: NotificationCallback | null
+): Promise<boolean>
 
 // export declare function unwrap_window_hwnd(hwnd: Win32Hwnd): string
 // export declare function wrap_window_hwnd(hwnd: string): Win32Hwnd | null
