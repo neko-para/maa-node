@@ -3,7 +3,7 @@ name: 'Build'
 on:
     push:
         branches:
-            - dev
+            - dev_module
         paths-ignore:
             - '**.md'
             - '.vscode'
@@ -73,7 +73,7 @@ jobs:
                   path: 'install'
 
     linux:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
         strategy:
             matrix:
                 arch: ['amd64', 'arm64']
@@ -108,17 +108,26 @@ jobs:
                   path: maa
                   name: MAA-linux-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
 
+            - name: Install compiler
+              if: ${{ matrix.arch == 'amd64' }}
+              shell: bash
+              run: |
+                  sudo add-apt-repository universe
+                  sudo apt-get update
+                  sudo apt-get install g++14
+
             - name: Install cross compiler
               if: ${{ matrix.arch != 'amd64' }}
               shell: bash
               run: |
+                  sudo add-apt-repository universe
                   sudo apt-get update
-                  sudo apt-get install g++-aarch64-linux-gnu
+                  sudo apt-get install g++14-aarch64-linux-gnu
 
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--cc gcc --cxx g++' || '--cc aarch64-linux-gnu-gcc --cxx aarch64-linux-gnu-g++' }} ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }}
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--cc gcc --cxx g++' || '--cc aarch64-linux-gnu-gcc-14 --cxx aarch64-linux-gnu-g++-14' }} ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }}
                   cmake --install build --prefix install
 
             - name: Copy files
@@ -168,10 +177,18 @@ jobs:
                   path: maa
                   name: MAA-macos-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
 
+            - name: Install compiler
+              run: |
+                  brew install llvm
+
             - name: Build maa.node
               shell: bash
               run: |
-                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }} --CDCMAKE_OSX_ARCHITECTURES=${{ matrix.arch == 'amd64' && 'x86_64' || 'arm64' }}
+                  LLVM_PREFIX=$(brew --prefix llvm)
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }} \
+                    --CDCMAKE_OSX_ARCHITECTURES=${{ matrix.arch == 'amd64' && 'x86_64' || 'arm64' }} \
+                    --CDCMAKE_C_COMPILER=${LLVM_PREFIX}/bin/clang \
+                    --CDCMAKE_CXX_COMPILER=${LLVM_PREFIX}/bin/clang++
                   cmake --install build --prefix install
 
             - name: Copy files

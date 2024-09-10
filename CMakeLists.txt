@@ -13,6 +13,23 @@ endif()
 
 if(APPLE)
   set(CMAKE_INSTALL_RPATH "@loader_path;@executable_path")
+
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_COMPILER_VERSION
+                                               VERSION_GREATER_EQUAL 18)
+    set(MAC_CLANG_FIX_LINK
+        "/opt/local/libexec/llvm-18/lib/libc++" # mac port
+        "/usr/local/opt/llvm/lib/c++" # brew mac 13.*
+        "/opt/homebrew/opt/llvm/lib/c++" # brew mac 14.*
+    )
+
+    foreach(DIR ${MAC_CLANG_FIX_LINK})
+      if(IS_DIRECTORY ${DIR})
+        add_link_options("-L${DIR}")
+        set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH};${DIR};${DIR}/..")
+        set(CMAKE_BUILD_RPATH "${CMAKE_BUILD_RPATH};${DIR};${DIR}/..")
+      endif()
+    endforeach()
+  endif()
 elseif(UNIX)
   set(CMAKE_INSTALL_RPATH "$ORIGIN")
 endif()
