@@ -4,6 +4,7 @@
 #include "../include/wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
+#include <string>
 
 Napi::Promise context_run_pipeline(
     Napi::Env env,
@@ -62,6 +63,20 @@ bool context_override_pipeline(Napi::External<MaaContext> info, std::string over
     return MaaContextOverridePipeline(info.Data(), overr.c_str());
 }
 
+bool context_override_next(
+    Napi::External<MaaContext> info,
+    std::string name,
+    std::vector<std::string> next)
+{
+    StringListBuffer buffer;
+    buffer.set_vector(next, [](auto str) {
+        StringBuffer buf;
+        buf.set(str);
+        return buf;
+    });
+    return MaaContextOverrideNext(info.Data(), name.c_str(), buffer);
+}
+
 MaaTaskId context_get_task_id(Napi::External<MaaContext> info)
 {
     return MaaContextGetTaskId(info.Data());
@@ -96,6 +111,7 @@ void load_instance_context(
     BIND(context_run_recognition);
     BIND(context_run_action);
     BIND(context_override_pipeline);
+    BIND(context_override_next);
     BIND(context_get_task_id);
     BIND(context_get_tasker);
     BIND(context_clone);

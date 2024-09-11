@@ -68,6 +68,11 @@ export declare function context_override_pipeline(
     context: ContextHandle,
     pipeline_override: string
 ): boolean
+export declare function context_override_next(
+    context: ContextHandle,
+    name: string,
+    next: string[]
+): boolean
 export declare function context_get_task_id(context: ContextHandle): TaskId
 export declare function context_get_tasker(context: ContextHandle): TaskerHandle
 export declare function context_clone(context: ContextHandle): ContextHandle
@@ -269,6 +274,11 @@ export declare function set_global_option_debug_message(value: boolean): boolean
 
 // pi.cpp
 
+export declare function pi_register_custom_recognizer(
+    name: string,
+    recognizer: CustomRecognizerCallback
+): void
+export declare function pi_register_custom_action(name: string, action: CustomActionCallback): void
 export declare function pi_run_cli(
     resource_path: string,
     user_path: string,

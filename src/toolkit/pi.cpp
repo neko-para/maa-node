@@ -5,6 +5,31 @@
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
+void pi_register_custom_recognizer(
+    Napi::Env env,
+    ExtContextInfo* context,
+    std::string name,
+    Napi::Function callback)
+{
+    auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
+    MaaToolkitProjectInterfaceRegisterCustomRecognition(
+        name.c_str(),
+        CustomRecognizerCallback,
+        ctx);
+    context->picli.emplace_back(ctx);
+}
+
+void pi_register_custom_action(
+    Napi::Env env,
+    ExtContextInfo* context,
+    std::string name,
+    Napi::Function callback)
+{
+    auto ctx = new CallbackContext(env, callback, "CustomActionCallback");
+    MaaToolkitProjectInterfaceRegisterCustomAction(name.c_str(), CustomActionCallback, ctx);
+    context->picli.emplace_back(ctx);
+}
+
 Napi::Promise pi_run_cli(
     Napi::Env env,
     std::string resource_path,
@@ -40,5 +65,7 @@ Napi::Promise pi_run_cli(
 
 void load_toolkit_pi(Napi::Env env, Napi::Object& exports, Napi::External<ExtContextInfo> context)
 {
+    BIND(pi_register_custom_recognizer);
+    BIND(pi_register_custom_action);
     BIND(pi_run_cli);
 }

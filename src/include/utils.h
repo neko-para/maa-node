@@ -142,6 +142,11 @@ struct StringBufferRefer : public HandlerReferHolder<const MaaStringBuffer>
 {
     using HandlerReferHolder::HandlerReferHolder;
 
+    StringBufferRefer(const StringBuffer& buf)
+        : HandlerReferHolder(buf.buffer)
+    {
+    }
+
     operator const MaaStringBuffer*() const { return buffer; }
 
     std::string str() const
@@ -178,6 +183,11 @@ struct ImageBuffer
 struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
 {
     using HandlerReferHolder::HandlerReferHolder;
+
+    ImageBufferRefer(const ImageBuffer& buf)
+        : HandlerReferHolder(buf.buffer)
+    {
+    }
 
     operator const MaaImageBuffer*() const { return buffer; }
 
@@ -248,6 +258,15 @@ struct ListBuffer
             result.push_back(func(at(i)));
         }
         return result;
+    }
+
+    template <typename Vec, typename Mapper>
+    void set_vector(const Vec& vec, Mapper func)
+    {
+        clear();
+        for (const auto& val : vec) {
+            append(func(val));
+        }
     }
 };
 

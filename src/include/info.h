@@ -179,4 +179,5 @@ struct ExtContextInfo
     constexpr static std::string_view name = "ExtContextInfo";
 
     std::map<MaaTasker*, Napi::Reference<Napi::External<TaskerInfo>>> taskers;
+    std::vector<std::unique_ptr<CallbackContext>> picli;
 };
