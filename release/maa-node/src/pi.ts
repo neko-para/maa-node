@@ -1,20 +1,18 @@
 import { Context } from './context'
 import * as maa from './maa'
-import { CustomActionSelf, CustomRecognizerSelf } from './types'
+import {
+    CustomActionCallback,
+    CustomActionSelf,
+    CustomRecognizerCallback,
+    CustomRecognizerSelf
+} from './types'
 
 export const Pi = {
     __running: false,
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {},
 
-    register_custom_recognizer(
-        id: maa.Id,
-        name: string,
-        func: (
-            this: CustomRecognizerSelf,
-            self: CustomRecognizerSelf
-        ) => maa.MaybePromise<[out_box: maa.Rect, out_detail: string] | null>
-    ) {
+    register_custom_recognizer(id: maa.Id, name: string, func: CustomRecognizerCallback) {
         maa.pi_register_custom_recognizer(id, name, (context, id, task, name, param, image) => {
             const self: CustomRecognizerSelf = {
                 context: new Context(context),
@@ -28,11 +26,7 @@ export const Pi = {
         })
     },
 
-    register_custom_action(
-        id: maa.Id,
-        name: string,
-        func: (this: CustomActionSelf, self: CustomActionSelf) => maa.MaybePromise<boolean>
-    ) {
+    register_custom_action(id: maa.Id, name: string, func: CustomActionCallback) {
         maa.pi_register_custom_action(id, name, (context, id, task, name, param, recoId, box) => {
             const self: CustomActionSelf = {
                 context: new Context(context),

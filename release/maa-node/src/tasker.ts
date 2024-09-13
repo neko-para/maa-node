@@ -3,6 +3,55 @@ import { Job, JobSource } from './job'
 import maa from './maa'
 import { ResourceBase } from './resource'
 
+type TaskDetail = ReturnType<TaskerBase['task_detail']>
+
+class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
+    #tasker: TaskerBase
+
+    constructor(tasker: TaskerBase, source: JobSource<maa.TaskId>, id: maa.TaskId) {
+        super(source, id)
+
+        this.#tasker = tasker
+    }
+
+    get() {
+        if (this.done) {
+            return this.#tasker.task_detail(this.id)
+        } else {
+            return null
+        }
+    }
+
+    wait() {
+        const pro = super.wait() as Promise<this> & {
+            get: () => Promise<TaskDetail>
+            status: Promise<maa.Status>
+            done: Promise<boolean>
+            success: Promise<boolean>
+            failed: Promise<boolean>
+        }
+        pro.get = () => {
+            return new Promise(resolve => {
+                pro.then(self => {
+                    resolve(self.get())
+                })
+            })
+        }
+        for (const key of ['status', 'done', 'success', 'failed']) {
+            Object.defineProperty(pro, key, {
+                get: () => {
+                    return new Promise(resolve => {
+                        pro.then(self => {
+                            resolve((self as any)[key])
+                        })
+                    })
+                }
+            })
+        }
+        return pro
+    }
+}
+
 export class TaskerBase {
     handle: maa.TaskerHandle
     #source: JobSource<maa.TaskId>
@@ -34,21 +83,24 @@ export class TaskerBase {
     }
 
     post_pipeline(entry: string, param: Record<string, unknown> = {}) {
-        return new Job(
+        return new TaskJob(
+            this,
             this.#source,
             maa.tasker_post_pipeline(this.handle, entry, JSON.stringify(param))
         )
     }
 
     post_recognition(entry: string, param: Record<string, unknown> = {}) {
-        return new Job(
+        return new TaskJob(
+            this,
             this.#source,
             maa.tasker_post_recognition(this.handle, entry, JSON.stringify(param))
         )
     }
 
     post_action(entry: string, param: Record<string, unknown> = {}) {
-        return new Job(
+        return new TaskJob(
+            this,
             this.#source,
             maa.tasker_post_action(this.handle, entry, JSON.stringify(param))
         )

@@ -118,6 +118,67 @@ MaaCtrlId controller_post_connection(Napi::External<ControllerInfo> info)
     return MaaControllerPostConnection(info.Data()->handle);
 }
 
+MaaCtrlId controller_post_click(Napi::External<ControllerInfo> info, int32_t x, int32_t y)
+{
+    return MaaControllerPostClick(info.Data()->handle, x, y);
+}
+
+MaaCtrlId controller_post_swipe(
+    Napi::External<ControllerInfo> info,
+    int32_t x1,
+    int32_t y1,
+    int32_t x2,
+    int32_t y2,
+    int32_t duration)
+{
+    return MaaControllerPostSwipe(info.Data()->handle, x1, y1, x2, y2, duration);
+}
+
+MaaCtrlId controller_post_press_key(Napi::External<ControllerInfo> info, int32_t keycode)
+{
+    return MaaControllerPostPressKey(info.Data()->handle, keycode);
+}
+
+MaaCtrlId controller_post_input_text(Napi::External<ControllerInfo> info, std::string text)
+{
+    return MaaControllerPostInputText(info.Data()->handle, text.c_str());
+}
+
+MaaCtrlId controller_post_start_app(Napi::External<ControllerInfo> info, std::string intent)
+{
+    return MaaControllerPostStartApp(info.Data()->handle, intent.c_str());
+}
+
+MaaCtrlId controller_post_stop_app(Napi::External<ControllerInfo> info, std::string intent)
+{
+    return MaaControllerPostStopApp(info.Data()->handle, intent.c_str());
+}
+
+MaaCtrlId controller_post_touch_down(
+    Napi::External<ControllerInfo> info,
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure)
+{
+    return MaaControllerPostTouchDown(info.Data()->handle, contact, x, y, pressure);
+}
+
+MaaCtrlId controller_post_touch_move(
+    Napi::External<ControllerInfo> info,
+    int32_t contact,
+    int32_t x,
+    int32_t y,
+    int32_t pressure)
+{
+    return MaaControllerPostTouchMove(info.Data()->handle, contact, x, y, pressure);
+}
+
+MaaCtrlId controller_post_touch_up(Napi::External<ControllerInfo> info, int32_t contact)
+{
+    return MaaControllerPostTouchUp(info.Data()->handle, contact);
+}
+
 MaaCtrlId controller_post_screencap(Napi::External<ControllerInfo> info)
 {
     return MaaControllerPostScreencap(info.Data()->handle);
@@ -202,106 +263,6 @@ Napi::Value custom_controller_create(const Napi::CallbackInfo& info)
         return info.Env().Null();
     }
 }
-
-Napi::Value controller_post_click(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 3);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto x = CheckAsNumber(info[1]).Int32Value();
-    auto y = CheckAsNumber(info[2]).Int32Value();
-    auto ctrlId = MaaControllerPostClick(handle, x, y);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_swipe(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 6);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto x1 = CheckAsNumber(info[1]).Int32Value();
-    auto y1 = CheckAsNumber(info[2]).Int32Value();
-    auto x2 = CheckAsNumber(info[3]).Int32Value();
-    auto y2 = CheckAsNumber(info[4]).Int32Value();
-    auto duration = CheckAsNumber(info[5]).Int32Value();
-    auto ctrlId = MaaControllerPostSwipe(handle, x1, y1, x2, y2, duration);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_press_key(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto key = CheckAsNumber(info[1]).Int32Value();
-    auto ctrlId = MaaControllerPostPressKey(handle, key);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_input_text(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto text = CheckAsString(info[1]);
-    auto ctrlId = MaaControllerPostInputText(handle, text.c_str());
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_start_app(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto intent = CheckAsString(info[1]);
-    auto ctrlId = MaaControllerPostStartApp(handle, intent.c_str());
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_stop_app(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto intent = CheckAsString(info[1]);
-    auto ctrlId = MaaControllerPostStopApp(handle, intent.c_str());
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_touch_down(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 5);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto contact = CheckAsNumber(info[1]).Int32Value();
-    auto x = CheckAsNumber(info[2]).Int32Value();
-    auto y = CheckAsNumber(info[3]).Int32Value();
-    auto pressure = CheckAsNumber(info[4]).Int32Value();
-    auto ctrlId = MaaControllerPostTouchDown(handle, contact, x, y, pressure);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_touch_move(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 5);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto contact = CheckAsNumber(info[1]).Int32Value();
-    auto x = CheckAsNumber(info[2]).Int32Value();
-    auto y = CheckAsNumber(info[3]).Int32Value();
-    auto pressure = CheckAsNumber(info[4]).Int32Value();
-    auto ctrlId = MaaControllerPostTouchMove(handle, contact, x, y, pressure);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_post_touch_up(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto contact = CheckAsNumber(info[1]).Int32Value();
-    auto ctrlId = MaaControllerPostTouchUp(handle, contact);
-    return Napi::Number::New(info.Env(), ctrlId);
-}
-
-Napi::Value controller_get_image(const Napi::CallbackInfo& info)
-{
-    CheckCount(info, 2);
-    auto handle = ControllerInfo::FromValue(info[0])->handle;
-    auto value = CheckAsExternal<MaaImageBuffer>(info[1]).Data();
-    return Napi::Boolean::New(info.Env(), MaaControllerGetImage(handle, value));
-}
 */
 
 void load_instance_controller(
@@ -317,15 +278,15 @@ void load_instance_controller(
     BIND(controller_set_option_screenshot_target_short_side);
     BIND(controller_set_option_recording);
     BIND(controller_post_connection);
-    // BIND(controller_post_click);
-    // BIND(controller_post_swipe);
-    // BIND(controller_post_press_key);
-    // BIND(controller_post_input_text);
-    // BIND(controller_post_start_app);
-    // BIND(controller_post_stop_app);
-    // BIND(controller_post_touch_down);
-    // BIND(controller_post_touch_move);
-    // BIND(controller_post_touch_up);
+    BIND(controller_post_click);
+    BIND(controller_post_swipe);
+    BIND(controller_post_press_key);
+    BIND(controller_post_input_text);
+    BIND(controller_post_start_app);
+    BIND(controller_post_stop_app);
+    BIND(controller_post_touch_down);
+    BIND(controller_post_touch_move);
+    BIND(controller_post_touch_up);
     BIND(controller_post_screencap);
     BIND(controller_status);
     BIND(controller_wait);

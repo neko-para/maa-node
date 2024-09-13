@@ -39,5 +39,11 @@ export const Global = {
         if (!maa.set_global_option_debug_message(value)) {
             throw 'Global set debug_message failed'
         }
+    },
+
+    config_init_option(user_path: string, default_json = '{}') {
+        if (!maa.config_init_option(user_path, default_json)) {
+            throw 'Global config_init_option failed'
+        }
     }
 }

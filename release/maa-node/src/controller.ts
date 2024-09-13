@@ -43,6 +43,51 @@ export class ControllerBase {
         return new Job(this.#source, maa.controller_post_connection(this.handle))
     }
 
+    post_click(x: number, y: number) {
+        return new Job(this.#source, maa.controller_post_click(this.handle, x, y))
+    }
+
+    post_swipe(x1: number, y1: number, x2: number, y2: number, duration: number) {
+        return new Job(
+            this.#source,
+            maa.controller_post_swipe(this.handle, x1, y1, x2, y2, duration)
+        )
+    }
+
+    post_press_key(keycode: number) {
+        return new Job(this.#source, maa.controller_post_press_key(this.handle, keycode))
+    }
+
+    post_input_text(text: string) {
+        return new Job(this.#source, maa.controller_post_input_text(this.handle, text))
+    }
+
+    post_start_app(intent: string) {
+        return new Job(this.#source, maa.controller_post_start_app(this.handle, intent))
+    }
+
+    post_stop_app(intent: string) {
+        return new Job(this.#source, maa.controller_post_stop_app(this.handle, intent))
+    }
+
+    post_touch_down(contact: number, x: number, y: number, pressure: number) {
+        return new Job(
+            this.#source,
+            maa.controller_post_touch_down(this.handle, contact, x, y, pressure)
+        )
+    }
+
+    post_touch_move(contact: number, x: number, y: number, pressure: number) {
+        return new Job(
+            this.#source,
+            maa.controller_post_touch_move(this.handle, contact, x, y, pressure)
+        )
+    }
+
+    post_touch_up(contact: number) {
+        return new Job(this.#source, maa.controller_post_touch_up(this.handle, contact))
+    }
+
     post_screencap() {
         return new Job(this.#source, maa.controller_post_screencap(this.handle))
     }

@@ -1,7 +1,12 @@
 import { Context } from './context'
 import { Job, JobSource } from './job'
 import maa from './maa'
-import { CustomActionSelf, CustomRecognizerSelf } from './types'
+import {
+    CustomActionCallback,
+    CustomActionSelf,
+    CustomRecognizerCallback,
+    CustomRecognizerSelf
+} from './types'
 
 export class ResourceBase {
     handle: maa.ResourceHandle
@@ -21,13 +26,7 @@ export class ResourceBase {
         maa.resource_destroy(this.handle)
     }
 
-    register_custom_recognizer(
-        name: string,
-        func: (
-            this: CustomRecognizerSelf,
-            self: CustomRecognizerSelf
-        ) => maa.MaybePromise<[out_box: maa.Rect, out_detail: string] | null>
-    ) {
+    register_custom_recognizer(name: string, func: CustomRecognizerCallback) {
         if (
             !maa.resource_register_custom_recognizer(
                 this.handle,
@@ -61,10 +60,7 @@ export class ResourceBase {
         }
     }
 
-    register_custom_action(
-        name: string,
-        func: (this: CustomActionSelf, self: CustomActionSelf) => maa.MaybePromise<boolean>
-    ) {
+    register_custom_action(name: string, func: CustomActionCallback) {
         if (
             !maa.resource_register_custom_action(
                 this.handle,

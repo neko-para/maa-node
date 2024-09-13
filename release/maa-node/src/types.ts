@@ -19,3 +19,12 @@ export interface CustomActionSelf {
     recoId: maa.RecoId
     box: maa.Rect
 }
+
+type CustomCallback<Self, Ret> = (this: Self, self: Self) => maa.MaybePromise<Ret>
+
+export type CustomRecognizerCallback = CustomCallback<
+    CustomRecognizerSelf,
+    [out_box: maa.Rect, out_detail: string] | null
+>
+
+export type CustomActionCallback = CustomCallback<CustomActionSelf, boolean>
