@@ -31,17 +31,20 @@ export type NotificationCallback = (message: string, details_json: string) => Ma
 export type CustomRecognizerCallback = (
     context: ContextHandle,
     task_id: TaskId,
-    recognizer_name: string,
+    current_task_name: string,
+    custom_recognition_name: string,
     custom_recognition_param: string,
-    image: ImageData
+    image: ImageData,
+    roi: Rect
 ) => MaybePromise<[out_box: Rect, out_detail: string] | null>
 export type CustomActionCallback = (
     context: ContextHandle,
     task_id: TaskId,
-    action_name: string,
+    current_task_name: string,
+    custom_action_name: string,
     custom_action_param: string,
-    box: Rect,
-    reco_detail: string
+    reco_id: RecoId,
+    box: Rect
 ) => MaybePromise<boolean>
 
 // context.cpp
@@ -224,7 +227,15 @@ export declare function tasker_get_recognition_detail(
     handle: TaskerHandle,
     reco_id: RecoId
 ):
-    | [name: string, hit: boolean, box: Rect, detail: string, raw: ImageData, draws: ImageData[]]
+    | [
+          name: string,
+          algorithm: string,
+          hit: boolean,
+          box: Rect,
+          detail: string,
+          raw: ImageData,
+          draws: ImageData[]
+      ]
     | null
 export declare function tasker_get_node_detail(
     handle: TaskerHandle,
@@ -275,11 +286,17 @@ export declare function set_global_option_debug_message(value: boolean): boolean
 // pi.cpp
 
 export declare function pi_register_custom_recognizer(
+    id: Id,
     name: string,
     recognizer: CustomRecognizerCallback
 ): void
-export declare function pi_register_custom_action(name: string, action: CustomActionCallback): void
+export declare function pi_register_custom_action(
+    id: Id,
+    name: string,
+    action: CustomActionCallback
+): void
 export declare function pi_run_cli(
+    id: Id,
     resource_path: string,
     user_path: string,
     directly: boolean,

@@ -77,9 +77,10 @@ export class TaskerBase {
     recognition_detail(id: maa.RecoId) {
         const dt = maa.tasker_get_recognition_detail(this.handle, id)
         if (dt) {
-            const [name, hit, box, detail, raw, draws] = dt
+            const [name, algorithm, hit, box, detail, raw, draws] = dt
             return {
                 name,
+                algorithm,
                 hit,
                 box,
                 detail,

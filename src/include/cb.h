@@ -20,9 +20,11 @@ inline void NotificationCallback(const char* message, const char* details_json, 
 inline MaaBool CustomRecognizerCallback(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* recognizer_name,
+    const char* current_task_name,
+    const char* custom_recognition_name,
     const char* custom_recognition_param,
     const MaaImageBuffer* image,
+    const MaaRect* roi,
     void* trans_arg,
     MaaRect* out_box,
     MaaStringBuffer* out_detail)
@@ -34,9 +36,11 @@ inline MaaBool CustomRecognizerCallback(
             return fn.Call({
                 Napi::External<MaaContext>::New(env, context),
                 JSConvert<MaaTaskId>::to_value(env, task_id),
-                Napi::String::New(env, recognizer_name),
+                Napi::String::New(env, current_task_name),
+                Napi::String::New(env, custom_recognition_name),
                 Napi::String::New(env, custom_recognition_param),
                 ImageBufferRefer(image).data(env),
+                JSConvert<MaaRect>::to_value(env, *roi),
             });
         },
         [](Napi::Value res) -> Result {
@@ -62,10 +66,11 @@ inline MaaBool CustomRecognizerCallback(
 inline MaaBool CustomActionCallback(
     MaaContext* context,
     MaaTaskId task_id,
-    const char* action_name,
+    const char* current_task_name,
+    const char* custom_action_name,
     const char* custom_action_param,
+    MaaRecoId reco_id,
     const MaaRect* box,
-    const char* reco_detail,
     void* trans_arg)
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
@@ -75,10 +80,11 @@ inline MaaBool CustomActionCallback(
             return fn.Call({
                 Napi::External<MaaContext>::New(env, context),
                 JSConvert<MaaTaskId>::to_value(env, task_id),
-                Napi::String::New(env, action_name),
+                Napi::String::New(env, current_task_name),
+                Napi::String::New(env, custom_action_name),
                 Napi::String::New(env, custom_action_param),
+                JSConvert<MaaRecoId>::to_value(env, reco_id),
                 JSConvert<MaaRect>::to_value(env, *box),
-                Napi::String::New(env, reco_detail),
             });
         },
         [](Napi::Value res) -> bool {

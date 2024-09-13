@@ -8,11 +8,13 @@
 void pi_register_custom_recognizer(
     Napi::Env env,
     ExtContextInfo* context,
+    uint64_t id,
     std::string name,
     Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
     MaaToolkitProjectInterfaceRegisterCustomRecognition(
+        id,
         name.c_str(),
         CustomRecognizerCallback,
         ctx);
@@ -22,16 +24,18 @@ void pi_register_custom_recognizer(
 void pi_register_custom_action(
     Napi::Env env,
     ExtContextInfo* context,
+    uint64_t id,
     std::string name,
     Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomActionCallback");
-    MaaToolkitProjectInterfaceRegisterCustomAction(name.c_str(), CustomActionCallback, ctx);
+    MaaToolkitProjectInterfaceRegisterCustomAction(id, name.c_str(), CustomActionCallback, ctx);
     context->picli.emplace_back(ctx);
 }
 
 Napi::Promise pi_run_cli(
     Napi::Env env,
+    uint64_t id,
     std::string resource_path,
     std::string user_path,
     bool directly,
@@ -47,8 +51,9 @@ Napi::Promise pi_run_cli(
 
     auto worker = new SimpleAsyncWork<bool, "pi_run_cli">(
         env,
-        [resource_path, user_path, directly, cb, ctx]() {
+        [id, resource_path, user_path, directly, cb, ctx]() {
             return MaaToolkitProjectInterfaceRunCli(
+                id,
                 resource_path.c_str(),
                 user_path.c_str(),
                 directly,

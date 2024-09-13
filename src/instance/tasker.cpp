@@ -163,6 +163,7 @@ bool tasker_clear_cache(Napi::External<TaskerInfo> info)
 
 std::optional<std::tuple<
     std::string,
+    std::string,
     bool,
     MaaRect,
     std::string,
@@ -171,6 +172,7 @@ std::optional<std::tuple<
     tasker_get_recognition_detail(Napi::Env env, Napi::External<TaskerInfo> info, MaaRecoId id)
 {
     StringBuffer name;
+    StringBuffer algorithm;
     MaaBool hit;
     MaaRect box;
     StringBuffer detail;
@@ -180,6 +182,7 @@ std::optional<std::tuple<
             info.Data()->handle,
             id,
             name,
+            algorithm,
             &hit,
             &box,
             detail,
@@ -187,6 +190,7 @@ std::optional<std::tuple<
             draws)) {
         return std::make_tuple(
             name.str(),
+            algorithm.str(),
             !!hit,
             box,
             detail.str(),
