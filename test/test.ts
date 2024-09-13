@@ -2,15 +2,6 @@ import * as maa from './maa'
 
 console.log(maa.Global.version)
 
-maa.Global.log_dir = 'debug'
-
-maa.Pi.notify = (msg, detail) => {
-    console.log(msg, detail)
-}
-maa.Pi.run_cli('/Users/nekosu/Documents/Projects/MAA/MAA1999/assets', 'debug', false)
-
-process.exit(0)
-
 async function main() {
     const devices = await maa.AdbController.find()
 

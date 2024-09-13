@@ -68,6 +68,24 @@ export class TaskerBase {
         }
     }
 
+    get resource() {
+        const res = maa.tasker_get_resource(this.handle)
+        if (res) {
+            return new ResourceBase(res)
+        } else {
+            return null
+        }
+    }
+
+    get controller() {
+        const ctrl = maa.tasker_get_controller(this.handle)
+        if (ctrl) {
+            return new ControllerBase(ctrl)
+        } else {
+            return null
+        }
+    }
+
     clear_cache() {
         if (!maa.tasker_clear_cache(this.handle)) {
             throw 'Tasker clear_cache failed'
