@@ -9,6 +9,7 @@ on:
         paths-ignore:
             - '**.md'
             - '.vscode'
+            - '.github/workflows/test.yml'
     workflow_dispatch:
 
 defaults:
