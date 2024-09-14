@@ -220,7 +220,7 @@ std::optional<std::tuple<std::string, MaaRecoId, MaaSize, bool>>
 std::optional<std::tuple<std::string, std::vector<MaaNodeId>>>
     tasker_get_task_detail(Napi::External<TaskerInfo> info, MaaTaskId id)
 {
-    MaaSize node_size;
+    MaaSize node_size = 0;
     if (!MaaTaskerGetTaskDetail(info.Data()->handle, id, nullptr, nullptr, &node_size)) {
         return std::nullopt;
     }

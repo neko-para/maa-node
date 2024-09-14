@@ -76,6 +76,11 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     DE(MaaWin32InputMethod, SendMessage);
     exports["Win32InputMethod"] = MaaWin32InputMethod_obj;
 
+    auto MaaDbgControllerType_obj = Napi::Object::New(env);
+    DE(MaaDbgControllerType, CarouselImage);
+    DE(MaaDbgControllerType, ReplayRecording);
+    exports["DbgControllerType"] = MaaDbgControllerType_obj;
+
     return exports;
 }
 

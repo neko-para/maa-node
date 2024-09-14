@@ -77,6 +77,43 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
     }
 }
 
+std::optional<Napi::External<ControllerInfo>> dbg_controller_create(
+    Napi::Env env,
+    std::string read_path,
+    std::string write_path,
+    MaaDbgControllerType type,
+    std::string config,
+    std::optional<Napi::Function> callback)
+{
+    MaaNotificationCallback cb = nullptr;
+    CallbackContext* ctx = nullptr;
+    MaaController* handle = nullptr;
+
+    if (callback) {
+        cb = NotificationCallback;
+        ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
+    }
+
+    handle = MaaDbgControllerCreate(
+        read_path.c_str(),
+        write_path.c_str(),
+        type,
+        config.c_str(),
+        cb,
+        ctx);
+
+    if (handle) {
+        return Napi::External<ControllerInfo>::New(
+            env,
+            new ControllerInfo { handle, ctx },
+            &DeleteFinalizer<ControllerInfo*>);
+    }
+    else {
+        delete ctx;
+        return std::nullopt;
+    }
+}
+
 void controller_destroy(Napi::External<ControllerInfo> info)
 {
     info.Data()->dispose();
@@ -273,6 +310,7 @@ void load_instance_controller(
     BIND(adb_controller_create);
     BIND(win32_controller_create);
     // BIND(custom_controller_create);
+    BIND(dbg_controller_create);
     BIND(controller_destroy);
     BIND(controller_set_option_screenshot_target_long_side);
     BIND(controller_set_option_screenshot_target_short_side);

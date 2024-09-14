@@ -3,6 +3,8 @@
 #include "wrapper.h"
 
 #include <MaaFramework/MaaAPI.h>
+#include <cstring>
+#include <iostream>
 #include <napi.h>
 
 #include <functional>
@@ -165,10 +167,10 @@ struct ImageBuffer
 
     Napi::ArrayBuffer data(Napi::Env env) const
     {
-        return Napi::ArrayBuffer::New(
-            env,
-            MaaImageBufferGetEncoded(buffer),
-            MaaImageBufferGetEncodedSize(buffer));
+        auto len = MaaImageBufferGetEncodedSize(buffer);
+        auto buf = Napi::ArrayBuffer::New(env, len);
+        memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
+        return buf;
     }
 
     void set(Napi::ArrayBuffer data) const

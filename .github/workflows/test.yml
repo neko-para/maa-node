@@ -1,0 +1,207 @@
+name: 'Test'
+
+on:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - '**.md'
+            - '.vscode'
+    workflow_dispatch:
+
+defaults:
+    run:
+        shell: bash
+
+jobs:
+    windows:
+        runs-on: 'windows-latest'
+        strategy:
+            matrix:
+                arch: ['amd64', 'arm64']
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'pnpm'
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v6
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  branch: main
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa
+                  name: MAA-win-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+
+            - name: Setup Windows 10 SDK
+              uses: GuillaumeFalourd/setup-windows10-sdk-action@v2
+              with:
+                  sdk-version: 22621
+
+            - name: Build maa.node
+              shell: bash
+              run: |
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '-A x64' || '-A ARM64' }} ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }}
+                  cmake --install build --prefix install
+
+            - name: Copy files
+              shell: bash
+              run: |
+                  cp -r maa/bin/* install/
+                  rm install/MaaPiCli*
+
+            - name: Build wrapper
+              run: |
+                  cd release/maa-node
+                  pnpm i
+                  pnpm run build
+
+            - name: Launch test
+              shell: bash
+              run: |
+                  cd test
+                  npx tsx binding.ts
+
+    linux:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                arch: ['amd64', 'arm64']
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'pnpm'
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v6
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  branch: main
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa
+                  name: MAA-linux-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+
+            - name: Install cross compiler
+              if: ${{ matrix.arch != 'amd64' }}
+              shell: bash
+              run: |
+                  sudo apt-get update
+                  sudo apt-get install g++-aarch64-linux-gnu
+
+            - name: Build maa.node
+              shell: bash
+              run: |
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--cc gcc --cxx g++' || '--cc aarch64-linux-gnu-gcc --cxx aarch64-linux-gnu-g++' }} ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }}
+                  cmake --install build --prefix install
+
+            - name: Copy files
+              shell: bash
+              run: |
+                  cp -r maa/bin/* install/
+                  rm install/MaaPiCli*
+
+            - name: Build wrapper
+              run: |
+                  cd release/maa-node
+                  pnpm i
+                  pnpm run build
+
+            - name: Launch test
+              shell: bash
+              run: |
+                  cd test
+                  npx tsx binding.ts
+
+    macos:
+        runs-on: macos-latest
+        strategy:
+            matrix:
+                arch: ['amd64', 'arm64']
+        env:
+            GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        steps:
+            - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+
+            - uses: pnpm/action-setup@v4
+              with:
+                  version: latest
+
+            - name: Use Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: 'pnpm'
+
+            - name: Install dependencies
+              run: pnpm i
+
+            - name: Download MAA
+              uses: dawidd6/action-download-artifact@v6
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
+                  repo: MaaXYZ/MaaFramework
+                  branch: main
+                  workflow: build.yml
+                  workflow_conclusion: success
+                  path: maa
+                  name: MAA-macos-${{ matrix.arch == 'amd64' && 'x86_64' || 'aarch64' }}
+
+            - name: Build maa.node
+              shell: bash
+              run: |
+                  npx cmake-js build ${{ matrix.arch == 'amd64' && '--a x64' || '-a arm64' }} --CDCMAKE_OSX_ARCHITECTURES=${{ matrix.arch == 'amd64' && 'x86_64' || 'arm64' }}
+                  cmake --install build --prefix install
+
+            - name: Copy files
+              shell: bash
+              run: |
+                  cp -r maa/bin/* install/
+                  rm install/MaaPiCli*
+
+            - name: Build wrapper
+              run: |
+                  cd release/maa-node
+                  pnpm i
+                  pnpm run build
+
+            - name: Launch test
+              shell: bash
+              run: |
+                  cd test
+                  npx tsx binding.ts

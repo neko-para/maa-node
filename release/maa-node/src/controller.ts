@@ -169,6 +169,26 @@ export class Win32Controller extends ControllerBase {
     }
 }
 
+export class DbgController extends ControllerBase {
+    constructor(read_path: string, write_path: string, type: maa.Uint64, config: string) {
+        let ws: WeakRef<this>
+        const h = maa.dbg_controller_create(
+            read_path,
+            write_path,
+            type,
+            config,
+            (message, details_json) => {
+                ws.deref()?.notify(message, details_json)
+            }
+        )
+        if (!h) {
+            throw 'DbgController create failed'
+        }
+        super(h)
+        ws = new WeakRef(this)
+    }
+}
+
 /*
 export abstract class CustomControllerActor {
     abstract connect(): maa.MaybePromise<boolean>

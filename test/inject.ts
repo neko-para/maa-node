@@ -1,9 +1,12 @@
+import { existsSync } from 'fs'
+
 declare module globalThis {
     let MaaAPI: any
 }
 
-if (process.platform === 'win32') {
-    globalThis.MaaAPI = require('../build/maa.node')
-} else {
-    globalThis.MaaAPI = require('../build/Release/maa.node')
+for (const p of ['../build/maa.node', '../build/Release/maa.node']) {
+    if (existsSync(p)) {
+        globalThis.MaaAPI = require(p)
+        break
+    }
 }

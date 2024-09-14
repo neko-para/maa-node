@@ -4,8 +4,9 @@ export type TaskerHandle = { __brand: 'TaskerHandle' }
 export type ContextHandle = { __brand: 'ContextHandle' }
 export type DesktopHandle = { __brand: 'DesktopHandle' }
 
-type Id = number | bigint
-type ScreencapOrInputMethods = number | bigint
+type Uint64 = number | bigint
+type Id = Uint64
+type ScreencapOrInputMethods = Uint64
 
 export type ResId = Id & { __brand: 'ResId' }
 export type CtrlId = Id & { __brand: 'CtrlId' }
@@ -101,6 +102,13 @@ export declare function win32_controller_create(
 //     custom_callback: CustomControllerCallback,
 //     callback: NotificationCallbak | null
 // ): ControllerHandle | null
+export declare function dbg_controller_create(
+    read_path: string,
+    write_path: string,
+    type: Uint64,
+    config: string,
+    callback: NotificationCallback | null
+): ControllerHandle | null
 export declare function controller_destroy(handle: ControllerHandle): void
 export declare function controller_set_option_screenshot_target_long_side(
     handle: ControllerHandle,
@@ -335,3 +343,4 @@ export declare const Win32ScreencapMethod: Record<
     ScreencapOrInputMethods
 >
 export declare const Win32InputMethod: Record<'Seize' | 'SendMessage', ScreencapOrInputMethods>
+export declare const DbgControllerType: Record<'CarouselImage' | 'ReplayRecording', Uint64>
