@@ -89,6 +89,15 @@ jobs:
         env:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
+            - name: Update system
+              run: |
+                  pacman -Syu --noconfirm
+
+            - name: Install dep
+              run: |
+                  pacman -Sy
+                  pacman -S --noconfirm cmake python ccache ninja git
+
             - uses: actions/checkout@v4
               with:
                   submodules: recursive
