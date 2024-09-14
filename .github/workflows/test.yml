@@ -203,5 +203,10 @@ jobs:
             - name: Launch test
               shell: bash
               run: |
+                  brew install llvm
+
+            - name: Launch test
+              shell: bash
+              run: |
                   cd test
                   npx tsx binding.ts
