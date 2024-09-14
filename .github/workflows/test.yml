@@ -82,6 +82,7 @@ jobs:
 
     linux:
         runs-on: ubuntu-latest
+        container: archlinux:base-devel
         strategy:
             matrix:
                 arch: ['amd64']
@@ -120,8 +121,8 @@ jobs:
               if: ${{ matrix.arch != 'amd64' }}
               shell: bash
               run: |
-                  sudo apt-get update
-                  sudo apt-get install g++-aarch64-linux-gnu
+                  pacman -Syu
+                  pacman -Sy aarch64-linux-gnu-gcc
 
             - name: Build maa.node
               shell: bash
@@ -201,7 +202,7 @@ jobs:
                   pnpm i
                   pnpm run build
 
-            - name: Launch test
+            - name: Install llvm
               shell: bash
               run: |
                   brew install llvm
