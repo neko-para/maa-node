@@ -126,7 +126,7 @@ jobs:
               shell: bash
               run: |
                   pacman -Syu
-                  pacman -Sy aarch64-linux-gnu-gcc
+                  pacman -S --noconfirm aarch64-linux-gnu-gcc
 
             - name: Build maa.node
               shell: bash
