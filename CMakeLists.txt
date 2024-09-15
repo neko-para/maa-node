@@ -51,6 +51,7 @@ include(
   ${CMAKE_CURRENT_LIST_DIR}/maa/share/cmake/MaaFramework/MaaFramework.cmake)
 
 add_definitions(-DNAPI_VERSION=8)
+add_definitions(-DNODE_API_NO_EXTERNAL_BUFFERS_ALLOWED)
 
 include_directories(${CMAKE_JS_INC})
 

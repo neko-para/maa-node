@@ -195,10 +195,10 @@ struct ImageBufferRefer : public HandlerReferHolder<const MaaImageBuffer>
 
     Napi::ArrayBuffer data(Napi::Env env) const
     {
-        return Napi::ArrayBuffer::New(
-            env,
-            MaaImageBufferGetEncoded(buffer),
-            MaaImageBufferGetEncodedSize(buffer));
+        auto len = MaaImageBufferGetEncodedSize(buffer);
+        auto buf = Napi::ArrayBuffer::New(env, len);
+        memcpy(buf.Data(), MaaImageBufferGetEncoded(buffer), len);
+        return buf;
     }
 };
 
