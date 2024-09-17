@@ -52,11 +52,60 @@ class TaskJob extends Job<maa.TaskId, JobSource<maa.TaskId>> {
     }
 }
 
+export type TaskerNotify = {
+    task_id: maa.TaskId
+    entry: string
+    hash: string
+    uuid: string
+} & (
+    | {
+          msg: 'Task.Started' | 'Task.Completed' | 'Task.Failed'
+      }
+    | {
+          msg: 'Debug.RecognitionResult' | 'Debug.Hit'
+          current: string
+          recognition: {
+              reco_id: maa.RecoId
+              name: string
+              /**
+               * Won't be `null` for msg `Debug.Hit`
+               */
+              box: maa.FlatRect | null
+              detail: string
+          }
+      }
+    | {
+          msg: 'Focus.ReadyToRun' | 'Focus.Completed' | 'Debug.ReadyToRun' | 'Debug.Completed'
+          current: string
+          node: {
+              node_id: maa.NodeId
+              name: string
+              reco_id: maa.RecoId
+              times: number
+              completed: boolean
+          }
+      }
+    | {
+          msg: 'Debug.ListToRecognize' | 'Debug.MissAll'
+          current: string
+          list: string[]
+      }
+)
+
 export class TaskerBase {
     handle: maa.TaskerHandle
     #source: JobSource<maa.TaskId>
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
+
+    set parsed_notify(cb: (msg: TaskerNotify) => maa.MaybePromise<void>) {
+        this.notify = (msg, details) => {
+            return cb({
+                msg: msg.replace(/^Task(?:er)?\./, '') as any,
+                ...JSON.parse(details)
+            })
+        }
+    }
 
     constructor(handle: maa.TaskerHandle) {
         this.handle = handle

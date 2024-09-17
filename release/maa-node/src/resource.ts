@@ -8,11 +8,30 @@ import {
     CustomRecognizerSelf
 } from './types'
 
+export type ResourceNotify = { res_id: maa.ResId; path: string } & (
+    | {
+          msg: 'StartLoading'
+      }
+    | {
+          msg: 'LoadingCompleted' | 'LoadingFailed'
+          hash: string
+      }
+)
+
 export class ResourceBase {
     handle: maa.ResourceHandle
     #source: JobSource<maa.ResId>
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
+
+    set parsed_notify(cb: (msg: ResourceNotify) => maa.MaybePromise<void>) {
+        this.notify = (msg, details) => {
+            return cb({
+                msg: msg.replace(/^Resource\./, '') as any,
+                ...JSON.parse(details)
+            })
+        }
+    }
 
     constructor(handle: maa.ResourceHandle) {
         this.handle = handle

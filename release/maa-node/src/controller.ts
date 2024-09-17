@@ -3,11 +3,53 @@ import path from 'path'
 import { Job, JobSource } from './job'
 import maa from './maa'
 
+export type ControllerNotify =
+    | ({
+          adb: string
+          address: string
+      } & (
+          | {
+                msg: 'UUIDGot'
+                uuid: string
+            }
+          | {
+                msg: 'UUIDGetFailed'
+            }
+          | {
+                msg: 'ConnectSuccess'
+            }
+          | {
+                msg: 'ConnectFailed'
+                why: 'ConnectFailed' | 'UUIDGetFailed'
+            }
+          | {
+                msg:
+                    | 'ScreencapInited'
+                    | 'ScreencapInitFailed'
+                    | 'TouchinputInited'
+                    | 'TouchinputInitFailed'
+            }
+      ))
+    | {
+          msg: 'Action.Started' | 'Action.Completed' | 'Action.Failed'
+          ctrl_id: maa.CtrlId
+          uuid: string
+      }
+
 export class ControllerBase {
     handle: maa.ControllerHandle
     #source: JobSource<maa.CtrlId>
 
     notify(message: string, details_json: string): maa.MaybePromise<void> {}
+
+    set parsed_notify(cb: (msg: ControllerNotify) => maa.MaybePromise<void>) {
+        this.notify = (msg, details) => {
+            return cb({
+                msg: msg.replace(/^Controller\./, '') as any,
+                ...JSON.parse(details)
+            })
+        }
+    }
 
     constructor(handle: maa.ControllerHandle) {
         this.handle = handle

@@ -26,6 +26,8 @@ export type Rect = {
     height: number
 }
 
+export type FlatRect = [x: number, y: number, width: number, height: number]
+
 type MaybePromise<T> = T | Promise<T>
 
 export type NotificationCallback = (message: string, details_json: string) => MaybePromise<void>
