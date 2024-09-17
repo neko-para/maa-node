@@ -139,22 +139,6 @@ export class TaskerBase {
         )
     }
 
-    post_recognition(entry: string, param: Record<string, unknown> = {}) {
-        return new TaskJob(
-            this,
-            this.#source,
-            maa.tasker_post_recognition(this.handle, entry, JSON.stringify(param))
-        )
-    }
-
-    post_action(entry: string, param: Record<string, unknown> = {}) {
-        return new TaskJob(
-            this,
-            this.#source,
-            maa.tasker_post_action(this.handle, entry, JSON.stringify(param))
-        )
-    }
-
     get inited() {
         return maa.tasker_inited(this.handle)
     }

@@ -91,20 +91,6 @@ async function main() {
     }
     console.log('pipeline detail:', detail)
 
-    detail = await tskr.post_recognition('Rec', ppover).wait().get()
-    if (!detail) {
-        console.log('reco failed')
-        return 1
-    }
-    console.log('reco detail:', detail)
-
-    detail = await tskr.post_action('Rec', ppover).wait().get()
-    if (!detail) {
-        console.log('act failed')
-        return 1
-    }
-    console.log('act detail:', detail)
-
     return 0
 }
 

@@ -216,16 +216,6 @@ export declare function tasker_post_pipeline(
     entry: string,
     pipeline_override: string
 ): TaskId
-export declare function tasker_post_recognition(
-    handle: TaskerHandle,
-    entry: string,
-    pipeline_override: string
-): TaskId
-export declare function tasker_post_action(
-    handle: TaskerHandle,
-    entry: string,
-    pipeline_override: string
-): TaskId
 export declare function tasker_status(handle: TaskerHandle, task_id: TaskId): Status
 export declare function tasker_wait(handle: TaskerHandle, task_id: TaskId): Promise<Status>
 export declare function tasker_running(handle: TaskerHandle): boolean
