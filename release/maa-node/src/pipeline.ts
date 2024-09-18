@@ -523,7 +523,7 @@ type PipelineWaitFreezeBuilderState<
           })
 
 export function pp(): PipelineBuilderState {
-    const self = new Proxy(
+    const self: any = new Proxy(
         {
             __json: {}
         },
@@ -536,7 +536,7 @@ export function pp(): PipelineBuilderState {
                         return (val: unknown) => {
                             target.__json[key] = val
 
-                            const sub_self = new Proxy(
+                            const sub_self: any = new Proxy(
                                 { __json: {} },
                                 {
                                     get(sub_target: { __json: any }, sub_key: string) {
@@ -591,7 +591,7 @@ export function pp(): PipelineBuilderState {
                         return (val: unknown) => {
                             target.__json[key] = val
 
-                            const sub_self = new Proxy(
+                            const sub_self: any = new Proxy(
                                 { __json: {} },
                                 {
                                     get(sub_target: { __json: any }, sub_key: string) {
@@ -651,7 +651,7 @@ export function pp(): PipelineBuilderState {
                         }
                     case 'pre_wait_freezes':
                     case 'post_wait_freezes': {
-                        const sub_self = new Proxy(
+                        const sub_self: any = new Proxy(
                             { __json: {} },
                             {
                                 get(sub_target: { __json: any }, sub_key: string) {
@@ -690,5 +690,5 @@ export function pp(): PipelineBuilderState {
             }
         }
     )
-    return self as any
+    return self
 }
