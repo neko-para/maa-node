@@ -6,6 +6,10 @@
 
 #include <MaaFramework/MaaAPI.h>
 
+#if defined(_WIN32)
+#include <Windows.h>
+#endif
+
 std::optional<Napi::External<ControllerInfo>> adb_controller_create(
     Napi::Env env,
     std::string adb_path,
@@ -49,11 +53,18 @@ std::optional<Napi::External<ControllerInfo>> adb_controller_create(
 
 std::optional<Napi::External<ControllerInfo>> win32_controller_create(
     Napi::Env env,
-    Napi::External<void> hwnd,
+    __DesktopHandle* hwnd,
     MaaWin32ScreencapMethod screencap_methods,
     MaaWin32InputMethod input_methods,
     std::optional<Napi::Function> callback)
 {
+    void* h = static_cast<void*>(hwnd);
+#if defined(_WIN32)
+    if (!IsWindow(static_cast<HWND>(h))) {
+        return std::nullopt;
+    }
+#endif
+
     MaaNotificationCallback cb = nullptr;
     CallbackContext* ctx = nullptr;
     MaaController* handle = nullptr;
@@ -63,7 +74,7 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
         ctx = new CallbackContext { env, callback.value(), "NotificationCallback" };
     }
 
-    handle = MaaWin32ControllerCreate(hwnd.Data(), screencap_methods, input_methods, cb, ctx);
+    handle = MaaWin32ControllerCreate(hwnd, screencap_methods, input_methods, cb, ctx);
 
     if (handle) {
         return Napi::External<ControllerInfo>::New(

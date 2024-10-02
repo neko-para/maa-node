@@ -5,15 +5,6 @@
 #include <MaaFramework/MaaAPI.h>
 #include <MaaToolkit/MaaToolkitAPI.h>
 
-template <>
-struct JSConvert<void*>
-{
-    static Napi::Value to_value(Napi::Env env, void* val)
-    {
-        return Napi::External<void>::New(env, val);
-    }
-};
-
 Napi::Promise find_adb(Napi::Env env, std::optional<std::string> adb)
 {
     using AdbInfo = std::tuple<
@@ -60,7 +51,7 @@ Napi::Promise find_adb(Napi::Env env, std::optional<std::string> adb)
 
 Napi::Promise find_desktop(Napi::Env env)
 {
-    using DesktopInfo = std::tuple<void*, std::string, std::string>;
+    using DesktopInfo = std::tuple<__DesktopHandle*, std::string, std::string>;
     auto worker = new SimpleAsyncWork<std::optional<std::vector<DesktopInfo>>, "find_desktop">(
         env,
         []() -> std::optional<std::vector<DesktopInfo>> {
@@ -75,7 +66,7 @@ Napi::Promise find_desktop(Napi::Env env)
             for (size_t i = 0; i < size; i++) {
                 auto dev = MaaToolkitDesktopWindowListAt(list, i);
                 infos[i] = std::make_tuple(
-                    MaaToolkitDesktopWindowGetHandle(dev),
+                    static_cast<__DesktopHandle*>(MaaToolkitDesktopWindowGetHandle(dev)),
                     std::string(MaaToolkitDesktopWindowGetClassName(dev)),
                     std::string(MaaToolkitDesktopWindowGetWindowName(dev)));
             }

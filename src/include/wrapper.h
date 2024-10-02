@@ -467,6 +467,28 @@ struct JSConvert<MaaRect>
     }
 };
 
+struct __DesktopHandle;
+
+template <>
+struct JSConvert<__DesktopHandle*>
+{
+    static std::string name() { return "String<DesktopHandle>"; }
+
+    static __DesktopHandle* from_value(Napi::Value val)
+    {
+        if (!val.IsString()) {
+            throw MaaNodeException { fmt::format("expect {}, got {}", name(), DumpValue(val)) };
+        }
+        auto xval = std::strtoull(val.As<Napi::String>().Utf8Value().c_str(), nullptr, 16);
+        return reinterpret_cast<__DesktopHandle*>(static_cast<size_t>(xval));
+    }
+
+    static Napi::Value to_value(Napi::Env env, __DesktopHandle* val)
+    {
+        return Napi::String::New(env, fmt::format("{:p}", static_cast<void*>(val)));
+    }
+};
+
 template <typename F>
 struct FuncTraits
 {

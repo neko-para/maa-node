@@ -2,7 +2,7 @@ export type ResourceHandle = { __brand: 'ResourceHandle' }
 export type ControllerHandle = { __brand: 'ControllerHandle' }
 export type TaskerHandle = { __brand: 'TaskerHandle' }
 export type ContextHandle = { __brand: 'ContextHandle' }
-export type DesktopHandle = { __brand: 'DesktopHandle' }
+export type DesktopHandle = string & { __brand: 'DesktopHandle' }
 
 type Uint64 = number | bigint
 type Id = Uint64
