@@ -33,9 +33,9 @@ bool set_global_option_show_hit_draw(bool flag)
     return MaaSetGlobalOption(MaaGlobalOption_ShowHitDraw, &flag, sizeof(flag));
 }
 
-bool set_global_option_debug_message(bool flag)
+bool set_global_option_debug_mode(bool flag)
 {
-    return MaaSetGlobalOption(MaaGlobalOption_DebugMessage, &flag, sizeof(flag));
+    return MaaSetGlobalOption(MaaGlobalOption_DebugMode, &flag, sizeof(flag));
 }
 
 void load_utility_utility(
@@ -49,5 +49,5 @@ void load_utility_utility(
     BIND(set_global_option_recording);
     BIND(set_global_option_stdout_level);
     BIND(set_global_option_show_hit_draw);
-    BIND(set_global_option_debug_message);
+    BIND(set_global_option_debug_mode);
 }

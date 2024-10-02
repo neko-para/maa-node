@@ -37,14 +37,14 @@ void resource_destroy(Napi::External<ResourceInfo> info)
     info.Data()->dispose();
 }
 
-bool resource_register_custom_recognizer(
+bool resource_register_custom_recognition(
     Napi::Env env,
     Napi::External<ResourceInfo> info,
     std::string name,
     Napi::Function callback)
 {
     auto ctx = new CallbackContext(env, callback, "CustomRecognizerCallback");
-    if (MaaResourceRegisterCustomRecognizer(
+    if (MaaResourceRegisterCustomRecognition(
             info.Data()->handle,
             name.c_str(),
             CustomRecognizerCallback,
@@ -61,10 +61,10 @@ bool resource_register_custom_recognizer(
     }
 }
 
-bool resource_unregister_custom_recognizer(Napi::External<ResourceInfo> info, std::string name)
+bool resource_unregister_custom_recognition(Napi::External<ResourceInfo> info, std::string name)
 {
     auto& map = info.Data()->custom_recognizers;
-    if (MaaResourceUnregisterCustomRecognizer(info.Data()->handle, name.c_str())) {
+    if (MaaResourceUnregisterCustomRecognition(info.Data()->handle, name.c_str())) {
         delete map[name];
         map.erase(name);
         return true;
@@ -74,9 +74,9 @@ bool resource_unregister_custom_recognizer(Napi::External<ResourceInfo> info, st
     }
 }
 
-bool resource_clear_custom_recognizer(Napi::External<ResourceInfo> info)
+bool resource_clear_custom_recognition(Napi::External<ResourceInfo> info)
 {
-    if (MaaResourceClearCustomRecognizer(info.Data()->handle)) {
+    if (MaaResourceClearCustomRecognition(info.Data()->handle)) {
         info.Data()->ClearRecos();
         return true;
     }
@@ -194,9 +194,9 @@ void load_instance_resource(
 {
     BIND(resource_create);
     BIND(resource_destroy);
-    BIND(resource_register_custom_recognizer);
-    BIND(resource_unregister_custom_recognizer);
-    BIND(resource_clear_custom_recognizer);
+    BIND(resource_register_custom_recognition);
+    BIND(resource_unregister_custom_recognition);
+    BIND(resource_clear_custom_recognition);
     BIND(resource_register_custom_action);
     BIND(resource_unregister_custom_action);
     BIND(resource_clear_custom_action);

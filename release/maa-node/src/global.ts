@@ -35,9 +35,9 @@ export const Global = {
         }
     },
 
-    set debug_message(value: boolean) {
-        if (!maa.set_global_option_debug_message(value)) {
-            throw 'Global set debug_message failed'
+    set debug_mode(value: boolean) {
+        if (!maa.set_global_option_debug_mode(value)) {
+            throw 'Global set debug_mode failed'
         }
     },
 

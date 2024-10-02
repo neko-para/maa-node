@@ -47,7 +47,7 @@ export class ResourceBase {
 
     register_custom_recognizer(name: string, func: CustomRecognizerCallback) {
         if (
-            !maa.resource_register_custom_recognizer(
+            !maa.resource_register_custom_recognition(
                 this.handle,
                 name,
                 (context, id, task, name, param, image) => {
@@ -63,19 +63,19 @@ export class ResourceBase {
                 }
             )
         ) {
-            throw 'Resource register_custom_recognizer failed'
+            throw 'Resource register_custom_recognition failed'
         }
     }
 
     unregister_custom_recognizer(name: string) {
-        if (!maa.resource_unregister_custom_recognizer(this.handle, name)) {
-            throw 'Resource unregister_custom_recognizer failed'
+        if (!maa.resource_unregister_custom_recognition(this.handle, name)) {
+            throw 'Resource unregister_custom_recognition failed'
         }
     }
 
     clear_custom_recognizer() {
-        if (!maa.resource_clear_custom_recognizer(this.handle)) {
-            throw 'Resource clear_custom_recognizer failed'
+        if (!maa.resource_clear_custom_recognition(this.handle)) {
+            throw 'Resource clear_custom_recognition failed'
         }
     }
 

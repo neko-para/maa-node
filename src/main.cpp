@@ -29,7 +29,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports)
     DE(MaaStatus, Invalid);
     DE(MaaStatus, Pending);
     DE(MaaStatus, Running);
-    DE(MaaStatus, Success);
+    DE(MaaStatus, Succeeded);
     DE(MaaStatus, Failed);
     exports["Status"] = MaaStatus_obj;
 

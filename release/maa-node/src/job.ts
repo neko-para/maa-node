@@ -26,11 +26,11 @@ export class Job<Id, Source extends JobSource<Id>> {
     }
 
     get done() {
-        return [maa.Status.Success, maa.Status.Failed].includes(this.status)
+        return [maa.Status.Succeeded, maa.Status.Failed].includes(this.status)
     }
 
-    get success() {
-        return this.status == maa.Status.Success
+    get succeeded() {
+        return this.status == maa.Status.Succeeded
     }
 
     get failed() {

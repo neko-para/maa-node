@@ -31,7 +31,7 @@ export type FlatRect = [x: number, y: number, width: number, height: number]
 type MaybePromise<T> = T | Promise<T>
 
 export type NotificationCallback = (message: string, details_json: string) => MaybePromise<void>
-export type CustomRecognizerCallback = (
+export type CustomRecognitionCallback = (
     context: ContextHandle,
     task_id: TaskId,
     current_task_name: string,
@@ -170,16 +170,16 @@ export declare function resource_create(
     callback: NotificationCallback | null
 ): ResourceHandle | null
 export declare function resource_destroy(handle: ResourceHandle): void
-export declare function resource_register_custom_recognizer(
+export declare function resource_register_custom_recognition(
     handle: ResourceHandle,
     name: string,
-    recognizer: CustomRecognizerCallback
+    recognizer: CustomRecognitionCallback
 ): boolean
-export declare function resource_unregister_custom_recognizer(
+export declare function resource_unregister_custom_recognition(
     handle: ResourceHandle,
     name: string
 ): boolean
-export declare function resource_clear_custom_recognizer(handle: ResourceHandle): boolean
+export declare function resource_clear_custom_recognition(handle: ResourceHandle): boolean
 export declare function resource_register_custom_action(
     handle: ResourceHandle,
     name: string,
@@ -240,7 +240,7 @@ export declare function tasker_get_recognition_detail(
 export declare function tasker_get_node_detail(
     handle: TaskerHandle,
     node_id: NodeId
-): [name: string, reco_id: RecoId, times: number, completed: boolean] | null
+): [name: string, reco_id: RecoId, completed: boolean] | null
 export declare function tasker_get_task_detail(
     handle: TaskerHandle,
     task_id: TaskId
@@ -281,14 +281,14 @@ export declare function set_global_option_save_draw(value: boolean): boolean
 export declare function set_global_option_recording(value: boolean): boolean
 export declare function set_global_option_stdout_level(value: LoggingLevel): boolean
 export declare function set_global_option_show_hit_draw(value: boolean): boolean
-export declare function set_global_option_debug_message(value: boolean): boolean
+export declare function set_global_option_debug_mode(value: boolean): boolean
 
 // pi.cpp
 
 export declare function pi_register_custom_recognizer(
     id: Id,
     name: string,
-    recognizer: CustomRecognizerCallback
+    recognizer: CustomRecognitionCallback
 ): void
 export declare function pi_register_custom_action(
     id: Id,
@@ -307,7 +307,7 @@ export declare function pi_run_cli(
 // export declare function wrap_window_hwnd(hwnd: string): Win32Hwnd | null
 
 export declare const Status: Record<
-    'Invalid' | 'Pending' | 'Running' | 'Success' | 'Failed',
+    'Invalid' | 'Pending' | 'Running' | 'Succeeded' | 'Failed',
     Status
 >
 export declare const LoggingLevel: Record<
