@@ -170,6 +170,10 @@ export declare function resource_create(
     callback: NotificationCallback | null
 ): ResourceHandle | null
 export declare function resource_destroy(handle: ResourceHandle): void
+export declare function resource_set_option_inference_device(
+    handle: ResourceHandle,
+    id: number
+): boolean
 export declare function resource_register_custom_recognition(
     handle: ResourceHandle,
     name: string,

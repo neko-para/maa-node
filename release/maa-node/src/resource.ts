@@ -45,6 +45,20 @@ export class ResourceBase {
         maa.resource_destroy(this.handle)
     }
 
+    set inference_device(id: 'cpu' | 'auto' | number) {
+        switch (id) {
+            case 'cpu':
+                id = -2
+                break
+            case 'auto':
+                id = -1
+                break
+        }
+        if (!maa.resource_set_option_inference_device(this.handle, id)) {
+            throw 'Resource set inference_device failed'
+        }
+    }
+
     register_custom_recognizer(name: string, func: CustomRecognizerCallback) {
         if (
             !maa.resource_register_custom_recognition(
