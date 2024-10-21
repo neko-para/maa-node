@@ -5,7 +5,7 @@
 需要NodeJS 20及以上, 创建项目文件夹后通过下列命令安装
 
 ```shell
-npm tskrall @nekosu/maa-node
+npm install @nekosu/maa-node
 ```
 
 由于npm包中集成了MaaFramework的库以及AgentBinary, 下载可能会花费一点时间.
