@@ -212,10 +212,11 @@ export class TaskerBase {
     task_detail(id: maa.TaskId) {
         const dt = maa.tasker_get_task_detail(this.handle, id)
         if (dt) {
-            const [entry, node_ids] = dt
+            const [entry, node_ids, status] = dt
             return {
                 entry,
-                nodes: node_ids.map(i => this.node_detail(i))
+                nodes: node_ids.map(i => this.node_detail(i)),
+                status
             }
         } else {
             return null

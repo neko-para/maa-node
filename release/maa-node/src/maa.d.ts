@@ -248,7 +248,7 @@ export declare function tasker_get_node_detail(
 export declare function tasker_get_task_detail(
     handle: TaskerHandle,
     task_id: TaskId
-): [entry: string, node_ids: NodeId[]] | null
+): [entry: string, node_ids: NodeId[], status: Status] | null
 export declare function tasker_get_latest_node(
     handle: TaskerHandle,
     task_name: string

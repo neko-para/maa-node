@@ -206,17 +206,18 @@ std::optional<std::tuple<std::string, MaaRecoId, bool>>
     }
 }
 
-std::optional<std::tuple<std::string, std::vector<MaaNodeId>>>
+std::optional<std::tuple<std::string, std::vector<MaaNodeId>, MaaStatus>>
     tasker_get_task_detail(Napi::External<TaskerInfo> info, MaaTaskId id)
 {
     MaaSize node_size = 0;
-    if (!MaaTaskerGetTaskDetail(info.Data()->handle, id, nullptr, nullptr, &node_size)) {
+    if (!MaaTaskerGetTaskDetail(info.Data()->handle, id, nullptr, nullptr, &node_size, nullptr)) {
         return std::nullopt;
     }
     StringBuffer entry;
     std::vector<MaaNodeId> nodes(node_size);
-    if (MaaTaskerGetTaskDetail(info.Data()->handle, id, entry, nodes.data(), &node_size)) {
-        return std::make_tuple(entry.str(), nodes);
+    MaaStatus status;
+    if (MaaTaskerGetTaskDetail(info.Data()->handle, id, entry, nodes.data(), &node_size, &status)) {
+        return std::make_tuple(entry.str(), nodes, status);
     }
     else {
         return std::nullopt;
