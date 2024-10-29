@@ -75,6 +75,12 @@ export class ControllerBase {
         }
     }
 
+    set screenshot_use_raw_size(value: boolean) {
+        if (!maa.controller_set_option_screenshot_use_raw_size(this.handle, value)) {
+            throw 'Controller set screenshot_use_raw_size failed'
+        }
+    }
+
     set recording(value: boolean) {
         if (!maa.controller_set_option_recording(this.handle, value)) {
             throw 'Controller set recording failed'
@@ -186,13 +192,13 @@ export class AdbController extends ControllerBase {
 
 export class Win32Controller extends ControllerBase {
     constructor(
-        hwnd: maa.DesktopHandle,
+        hwnd: maa.DesktopHandle | null,
         screencap_methods: maa.ScreencapOrInputMethods,
         input_methods: maa.ScreencapOrInputMethods
     ) {
         let ws: WeakRef<this>
         const h = maa.win32_controller_create(
-            hwnd,
+            hwnd ?? ('0' as maa.DesktopHandle),
             screencap_methods,
             input_methods,
             (message, details_json) => {

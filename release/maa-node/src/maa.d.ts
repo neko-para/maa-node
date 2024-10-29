@@ -120,6 +120,10 @@ export declare function controller_set_option_screenshot_target_short_side(
     handle: ControllerHandle,
     value: number
 ): boolean
+export declare function controller_set_option_screenshot_use_raw_size(
+    handle: ControllerHandle,
+    value: boolean
+): boolean
 export declare function controller_set_option_recording(
     handle: ControllerHandle,
     value: boolean

@@ -60,7 +60,7 @@ std::optional<Napi::External<ControllerInfo>> win32_controller_create(
 {
     void* h = static_cast<void*>(hwnd);
 #if defined(_WIN32)
-    if (!IsWindow(static_cast<HWND>(h))) {
+    if (h && !IsWindow(static_cast<HWND>(h))) {
         return std::nullopt;
     }
 #endif
@@ -150,6 +150,15 @@ bool controller_set_option_screenshot_target_short_side(
         MaaCtrlOption_ScreenshotTargetShortSide,
         &size,
         sizeof(size));
+}
+
+bool controller_set_option_screenshot_use_raw_size(Napi::External<ControllerInfo> info, bool flag)
+{
+    return MaaControllerSetOption(
+        info.Data()->handle,
+        MaaCtrlOption_ScreenshotUseRawSize,
+        &flag,
+        sizeof(flag));
 }
 
 bool controller_set_option_recording(Napi::External<ControllerInfo> info, bool flag)
@@ -325,6 +334,7 @@ void load_instance_controller(
     BIND(controller_destroy);
     BIND(controller_set_option_screenshot_target_long_side);
     BIND(controller_set_option_screenshot_target_short_side);
+    BIND(controller_set_option_screenshot_use_raw_size);
     BIND(controller_set_option_recording);
     BIND(controller_post_connection);
     BIND(controller_post_click);
