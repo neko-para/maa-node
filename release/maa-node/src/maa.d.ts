@@ -50,6 +50,25 @@ export type CustomActionCallback = (
     box: Rect
 ) => MaybePromise<boolean>
 
+export type CustomControllerParamResultMap = {
+    connect: [[], boolean]
+    request_uuid: [[], string | null]
+    start_app: [[intent: string], boolean]
+    screencap: [[intent: string], boolean]
+    screencap: [[image: ImageBufferHandle], boolean]
+    click: [[x: number, y: number], boolean]
+    swipe: [[x1: number, y1: number, x2: number, y2: number, duration: number], boolean]
+    touch_down: [[contact: number, x: number, y: number, pressure: number], boolean]
+    touch_move: [[contact: number, x: number, y: number, pressure: number], boolean]
+    touch_up: [[contact: number], boolean]
+    press_key: [[keycode: number], boolean]
+    input_text: [[text: string], boolean]
+}
+export type CustomControllerCallback = (
+    action: keyof CustomControllerParamResultMap,
+    ...param: any[]
+) => MaybePromise<any>
+
 // context.cpp
 
 export declare function context_run_pipeline(
@@ -100,10 +119,10 @@ export declare function win32_controller_create(
     input_methods: ScreencapOrInputMethods,
     callback: NotificationCallback | null
 ): ControllerHandle | null
-// export declare function custom_controller_create(
-//     custom_callback: CustomControllerCallback,
-//     callback: NotificationCallbak | null
-// ): ControllerHandle | null
+export declare function custom_controller_create(
+    custom_callback: CustomControllerCallback,
+    callback: NotificationCallbak | null
+): ControllerHandle | null
 export declare function dbg_controller_create(
     read_path: string,
     write_path: string,
