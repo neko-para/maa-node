@@ -1,7 +1,7 @@
 import path from 'path'
 
 import { Job, JobSource } from './job'
-import maa from './maa'
+import maa, { ImageData } from './maa'
 
 export type ControllerNotify =
     | ({
@@ -237,13 +237,12 @@ export class DbgController extends ControllerBase {
     }
 }
 
-/*
 export abstract class CustomControllerActor {
     abstract connect(): maa.MaybePromise<boolean>
     abstract request_uuid(): maa.MaybePromise<string | null>
     abstract start_app(intent: string): maa.MaybePromise<boolean>
     abstract stop_app(intent: string): maa.MaybePromise<boolean>
-    abstract screencap(image: ImageBuffer): maa.MaybePromise<boolean>
+    abstract screencap(): maa.MaybePromise<ImageData | null>
     abstract click(x: number, y: number): maa.MaybePromise<boolean>
     abstract swipe(
         x1: number,
@@ -282,8 +281,8 @@ export class CustomControllerActorDefaultImpl extends CustomControllerActor {
     stop_app(intent: string): maa.MaybePromise<boolean> {
         return false
     }
-    screencap(image: ImageBuffer): maa.MaybePromise<boolean> {
-        return false
+    screencap(): maa.MaybePromise<ImageData | null> {
+        return null
     }
     click(x: number, y: number): maa.MaybePromise<boolean> {
         return false
@@ -319,13 +318,10 @@ export class CustomController extends ControllerBase {
         let ws: WeakRef<this>
         const h = maa.custom_controller_create(
             (action, ...param) => {
-                if (action === 'screencap') {
-                    return actor.screencap(new ImageBuffer(param[0]))
-                }
                 return (actor[action] as any)(...param)
             },
-            (msg, detail) => {
-                ws.deref()?.notify(msg, detail)
+            (message, details_json) => {
+                ws.deref()?.notify(message, details_json)
             }
         )
         if (!h) {

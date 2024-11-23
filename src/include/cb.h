@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "wrapper.h"
 
+#include <MaaFramework/MaaAPI.h>
 #include <iostream>
 
 inline void NotificationCallback(const char* message, const char* details_json, void* callback_arg)
@@ -191,22 +192,27 @@ inline MaaBool CustomControllerScreencap(void* trans_arg, MaaImageBuffer* buffer
 {
     auto ctx = reinterpret_cast<CallbackContext*>(trans_arg);
 
-    auto res = ctx->Call<bool>(
-        [=](auto env, auto fn) {
-            return fn.Call({ Napi::String::New(env, "screencap"),
-                             Napi::External<MaaImageBuffer>::New(env, buffer) });
-        },
-        [](Napi::Value res) {
+    auto res = ctx->Call<std::optional<Napi::ArrayBuffer>>(
+        [=](auto env, auto fn) { return fn.Call({ Napi::String::New(env, "screencap") }); },
+        [](Napi::Value res) -> std::optional<Napi::ArrayBuffer> {
             try {
-                return JSConvert<bool>::from_value(res);
+                return JSConvert<std::optional<Napi::ArrayBuffer>>::from_value(res);
             }
             catch (MaaNodeException exc) {
                 std::cerr << exc.what() << std::endl;
-                return false;
+                return std::nullopt;
             }
         });
 
-    return res;
+    if (res) {
+        return MaaImageBufferSetEncoded(
+            buffer,
+            static_cast<uint8_t*>(res->Data()),
+            res->ByteLength());
+    }
+    else {
+        return false;
+    }
 }
 
 inline MaaBool CustomControllerClick(int32_t x, int32_t y, void* trans_arg)

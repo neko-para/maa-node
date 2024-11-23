@@ -54,8 +54,8 @@ export type CustomControllerParamResultMap = {
     connect: [[], boolean]
     request_uuid: [[], string | null]
     start_app: [[intent: string], boolean]
-    screencap: [[intent: string], boolean]
-    screencap: [[image: ImageBufferHandle], boolean]
+    stop_app: [[intent: string], boolean]
+    screencap: [[], ImageData | null]
     click: [[x: number, y: number], boolean]
     swipe: [[x1: number, y1: number, x2: number, y2: number, duration: number], boolean]
     touch_down: [[contact: number, x: number, y: number, pressure: number], boolean]
@@ -121,7 +121,7 @@ export declare function win32_controller_create(
 ): ControllerHandle | null
 export declare function custom_controller_create(
     custom_callback: CustomControllerCallback,
-    callback: NotificationCallbak | null
+    callback: NotificationCallback | null
 ): ControllerHandle | null
 export declare function dbg_controller_create(
     read_path: string,
